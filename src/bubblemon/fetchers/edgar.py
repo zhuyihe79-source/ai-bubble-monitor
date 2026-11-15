@@ -24,7 +24,8 @@ URL = "https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json"
 
 def _headers() -> dict:
     # SEC 要求 User-Agent 带联系方式：export SEC_USER_AGENT="Your Name you@example.com"
-    ua = os.environ.get("SEC_USER_AGENT", "ai-bubble-monitor research contact@example.com")
+    # 未配置的 Actions secret 会注入空字符串，所以用 or 而不是 get 的默认值
+    ua = os.environ.get("SEC_USER_AGENT") or "ai-bubble-monitor research contact@example.com"
     return {"User-Agent": ua}
 
 
