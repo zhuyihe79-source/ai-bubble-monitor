@@ -1,0 +1,129 @@
+# direction: "high" = 数值越高越接近泡沫；"low" = 数值越低越接近泡沫
+# max_stale_days: 数据超过这个天数没更新，评分时视为缺失
+# publication_lag_days: 数据实际公布比所属日期晚多少天（财报季度数据约 45 天），避免历史评分用到“未来”信息
+dimensions:
+  valuation:   {label: 估值与集中度, weight: 1.0}
+  capex:       {label: 投入与回报, weight: 1.0}
+  leverage:    {label: 融资与杠杆, weight: 1.0}
+  sentiment:   {label: 投机情绪, weight: 1.0}
+  demand:      {label: 真实需求, weight: 1.0}
+  macro:       {label: 宏观与流动性, weight: 1.0}
+
+indicators:
+  # ---- 估值与集中度（yfinance）----
+  - id: spy_rsp_ratio
+    name: 市值加权/等权标普500 (SPY/RSP)
+    dimension: valuation
+    source: yahoo
+    params: {kind: ratio, num: SPY, den: RSP}
+    direction: high
+    frequency: daily
+    max_stale_days: 10
+  - id: smh_spy_ratio
+    name: 半导体 ETF 相对标普500 (SMH/SPY)
+    dimension: valuation
+    source: yahoo
+    params: {kind: ratio, num: SMH, den: SPY}
+    direction: high
+    frequency: daily
+    max_stale_days: 10
+  - id: nvda_ma200_gap
+    name: NVDA 偏离 200 日均线
+    dimension: valuation
+    source: yahoo
+    params: {kind: ma_gap, ticker: NVDA, window: 200}
+    direction: high
+    frequency: daily
+    max_stale_days: 10
+
+  # ---- 投入与回报（SEC EDGAR）----
+  - id: hyperscaler_capex_ttm
+    name: 五大云厂商 capex 滚动四季合计 (美元)
+    dimension: capex
+    source: edgar
+    params: {metric: capex_ttm}
+    direction: high
+    frequency: quarterly
+    max_stale_days: 200
+    publication_lag_days: 45
+  - id: hyperscaler_capex_to_ocf
+    name: 五大云厂商 capex / 经营现金流
+    dimension: capex
+    source: edgar
+    params: {metric: capex_to_ocf}
+    direction: high
+    frequency: quarterly
+    max_stale_days: 200
+    publication_lag_days: 45
+
+  # ---- 融资与杠杆（FRED）----
+  - id: hy_spread
+    name: 美国高收益债利差 (OAS，FRED 只提供近 3 年)
+    dimension: leverage
+    source: fred
+    params: {series: BAMLH0A0HYM2}
+    direction: low        # 利差越窄，市场越松懈
+    frequency: daily
+    max_stale_days: 10
+  - id: baa_spread
+    name: Moody's Baa 公司债收益率 - 10Y 国债（长历史）
+    dimension: leverage
+    source: fred
+    params: {series: BAA10Y}
+    direction: low
+    frequency: daily
+    max_stale_days: 10
+
+  # ---- 投机情绪 ----
+  - id: trends_ai_bubble
+    name: Google Trends "AI bubble" 搜索热度
+    dimension: sentiment
+    source: trends
+    params: {keyword: AI bubble}
+    direction: high
+    frequency: weekly
+    max_stale_days: 21
+  - id: vix
+    name: VIX 波动率指数
+    dimension: sentiment
+    source: fred
+    params: {series: VIXCLS}
+    direction: low        # 波动率越低，越自满
+    frequency: daily
+    max_stale_days: 10
+
+  # ---- 真实需求（手工录入）----
+  - id: gpu_h100_rental
+    name: H100 每小时租赁价 (美元)
+    dimension: demand
+    source: manual
+    params: {file: gpu_h100_rental.csv}
+    direction: low        # 租赁价下跌 = 供过于求
+    frequency: weekly
+    max_stale_days: 45
+
+  # ---- 宏观与流动性（FRED）----
+  - id: real_yield_10y
+    name: 10 年期 TIPS 实际利率
+    dimension: macro
+    source: fred
+    params: {series: DFII10}
+    direction: low
+    frequency: daily
+    max_stale_days: 10
+  - id: yield_curve_10y2y
+    name: 10Y-2Y 国债利差
+    dimension: macro
+    source: fred
+    params: {series: T10Y2Y}
+    direction: low
+    frequency: daily
+    max_stale_days: 10
+
+scoring:
+  min_dimensions: 4   # 总分至少需要几个维度有数据，否则不发布
+
+alerts:
+  score_yellow: 60
+  score_red: 80
+  indicator_extreme_pct: 0.95

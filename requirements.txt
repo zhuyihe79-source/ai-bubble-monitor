@@ -1,0 +1,10 @@
+duckdb
+pandas
+numpy
+requests
+yfinance
+pytrends
+streamlit
+plotly
+pyyaml
+pytest

@@ -1,0 +1,69 @@
+import numpy as np
+import pandas as pd
+
+from bubblemon import scoring
+from bubblemon.registry import Config, Indicator, load_config
+
+
+def make_ind(direction="high", lag=0, stale=10, dim="valuation", iid="x"):
+    return Indicator(iid, iid, dim, "manual", direction, "daily", stale, lag, {})
+
+
+def test_config_loads_and_is_valid():
+    cfg = load_config()
+    assert len(cfg.indicators) >= 10
+    assert all(i.dimension in cfg.dimensions for i in cfg.indicators)
+
+
+def test_to_weekly_marks_stale_data_as_missing():
+    idx = pd.date_range("2024-01-01", "2024-03-01", freq="D")
+    s = pd.Series(1.0, index=idx)
+    w = scoring.to_weekly(s, max_stale_days=10, asof=pd.Timestamp("2024-06-01"))
+    assert w.loc["2024-03-01"] == 1.0
+    assert np.isnan(w.loc["2024-05-31"])
+
+
+def test_to_weekly_respects_publication_lag():
+    s = pd.Series([1.0, 2.0], index=pd.to_datetime(["2024-03-31", "2024-06-30"]))
+    w = scoring.to_weekly(s, 200, pd.Timestamp("2024-07-26"), lag_days=45)
+    # 6/30 的数据要到 8/14 才公布，7/26 时看到的还是 3 月那条
+    assert w.iloc[-1] == 1.0
+
+
+def test_to_weekly_never_goes_past_asof():
+    s = pd.Series(1.0, index=pd.date_range("2024-01-01", "2024-02-20"))
+    w = scoring.to_weekly(s, 10, pd.Timestamp("2024-02-15"))
+    assert w.index[-1] == pd.Timestamp("2024-02-09")
+
+
+def test_percentile_monotonic_series_is_extreme():
+    idx = pd.date_range("2015-01-02", periods=500, freq="W-FRI")
+    p = scoring.rolling_percentile(pd.Series(np.arange(500.0), index=idx))
+    assert p.dropna().iloc[-1] == 1.0
+
+
+def test_direction_low_inverts_score():
+    idx = pd.date_range("2015-01-02", periods=500, freq="W-FRI")
+    s = pd.Series(np.arange(500.0)[::-1], index=idx)  # 一路下降
+    asof = idx[-1]
+    hi = scoring.indicator_score(s, make_ind("high", stale=30), asof).dropna().iloc[-1]
+    lo = scoring.indicator_score(s, make_ind("low", stale=30), asof).dropna().iloc[-1]
+    assert hi == 0.0 and lo == 1.0
+
+
+def test_total_requires_min_dimensions():
+    idx = pd.date_range("2015-01-02", periods=300, freq="W-FRI")
+    s = pd.Series(np.arange(300.0), index=idx)
+    inds = [make_ind(stale=30, dim="valuation", iid="a"), make_ind(stale=30, dim="macro", iid="b")]
+    dims = {"valuation": {"label": "v", "weight": 1.0}, "macro": {"label": "m", "weight": 1.0}}
+    cfg = Config(dims, inds, {"score_yellow": 60, "score_red": 80}, {"min_dimensions": 3})
+    r = scoring.compute({"a": s, "b": s}, cfg, asof=idx[-1])
+    assert r.total.empty
+    cfg2 = Config(dims, inds, cfg.alerts, {"min_dimensions": 2})
+    r2 = scoring.compute({"a": s, "b": s}, cfg2, asof=idx[-1])
+    assert r2.total.iloc[-1] == 100.0
+
+
+def test_band():
+    a = {"score_yellow": 60, "score_red": 80}
+    assert [scoring.band(x, a) for x in (10, 60, 85)] == ["green", "yellow", "red"]
