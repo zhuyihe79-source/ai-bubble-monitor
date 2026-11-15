@@ -2,7 +2,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from bubblemon import alerts, db, scoring
+from bubblemon import commentary, db, scoring, triggers
 from bubblemon.registry import load_config
 
 st.set_page_config(page_title="AI 泡沫监测", layout="wide")
@@ -37,14 +37,43 @@ b = scoring.band(latest, cfg.alerts)
 c1, c2, c3 = st.columns([1, 1, 2])
 c1.metric("泡沫温度 (0-100)", f"{latest:.0f}", f"{latest - prev:+.0f} vs 4 周前", delta_color="inverse")
 c2.markdown(f"### 状态：<span style='color:{BAND_COLOR[b]}'>{BAND_LABEL[b]}</span>", unsafe_allow_html=True)
-c2.caption(f"截至 {result.total.index[-1].date()}，指标覆盖率 {result.coverage.iloc[-1]:.0%}")
-with c3:
-    msgs = alerts.evaluate(result, cfg)
-    for m in msgs:
-        st.warning(m)
-    if not msgs:
-        st.success("没有触发告警")
+c2.caption(f"截至 {result.total.index[-1].date()}，评分指标覆盖率 {result.coverage.iloc[-1]:.0%}")
 
+week = scoring.last_friday(pd.Timestamp.today())
+states = triggers.evaluate(series, cfg, week)
+before = {s.trigger.id: s for s in triggers.evaluate(series, cfg, week - pd.Timedelta(days=7))}
+with c3:
+    counts = {k: sum(s.status == k for s in states) for k in ("triggered", "alert", "ok", "nodata")}
+    cols = st.columns(4)
+    for col, (k, v) in zip(cols, counts.items()):
+        col.metric(f"破裂信号·{triggers.LABEL[k]}", v)
+
+notes = commentary.history(series, cfg, result, pd.Timestamp.today(), weeks=8)
+st.subheader(f"本周解读（{notes[0].week.date()}）")
+st.markdown(f"**{notes[0].headline}**")
+left_n, right_n = st.columns(2)
+for idx, (title, items) in enumerate(notes[0].sections):
+    with (left_n if idx % 2 == 0 else right_n):
+        st.markdown(f"**{title}**\n" + "\n".join(f"- {x}" for x in items))
+
+st.subheader("破裂信号")
+st.dataframe(
+    pd.DataFrame([{
+        "状态": s.label,
+        "信号": s.trigger.name,
+        "当前": triggers.fmt(s.value, s.trigger.unit),
+        "警戒 / 触发": f"{triggers.fmt_threshold(s.trigger.alert, s.trigger.unit)} / {triggers.fmt_threshold(s.trigger.trigger, s.trigger.unit)}",
+        "上周": before[s.trigger.id].label,
+        "数据截至": None if s.data_date is None else s.data_date.date(),
+        "为什么重要": s.trigger.why,
+    } for s in sorted(states, key=lambda s: triggers.SEVERITY[s.status])]),
+    hide_index=True, width="stretch",
+)
+with st.expander("过往解读"):
+    for n in notes[1:]:
+        st.markdown(f"**{n.week.date()}**｜{n.headline}")
+        for title, items in n.sections:
+            st.markdown(f"*{title}*\n" + "\n".join(f"- {x}" for x in items))
 years = st.slider("显示最近几年", 1, 25, 10)
 cut = result.total.index[-1] - pd.DateOffset(years=years)
 fig = go.Figure(go.Scatter(x=result.total[result.total.index >= cut].index,
@@ -69,7 +98,7 @@ with right:
     st.subheader("指标明细")
     rows = []
     last = result.indicators.iloc[-1]
-    for ind in cfg.indicators:
+    for ind in cfg.scored:
         s = series[ind.id]
         rows.append({
             "维度": cfg.dimensions[ind.dimension]["label"],

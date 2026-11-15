@@ -60,7 +60,7 @@ class ScoreResult:
 def compute(series_by_id: dict[str, pd.Series], cfg: Config, asof: pd.Timestamp | None = None) -> ScoreResult:
     asof = asof or pd.Timestamp.today().normalize()
     cols = {}
-    for ind in cfg.indicators:
+    for ind in cfg.scored:
         s = series_by_id.get(ind.id)
         if s is None or s.empty:
             continue
@@ -74,7 +74,7 @@ def compute(series_by_id: dict[str, pd.Series], cfg: Config, asof: pd.Timestamp 
     ind_df = pd.DataFrame(cols)
     dim_cols = {}
     for dim in cfg.dimensions:
-        members = [i.id for i in cfg.indicators if i.dimension == dim and i.id in ind_df]
+        members = [i.id for i in cfg.scored if i.dimension == dim and i.id in ind_df]
         if members:
             dim_cols[dim] = ind_df[members].mean(axis=1, skipna=True) * 100
     dim_df = pd.DataFrame(dim_cols)
@@ -83,7 +83,7 @@ def compute(series_by_id: dict[str, pd.Series], cfg: Config, asof: pd.Timestamp 
     w = dim_df.notna().mul(weights, axis=1)
     total = dim_df.fillna(0).mul(weights, axis=1).sum(axis=1) / w.sum(axis=1)
     total = total.where(dim_df.notna().sum(axis=1) >= cfg.scoring.get("min_dimensions", 1))
-    coverage = ind_df.notna().sum(axis=1) / len(cfg.indicators)
+    coverage = ind_df.notna().sum(axis=1) / len(cfg.scored)
     return ScoreResult(ind_df, dim_df.dropna(how="all"), total.dropna(), coverage)
 
 

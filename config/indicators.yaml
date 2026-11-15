@@ -1,6 +1,7 @@
 # direction: "high" = 数值越高越接近泡沫；"low" = 数值越低越接近泡沫
 # max_stale_days: 数据超过这个天数没更新，评分时视为缺失
-# publication_lag_days: 数据实际公布比所属日期晚多少天（财报季度数据约 45 天），避免历史评分用到“未来”信息
+# publication_lag_days: 数据实际公布比所属日期晚多少天（财报一般在季末后 35 天内），避免历史评分用到“未来”信息
+# score: false 表示只用于触发器和解读，不计入泡沫温度
 dimensions:
   valuation:   {label: 估值与集中度, weight: 1.0}
   capex:       {label: 投入与回报, weight: 1.0}
@@ -45,7 +46,7 @@ indicators:
     direction: high
     frequency: quarterly
     max_stale_days: 200
-    publication_lag_days: 45
+    publication_lag_days: 35
   - id: hyperscaler_capex_to_ocf
     name: 五大云厂商 capex / 经营现金流
     dimension: capex
@@ -54,7 +55,7 @@ indicators:
     direction: high
     frequency: quarterly
     max_stale_days: 200
-    publication_lag_days: 45
+    publication_lag_days: 35
 
   # ---- 融资与杠杆（FRED）----
   - id: hy_spread
@@ -120,6 +121,65 @@ indicators:
     frequency: daily
     max_stale_days: 10
 
+  # ---- 只用于触发器和解读，不计入泡沫温度（score: false）----
+  - id: nvda_price
+    name: NVDA 收盘价
+    dimension: valuation
+    source: yahoo
+    params: {kind: price, ticker: NVDA}
+    direction: high
+    frequency: daily
+    max_stale_days: 10
+    score: false
+  - id: smh_price
+    name: SMH 半导体 ETF 收盘价
+    dimension: valuation
+    source: yahoo
+    params: {kind: price, ticker: SMH}
+    direction: high
+    frequency: daily
+    max_stale_days: 10
+    score: false
+  - id: spy_price
+    name: SPY 标普500 ETF 收盘价
+    dimension: valuation
+    source: yahoo
+    params: {kind: price, ticker: SPY}
+    direction: high
+    frequency: daily
+    max_stale_days: 10
+    score: false
+  - id: hyperscaler_capex_q
+    name: 五大云厂商单季 capex 合计 (美元)
+    dimension: capex
+    source: edgar
+    params: {metric: capex_q}
+    direction: high
+    frequency: quarterly
+    max_stale_days: 200
+    publication_lag_days: 35
+    score: false
+  - id: nvda_revenue_q
+    name: NVDA 单季收入 (美元，财季)
+    dimension: capex
+    source: edgar
+    params: {metric: nvda_revenue_q}
+    direction: high
+    frequency: quarterly
+    max_stale_days: 200
+    publication_lag_days: 35
+    score: false
+  - id: hyperscaler_debt
+    name: 五大云厂商有息负债合计 (美元，不含租赁)
+    dimension: leverage
+    source: edgar
+    params: {metric: debt_total}
+    direction: high
+    frequency: quarterly
+    max_stale_days: 200
+    publication_lag_days: 35
+    score: false
+
 scoring:
   min_dimensions: 4   # 总分至少需要几个维度有数据，否则不发布
 
@@ -127,3 +187,130 @@ alerts:
   score_yellow: 60
   score_red: 80
   indicator_extreme_pct: 0.95
+
+# 破裂触发器。transform:
+#   level        当前值
+#   pct_change   相对 days 天前的涨跌幅（就近取 tolerance_days 内的观测）
+#   diff         相对 days 天前的差值
+#   drawdown     相对过去 days 天最高点的回撤
+# direction: above = 数值越高越危险；below = 越低越危险
+# unit: pct（显示为百分比）、pp（百分点）、num（原值）
+triggers:
+  - id: capex_qoq
+    name: 云厂商单季 capex 环比
+    series: hyperscaler_capex_q
+    transform: pct_change
+    days: 91
+    direction: below
+    alert: 0.0
+    trigger: -0.10
+    unit: pct
+    why: 资本开支第一次环比下降，意味着 AI 基建需求见顶，英伟达等供应链收入会直接受影响。
+  - id: capex_yoy
+    name: 云厂商 capex 同比（滚动四季）
+    series: hyperscaler_capex_ttm
+    transform: pct_change
+    days: 365
+    direction: below
+    alert: 0.25
+    trigger: 0.0
+    unit: pct
+    why: 当前估值隐含 capex 持续高增长；增速放缓本身就足以让供应链估值下修。
+  - id: capex_vs_ocf
+    name: 云厂商 capex / 经营现金流
+    series: hyperscaler_capex_to_ocf
+    transform: level
+    direction: above
+    alert: 0.9
+    trigger: 1.0
+    unit: num
+    why: 超过 1 意味着投资已经花光经营现金流，需要靠借债或减少回购来支撑，财务弹性下降。
+  - id: debt_yoy
+    name: 云厂商有息负债同比
+    series: hyperscaler_debt
+    transform: pct_change
+    days: 365
+    direction: above
+    alert: 0.25
+    trigger: 0.50
+    unit: pct
+    why: 从现金流投资转向借债投资，是周期后段的典型特征（参考 1999–2001 年电信业）。
+  - id: nvda_rev_yoy
+    name: NVDA 单季收入同比
+    series: nvda_revenue_q
+    transform: pct_change
+    days: 365
+    direction: below
+    alert: 0.30
+    trigger: 0.10
+    unit: pct
+    tolerance_days: 25
+    why: 英伟达是 AI 资本开支的最终收款方，收入增速是整个链条需求的最直接读数。
+  - id: nvda_drawdown
+    name: NVDA 距 52 周高点回撤
+    series: nvda_price
+    transform: drawdown
+    days: 365
+    direction: below
+    alert: -0.20
+    trigger: -0.35
+    unit: pct
+    why: 龙头深度回撤会通过指数权重和财富效应传导到整个 AI 板块。
+  - id: smh_rel_3m
+    name: 半导体相对标普500，3 个月变化
+    series: smh_spy_ratio
+    transform: pct_change
+    days: 91
+    direction: below
+    alert: -0.10
+    trigger: -0.20
+    unit: pct
+    why: AI 主线跑输大盘，说明资金在撤离领涨板块。
+  - id: hy_widening
+    name: 高收益债利差，3 个月变化
+    series: hy_spread
+    transform: diff
+    days: 91
+    direction: above
+    alert: 0.75
+    trigger: 1.50
+    unit: pp
+    why: 信用市场通常先于股市定价风险；利差急升会抬高数据中心项目和 AI 新贵的融资成本。
+  - id: vix_level
+    name: VIX 波动率
+    series: vix
+    transform: level
+    direction: above
+    alert: 25
+    trigger: 35
+    unit: num
+    why: 恐慌升温时，高估值、高集中度的板块最先被抛售。
+  - id: real_yield_3m
+    name: 10 年期实际利率，3 个月变化
+    series: real_yield_10y
+    transform: diff
+    days: 91
+    direction: above
+    alert: 0.40
+    trigger: 0.75
+    unit: pp
+    why: AI 股票的价值主要来自远期现金流，对贴现率最敏感。
+  - id: bubble_search
+    name: Google 搜索 "AI bubble" 热度
+    series: trends_ai_bubble
+    transform: level
+    direction: above
+    alert: 50
+    trigger: 80
+    unit: num
+    why: 泡沫担忧进入大众视野时，边际买家会变少；热度是 0–100 的相对值。
+  - id: gpu_price_3m
+    name: H100 租赁价，3 个月变化
+    series: gpu_h100_rental
+    transform: pct_change
+    days: 91
+    direction: below
+    alert: -0.15
+    trigger: -0.30
+    unit: pct
+    why: 算力租金下跌意味着供给过剩，GPU 资产的回报率和抵押价值都会下降。
