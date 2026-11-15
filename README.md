@@ -43,7 +43,7 @@ export SEC_USER_AGENT="你的名字 you@example.com"   # SEC 要求带联系方�
 
 1. 把项目推到 GitHub 仓库，默认分支叫 `main`。
 2. 仓库 Settings → Pages → Source 选 **GitHub Actions**。
-3. Settings → Secrets and variables → Actions，新建 secret `SEC_USER_AGENT`，值如 `你的名字 you@example.com`。
+3. （可选）Settings → Secrets and variables → Actions，新建 secret `SEC_USER_AGENT`，值如 `你的名字 you@example.com`。不设置会用默认值。不要用 GitHub 的 `noreply` 邮箱，SEC 会返回 403。
 4. Actions 页手动运行一次 `publish-dashboard`，之后每个工作日自动更新。网址是 `https://<用户名>.github.io/<仓库名>/`。
 
 注意：Pages 在免费账号下要求仓库公开；私有仓库需要付费计划。看板是纯静态页面，没有后端。
