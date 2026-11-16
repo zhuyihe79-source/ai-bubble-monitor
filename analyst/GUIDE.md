@@ -78,7 +78,7 @@
 
 有些新闻两面都有，比如 HBM 短缺：短期说明需求强（降低需求风险），但也限制英伟达出货、抬高成本（增加供给风险）。这种情况按对“未来 6–12 个月出现大幅回调”的净影响判断，并在 `implication` 里把两面都写出来。
 
-`signal`（可选）：如果新闻直接关系到某个破裂信号，填它在 `config/indicators.yaml` 里的触发器 id，例如 `capex_yoy`、`debt_yoy`、`nvda_rev_yoy`、`gpu_price_3m`。
+`signal`（可选）：如果新闻直接关系到某个破裂信号，填它在 `config/indicators.yaml` 里的触发器 id，例如 `capex_yoy`、`debt_yoy`、`nvda_rev_yoy`。
 
 ## 分析师风险评级
 

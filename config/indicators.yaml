@@ -8,7 +8,6 @@
 dimensions:
   valuation:   {label: 估值与集中度, group: ai, weight: 1.0, desc: 钱是不是过度挤在 AI 龙头上（大盘集中度、半导体相对大盘、NVDA 偏离均线）}
   capex:       {label: 投入与回报, group: ai, weight: 1.0, desc: 云厂商投入增长有多快、自己的现金流还撑不撑得住}
-  demand:      {label: 真实需求, group: ai, weight: 1.0, desc: 算力租金有没有下跌（供过于求的直接证据）}
   leverage:    {label: 信用环境, group: market, weight: 1.0, desc: 借钱是不是太容易（信用利差越窄，市场越松懈）}
   sentiment:   {label: 波动与自满, group: market, weight: 1.0, desc: 市场是不是太平静（VIX 越低越自满）}
   macro:       {label: 利率环境, group: market, weight: 1.0, desc: 资金成本是否宽松（实际利率、期限利差）}
@@ -114,16 +113,6 @@ indicators:
     direction: low        # 波动率越低，越自满
     frequency: daily
     max_stale_days: 10
-
-  # ---- 真实需求（手工录入）----
-  - id: gpu_h100_rental
-    name: H100 每小时租赁价 (美元)
-    dimension: demand
-    source: manual
-    params: {file: gpu_h100_rental.csv}
-    direction: low        # 租赁价下跌 = 供过于求
-    frequency: weekly
-    max_stale_days: 45
 
   # ---- 利率环境（FRED，计入市场宽松度）----
   - id: real_yield_10y
@@ -330,13 +319,3 @@ triggers:
     trigger: 80
     unit: num
     why: 泡沫担忧进入大众视野时，边际买家会变少；热度是 0–100 的相对值。
-  - id: gpu_price_3m
-    name: H100 租赁价，3 个月变化
-    series: gpu_h100_rental
-    transform: pct_change
-    days: 91
-    direction: below
-    alert: -0.15
-    trigger: -0.30
-    unit: pct
-    why: 算力租金下跌意味着供给过剩，GPU 资产的回报率和抵押价值都会下降。

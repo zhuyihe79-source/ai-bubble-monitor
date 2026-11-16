@@ -17,6 +17,7 @@ def test_dimension_section_flags_newly_entered_indicator_and_sums_contributions(
     res = scoring.ScoreResult(inds, dims, total, pd.Series(1.0, index=idx), market)
     ai = report._dimension_section(res, cfg, "ai")
     assert "AI 泡沫温度 75 = 2 个有数据维度" in ai and "估值与集中度 推高 5.0" in ai  # 2 个维度平均，+10 贡献 5 度
-    assert "新加入 五大云厂商 capex 同比" in ai                                      # 指标进出单独说明    assert "暂无数据" in ai and "信用环境" not in ai                                   # 市场维度不进 AI 温度
+    assert "新加入 五大云厂商 capex 同比" in ai                                      # 指标进出单独说明
+    assert "信用环境" not in ai                                                     # 市场维度不进 AI 温度
     mk = report._dimension_section(res, cfg, "market")
     assert "市场宽松度 60" in mk and "信用环境" in mk and "估值与集中度" not in mk
