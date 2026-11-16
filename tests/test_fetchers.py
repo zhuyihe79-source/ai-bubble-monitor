@@ -60,3 +60,10 @@ def test_upsert_is_idempotent_and_overwrites():
     db.upsert_observations(con, "x", "t", pd.Series([5.0], index=pd.to_datetime(["2024-01-02"])))
     out = db.load_series(con, "x")
     assert out.tolist() == [1.0, 5.0]
+
+
+def test_trends_combine_shares_scale_and_rescales_to_100():
+    from bubblemon.fetchers import trends
+    df = pd.DataFrame({"a": [10, 50, 20], "b": [10, 50, 0], "isPartial": [False] * 3})
+    s = trends.combine(df, ["a", "b"])
+    assert s.tolist() == [20.0, 100.0, 20.0]  # 相加后 100 = 两个词合计的最高周

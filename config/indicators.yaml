@@ -93,10 +93,13 @@ indicators:
 
   # ---- 搜索热度（不计分）----
   - id: trends_ai_bubble
-    name: Google Trends "AI bubble" 搜索热度
+    name: Google 搜索 "AI bubble" + "AI crash" 热度
     dimension: sentiment
     source: trends
-    params: {keyword: AI bubble}
+    # 两个词同一次请求、共用刻度后相加。2023 年起两者相关系数 0.78，量级相当。
+    # 试过但没加：Nvidia crash、AI bubble burst、tech bubble、dot com bubble（搜索量不到 AI bubble 的 1/5）；
+    # stock market crash、recession（是全市场恐慌，和 AI bubble 相关系数只有 0.2–0.5）。
+    params: {keywords: [AI bubble, AI crash]}
     direction: high
     frequency: weekly
     max_stale_days: 21
@@ -311,7 +314,7 @@ triggers:
     unit: pp
     why: AI 股票的价值主要来自远期现金流，对贴现率最敏感。
   - id: bubble_search
-    name: Google 搜索 "AI bubble" 热度
+    name: Google 搜索 "AI bubble" + "AI crash" 热度
     series: trends_ai_bubble
     transform: level
     direction: above

@@ -108,7 +108,7 @@ tr:last-child td{border-bottom:0}
 .nheat td,.nheat th{text-align:center;border:0;padding:4px 2px;font-size:12px}
 .nheat td{border-radius:5px;font-weight:600;font-variant-numeric:tabular-nums}
 .nheat td:first-child{text-align:left;white-space:nowrap;padding-right:10px;font-weight:500;color:var(--ink2)}
-.prose{max-width:820px}
+.prose{max-width:none}
 .prose h1{font-size:21px;line-height:1.45;letter-spacing:-.01em;margin:14px 0 12px}
 .prose h2{font-size:15.5px;margin:22px 0 8px;padding-top:16px;border-top:1px solid var(--line)}
 .prose h3{font-size:14px;margin:14px 0 4px}
