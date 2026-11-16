@@ -23,9 +23,9 @@
    print(n.headline); [print(t, items) for t, items in n.sections]"
    ```
 3. 确定时间窗口：从 `news/` 里最新文件的日期到现在（第一次运行取最近 7 天）。日期一律用北京时间。
-4. 按下面四个主题收集新闻，逐条核实，打分，写入 `news/YYYY-MM-DD.json`（今天的北京日期）。同一个链接如果已经出现在任何旧文件里，不要重复收录。
+4. 按下面四个主题收集新闻，逐条核实，打分，写入 `news/YYYY-MM-DD.json`（今天的北京日期）。同一个链接如果已经出现在任何旧文件里，不要重复收录。如果今天的文件已经存在（同一天第二次运行），保留里面已有的条目，只追加新条目，并重新写 `assessment`。
 5. 运行 `.venv/bin/python -c "import pandas as pd; from bubblemon import news; print(news.rule_rating(news.load(), pd.Timestamp('YYYY-MM-DD')))"` 看今天的规则评级，按下面“分析师风险评级”一节在新闻文件里写 `assessment`。
-6. 如果今天是周一（北京时间），或者本次出现了 importance = 5 的新闻，写分析师周报 `notes/YYYY-MM-DD.md`，在“数据面”里写明分析师风险评级。
+6. 如果今天是周一（北京时间），或者本次出现了 importance = 5 的新闻，写分析师周报 `notes/YYYY-MM-DD.md`，在“数据面”里写明分析师风险评级。今天的周报已经存在时，不要整篇重写，在末尾加一节“更新（HH:MM）”写新增的内容。
 7. 校验并提交：
    ```bash
    .venv/bin/bubblemon-news-check
