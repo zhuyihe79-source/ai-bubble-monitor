@@ -1,0 +1,77 @@
+{
+  "date": "2026-11-17",
+  "generated_at": "2026-11-17T07:35:53+08:00",
+  "window": "2026-11-16 至 2026-11-17",
+  "assessment": {
+    "level": 5,
+    "reason": "确认规则5级：远程算力许可新规及项目贷款折价成交构成独立于治理事件后续的实质冲击，尚无新增收入硬数据足以对冲。"
+  },
+  "items": [
+    {
+      "published": "2026-11-16",
+      "title": "BIS Issues Rule Addressing Remote Access to American Super Intelligence Technology",
+      "source": "美国商务部BIS（公告及规则原文）",
+      "url": "https://www.bis.gov/press-release/bis-issues-rule-addressing-remote-access-american-super-intelligence-technology",
+      "topic": "nvidia",
+      "importance": 5,
+      "direction": "risk_up",
+      "summary": "BIS公布远程算力许可新规，并对新加坡等五国增设芯片许可；现有受限业务须于生效后90天内获许可，正式生效日待刊登确认。",
+      "implication": "限制从实物出口延伸至境外云算力，可能扰动芯片订单和数据中心回款，但适用门槛、美国企业例外及逐案审批不等于全面禁运。"
+    },
+    {
+      "published": "2026-11-17",
+      "title": "HSBC Offloads Troubled New Mexico Data Center Debt Linked to Oracle",
+      "source": "Bloomberg",
+      "url": "https://www.bloomberg.com/news/articles/2026-11-16/hsbc-sold-300-million-troubled-data-center-loan-at-discount",
+      "topic": "financing",
+      "importance": 4,
+      "direction": "risk_up",
+      "summary": "据彭博，汇丰数周前以面值八成半左右出售约3亿美元甲骨文关联项目贷款；该笔属于180亿美元建设融资，并非今日违约。",
+      "implication": "折价成交比风险口号更能说明项目融资承压，但不能把一笔银行退出推算成整包融资损失或甲骨文表内债务增加。"
+    },
+    {
+      "published": "2026-11-16",
+      "title": "‘Standing on one leg’: IMF chief warns about global economy as AI circular financing hits $1 trillion",
+      "source": "CNBC（直接采访IMF总裁）",
+      "url": "https://www.cnbc.com/2026/11/16/imf-georgieva-warning-ai-circular-financing.html",
+      "topic": "financing",
+      "importance": 4,
+      "direction": "risk_up",
+      "summary": "IMF总裁接受CNBC采访称，AI循环融资已略超1万亿美元，约三分之二由债务支持；同时认为近期市场调整仍有序。",
+      "implication": "供应商投资与客户采购相互绑定，债务占比放大信心逆转的传导，但估算不是已发生损失，也不代表系统性危机已经爆发。"
+    },
+    {
+      "published": "2026-11-16",
+      "title": "Asian Data Center Loan Syndication Is Delayed in Rare Deal Pause",
+      "source": "Bloomberg",
+      "url": "https://www.bloomberg.com/news/articles/2026-11-16/asian-data-center-loan-syndication-is-delayed-in-rare-deal-pause",
+      "topic": "financing",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "据彭博，Actis支持的马来西亚数据中心4.88亿美元贷款银团分销延迟；11月2日推介及当周参观未举行，算力拟供字节跳动。",
+      "implication": "贷款分销开始出现摩擦，但报道未证实贷款取消或借款人违约，且延迟早于本次BIS新规，不能倒置因果。"
+    },
+    {
+      "published": "2026-11-17",
+      "title": "Samsung, SK Hynix and Micron Lose Bid to Dismiss US DRAM Antitrust Suit",
+      "source": "PYMNTS/CPI（MLex法庭报道交叉核实）",
+      "url": "https://www.pymnts.com/cpi-posts/samsung-sk-hynix-and-micron-lose-bid-to-dismiss-us-dram-antitrust-suit/",
+      "topic": "memory",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "据PYMNTS报道，三星、海力士和美光要求驳回DRAM反垄断诉讼的动议于11月14日被拒；案件继续，不代表价格合谋已经成立。",
+      "implication": "存储产能转向HBM的商业决策面临额外诉讼审查，但目前没有产能禁令或赔偿裁决，不能据此推断HBM供应中断。"
+    },
+    {
+      "published": "2026-11-16",
+      "title": "Assessing the carbon emissions and energy consumption of US hyperscale data centres",
+      "source": "Nature Sustainability（原始论文）",
+      "url": "https://www.nature.com/articles/s41893-026-01985-7",
+      "topic": "demand",
+      "importance": 3,
+      "direction": "neutral",
+      "summary": "新论文估算403座美国超大规模数据中心在2024年5月至2025年4月耗电68–99TWh，中心情景82TWh；不是2026年全行业实测。",
+      "implication": "研究量化了电力与监管压力，但样本并非纯AI负荷，也非全国完整覆盖，不能单凭历史耗电估算认定当前缺电或终端需求转弱。"
+    }
+  ]
+}
