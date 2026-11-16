@@ -1,10 +1,10 @@
 {
   "date": "2026-11-16",
-  "generated_at": "2026-11-16T14:30:00+08:00",
+  "generated_at": "2026-11-16T15:53:55+08:00",
   "window": "2026-11-09 至 2026-11-16",
   "assessment": {
     "level": 4,
-    "reason": "风险上升的条目多半来自英伟达同一事件；需求端（Anthropic 收入、DRAM 涨价）没有转弱，等 11-17 财报再决定是否上调。"
+    "reason": "规则值5级含多条英伟达治理事件后续，去重后下调至4级；新增芯片分流证据仍偏负面，但IPO认购和供电设备交付尚不支持全行业需求崩塌。"
   },
   "items": [
     {
@@ -209,6 +209,50 @@
       "direction": "risk_up",
       "summary": "PJM 独立市场监察机构称，为数据中心预留的容量会让 2029 年 6 月起一年的电力成本再增 50–100 亿美元，此前四次拍卖已增加 294 亿。",
       "implication": "电价负担转嫁居民，加剧选举后的政治反弹，审批和电价政策可能进一步收紧。"
+    },
+    {
+      "published": "2026-11-16",
+      "title": "SK Hynix to spend $1 billion over five years to support chip suppliers",
+      "source": "Reuters",
+      "url": "https://www.reuters.com/world/asia-pacific/sk-hynix-spend-1-billion-over-five-years-support-chip-suppliers-2026-11-16/",
+      "topic": "memory",
+      "importance": 3,
+      "direction": "neutral",
+      "summary": "SK海力士拟五年投入1.4万亿韩元支持供应商；合建8746亿韩元测试厂，计划2027年5月开放。",
+      "implication": "共享测试有助缓解供应链瓶颈，但新增投入也扩大未来产能，不能仅凭投资计划认定终端需求增强。"
+    },
+    {
+      "published": "2026-11-16",
+      "title": "Nvidia's Share of AI Compute Falls to 39% From 83%",
+      "source": "Seoul Economic Daily（引摩根资管，NDTV Profit交叉核实）",
+      "url": "https://en.sedaily.com/world/2026/11/16/nvidias-share-of-ai-compute-falls-to-39-percent-from-80",
+      "topic": "nvidia",
+      "importance": 4,
+      "direction": "risk_up",
+      "summary": "摩根资管统计前沿实验室未来算力协议：英伟达占39%、博通24%、TPU16%、AMD15%、Trainium6%；不是已实现收入份额。",
+      "implication": "客户分流可能削弱英伟达定价权，但未来算力协议与历史芯片营收口径不同，不能据此推算收入降幅。"
+    },
+    {
+      "published": "2026-11-16",
+      "title": "Anthropic IPO orders hit nearly 7 times shares on offer",
+      "source": "Gulf News（引Bloomberg）",
+      "url": "https://gulfnews.com/business/anthropic-ipo-orders-hit-nearly-7-times-shares-on-offer-1.500748696",
+      "topic": "financing",
+      "importance": 3,
+      "direction": "neutral",
+      "summary": "据Gulf News引彭博，Anthropic IPO获近7倍认购；另有260亿美元定增，参与者包含算力供应商。",
+      "implication": "认购热度缓和短期融资担忧，但并非已到账资金，供应商入股又强化循环融资；倍数未获原始簿记确认，重要性降一级。"
+    },
+    {
+      "published": "2026-11-16",
+      "title": "In the third quarter, 2G Energy AG secured orders for new plants totaling EUR 406.5 million (previous year: EUR 59.3 million, +585 %)",
+      "source": "2G Energy AG（EQS公司公告）",
+      "url": "https://www.eqs-news.com/news/corporate/in-the-third-quarter-2g-energy-ag-secured-orders-for-new-plants-totaling-eur-406-5-million-previous-year-eur-59-3-million-585/92d0fe45-aec1-4217-b5d4-338516800899_en",
+      "topic": "demand",
+      "importance": 3,
+      "direction": "risk_down",
+      "summary": "2G三季度新订单4.065亿欧元、同比增585%；275MW电厂合同收到预付款，另一个美国数据中心订单已开始交货。",
+      "implication": "预付款和设备到场降低部分供电项目执行风险，但不证明AI应用盈利，也不意味着275MW已经投运。"
     }
   ]
 }
