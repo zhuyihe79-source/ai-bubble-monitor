@@ -45,6 +45,8 @@ h2{font-size:16px;margin:0 0 8px}small{color:#6b7280}
 .nheat td,.nheat th{text-align:center}.nheat td:first-child{text-align:left;white-space:nowrap}
 .brief h1{font-size:20px;margin:4px 0 10px}.brief h2{font-size:16px;margin:16px 0 6px}.brief h3{font-size:14px;margin:12px 0 4px}
 .brief p,.brief li{font-size:14px;line-height:1.65}
+.nalert{margin-top:4px;font-size:12.5px}.nalert a{color:#b42318;text-decoration:none}
+.lvl{font-size:44px;font-weight:700;line-height:1}
 @media(max-width:800px){.grid{grid-template-columns:1fr}}
 """
 
@@ -82,7 +84,7 @@ def _news_html(items: list, trigger_names: dict) -> str:
     return "".join(rows)
 
 
-def _heat_news_html(df: pd.DataFrame) -> str:
+def _heat_news_html(df: pd.DataFrame, rate_hist: dict | None = None) -> str:
     if df.empty or df["count"].sum() == 0:
         return "<p><small>暂无数据。</small></p>"
     weeks = sorted(df["week_end"].unique())
@@ -95,8 +97,87 @@ def _heat_news_html(df: pd.DataFrame) -> str:
             color = "#f3c4c4" if r.net > 0 else "#c9ead6" if r.net < 0 else "#f1f2f4"
             cells.append(f"<td class=n style='background:{color}' title='净方向 {r.net:+d}'>{r['count'] or ''}</td>")
         rows.append(f"<tr><td>{label}</td>{''.join(cells)}</tr>")
+    if rate_hist:
+        cells = "".join(
+            f"<td class=n style='color:{LEVEL_COLOR.get(rate_hist[w].level, '#c4c8cf')};font-weight:700'>{rate_hist[w].level or '—'}</td>"
+            for w in weeks)
+        rows.append(f"<tr><td><b>分析师评级</b></td>{cells}</tr>")
     return (f"<table class=nheat><tr><th></th>{head}</tr>{''.join(rows)}</table>"
             "<small>数字 = 重要性 ≥ 3 的新闻条数；红色 = 风险上升的多于下降的，绿色相反。周期为截至该日的 7 天。</small>")
+
+
+LEVEL_COLOR = {1: "#2e9e5b", 2: "#7fb685", 3: "#8b93a1", 4: "#e0a800", 5: "#d64545"}
+
+
+def _rating_html(r: news.Rating) -> str:
+    if r.level is None:
+        return "<div><div class=lvl style='color:#c4c8cf'>—</div><small>分析师风险评级：近 7 天新闻不足</small></div>"
+    rule = f"规则值 {r.rule_level}（近 7 天新闻净方向 {r.balance:+.2f}，权重 {r.weight:g}）"
+    if r.forced:
+        rule += "，因有重要性 5 的风险上升新闻抬到至少 4"
+    if r.reason:
+        adj = r.level - r.rule_level
+        rule += f"；分析师{'维持' if adj == 0 else '上调' if adj > 0 else '下调'}{'' if adj == 0 else f' {abs(adj)} 级'}：{html.escape(r.reason)}"
+    return (f"<div style='max-width:460px'><div class=lvl style='color:{LEVEL_COLOR[r.level]}'>{r.level}<small style='font-size:16px'>/5 "
+            f"{news.LEVELS[r.level]}</small></div><small>分析师风险评级（{r.asof.date()}，基于新闻，不计入泡沫温度）<br>{rule}</small></div>")
+
+
+def _level_word(v: float) -> str:
+    return "历史高位" if v >= 80 else "偏高" if v >= 60 else "中等" if v >= 40 else "偏低"
+
+
+def _dimension_section(res: scoring.ScoreResult, cfg, lookback: pd.Timedelta = pd.Timedelta(weeks=13)) -> str:
+    """回答：温度由哪几块构成，过去 3 个月是谁在推高或拉低、具体是哪个指标。"""
+    dims, inds = res.dimensions, res.indicators
+    end = dims.index[-1]
+    then = dims.index[dims.index <= end - lookback][-1]
+    weights = pd.Series({d: cfg.dimensions[d]["weight"] for d in dims.columns})
+
+    def contrib(t):  # 每个维度对当周总分贡献了几度（总分 = 有数据维度的加权平均）
+        row = dims.loc[t]
+        w = weights[row.notna()]
+        return (row.dropna() * w / w.sum()).reindex(dims.columns)
+
+    c_now, c_then = contrib(end), contrib(then)
+    delta_total = res.total.loc[end] - res.total.loc[then]
+    rows, moves = [], []
+    for d, meta in cfg.dimensions.items():
+        label, desc = html.escape(meta["label"]), html.escape(meta.get("desc", ""))
+        cur = dims[d].get(end) if d in dims else None
+        if cur is None or pd.isna(cur):
+            rows.append(f"<tr><td><b>{label}</b><div class=why>{desc}</div></td><td colspan=4><small>暂无数据，不参与计算</small></td></tr>")
+            continue
+        old = dims[d].get(then)
+        dc = c_now[d] - (0 if pd.isna(c_then[d]) else c_then[d])
+        moves.append((dc, meta["label"]))
+        ids = [i.id for i in cfg.scored if i.dimension == d and i.id in inds]
+        chg = sorted(((inds[i].get(end) - inds[i].get(then), i) for i in ids
+                      if pd.notna(inds[i].get(end)) and pd.notna(inds[i].get(then))), key=lambda x: -abs(x[0]))
+        entered = [i for i in ids if pd.notna(inds[i].get(end)) and pd.isna(inds[i].get(then))]
+        left = [i for i in ids if pd.isna(inds[i].get(end)) and pd.notna(inds[i].get(then))]
+        if entered or left:  # 指标进出会让维度分跳变，这不是市场变化，要单独说明
+            driver = "；".join([f"新加入 {html.escape(cfg.indicator(i).name)}（{inds[i][end]:.0%}）" for i in entered]
+                              + [f"{html.escape(cfg.indicator(i).name)} 缺数据，暂不计入" for i in left])
+        elif chg and abs(chg[0][0]) >= 0.05:
+            ind = cfg.indicator(chg[0][1])
+            driver = f"{html.escape(ind.name)}：{inds[ind.id][then]:.0%} → {inds[ind.id][end]:.0%}"
+        else:
+            driver = "各指标变化不大"
+        color = "#d64545" if dc >= 1 else "#2e9e5b" if dc <= -1 else "#6b7280"
+        rows.append(
+            f"<tr><td><b>{label}</b><div class=why>{desc}</div></td>"
+            f"<td style='white-space:nowrap'><div class=bar><i style='width:{cur:.0f}%'></i></div> {cur:.0f} <small>{_level_word(cur)}</small></td>"
+            f"<td class=n>{'—' if pd.isna(old) else f'{old:.0f}'} → {cur:.0f}</td>"
+            f"<td class=n><b style='color:{color}'>{dc:+.1f}</b></td><td class=why>{driver}</td></tr>")
+    moves.sort(key=lambda x: -abs(x[0]))
+    top = "；".join(f"{name} {'推高' if v > 0 else '拉低'} {abs(v):.1f}" for v, name in moves[:3] if abs(v) >= 0.5) or "各维度变化都不大"
+    n = int(dims.loc[end].notna().sum())
+    head = (f"<p>泡沫温度 {res.total.loc[end]:.0f} = {n} 个有数据维度的平均。和 3 个月前（{then.date()}，{res.total.loc[then]:.0f}）相比 "
+            f"<b>{delta_total:+.0f}</b>，主要来自：{top}。</p>")
+    return (head + "<table><tr><th>维度（在问什么）</th><th>当前分</th><th class=n>3 个月前 → 现在</th>"
+            "<th class=n>对温度变化的贡献（度）</th><th>变化最大的指标（风险分位）</th></tr>" + "".join(rows) + "</table>"
+            "<small>维度分 = 该维度内各指标风险分位的平均 × 100；风险分位 = 指标在自身过去最多 15 年里的位置，越高越接近泡沫。"
+            "贡献合计等于温度变化（有数据的维度数变化时会有小误差）。</small>")
 
 
 def _badge(status: str) -> str:
@@ -125,12 +206,24 @@ def build(years: int = 10, cdn: bool = False, asof: pd.Timestamp | None = None) 
     counts = {k: sum(s.status == k for s in now.values()) for k in ("triggered", "alert", "ok", "nodata")}
     chips = "".join(f"<span style='background:{STATUS_COLOR[k]}'>{triggers.LABEL[k]} {v}</span>" for k, v in counts.items() if v)
 
+    all_news = news.load()
+    assessments = news.load_assessments()
+    # 评级按最近一个新闻文件的日期算：定时任务早上写文件，看板晚上发布时仍沿用当天的分析师判断
+    news_day = max((x.file_date for x in all_news if x.file_date is not None and x.file_date <= asof), default=asof)
+    rate = news.rating(all_news, assessments, news_day)
+    alerts = news.signal_alerts(all_news, asof)
+    if alerts:
+        chips += f"<span style='background:#b42318'>新闻预警 {len(alerts)}</span>"
+
     rows = []
     for s in sorted(now.values(), key=lambda s: (triggers.SEVERITY[s.status], s.trigger.name)):
         t = s.trigger
         dd = "—" if s.data_date is None else str(s.data_date.date())
+        na = "".join(f"<div class=nalert><span class=badge style='background:#b42318'>新闻预警</span> "
+                     f"<a href='{html.escape(x.url, quote=True)}' target=_blank rel=noopener>{html.escape(x.title)}</a>"
+                     f" <small>{x.published.date()}</small></div>" for x in alerts.get(t.id, []))
         rows.append(
-            f"<tr><td>{_badge(s.status)}</td><td><b>{html.escape(t.name)}</b><div class=why>{html.escape(t.why)}</div></td>"
+            f"<tr><td>{_badge(s.status)}</td><td><b>{html.escape(t.name)}</b><div class=why>{html.escape(t.why)}</div>{na}</td>"
             f"<td class=n>{triggers.fmt(s.value, t.unit)}</td>"
             f"<td class=n>{triggers.fmt_threshold(t.alert, t.unit)} / {triggers.fmt_threshold(t.trigger, t.unit)}</td>"
             f"<td>{_badge(prev[t.id].status)}</td><td>{_badge(month[t.id].status)}</td><td class=n>{dd}</td></tr>"
@@ -153,16 +246,7 @@ def build(years: int = 10, cdn: bool = False, asof: pd.Timestamp | None = None) 
     trend.update_layout(height=320, margin=dict(l=10, r=10, t=10, b=10), yaxis=dict(range=[0, 100]),
                         legend=dict(orientation="h", y=1.08))
 
-    dims = res.dimensions.iloc[-1].dropna()
-    labels = [cfg.dimensions[d]["label"] for d in dims.index]
-    radar = go.Figure(go.Scatterpolar(r=list(dims.values) + [dims.values[0]], theta=labels + [labels[0]], fill="toself"))
-    radar.update_layout(polar=dict(radialaxis=dict(range=[0, 100])), height=340, margin=dict(l=40, r=40, t=10, b=10))
-
-    dim_trend = go.Figure()
-    d = res.dimensions[res.dimensions.index >= cut].rolling(4).mean()
-    for col in d.columns:
-        dim_trend.add_scatter(x=d.index, y=d[col], name=cfg.dimensions[col]["label"], mode="lines")
-    dim_trend.update_layout(height=340, margin=dict(l=10, r=10, t=10, b=10), yaxis=dict(range=[0, 100]))
+    dim_html = _dimension_section(res, cfg)
 
     last = res.indicators.iloc[-1]
     ind_rows = []
@@ -175,8 +259,9 @@ def build(years: int = 10, cdn: bool = False, asof: pd.Timestamp | None = None) 
             f"<td class=n>{'—' if s.empty else f'{s.iloc[-1]:,.4g}'}</td><td>{'—' if s.empty else s.index[-1].date()}</td>"
             f"<td><div class=bar><i style='width:{sc * 100 if has else 0:.0f}%'></i></div> {f'{sc:.0%}' if has else '—'}</td></tr>")
 
-    all_news = news.load()
     week_news = news.recent(all_news, asof, 7)
+    heat_df = news.weekly_heat(all_news, asof)
+    rate_hist = {w: news.rating(all_news, assessments, w) for w in heat_df["week_end"].unique()}
     trigger_names = {t.id: t.name for t in cfg.triggers}
     note_md = news.latest_note()
     brief = (f"<div class=card><h2>分析师周报（{note_md[0]}）</h2><div class=brief>"
@@ -193,6 +278,7 @@ def build(years: int = 10, cdn: bool = False, asof: pd.Timestamp | None = None) 
 <div><b style='color:{COLORS[b]};font-size:20px'>{LABELS[b]}</b><br>
 <small>截至 {res.total.index[-1].date()}｜评分指标覆盖率 {res.coverage.iloc[-1]:.0%}</small></div>
 <div><small>破裂信号（{len(now)} 项）</small><div class=chips>{chips}</div></div>
+{_rating_html(rate)}
 </div></div>
 
 {brief}
@@ -208,12 +294,10 @@ def build(years: int = 10, cdn: bool = False, asof: pd.Timestamp | None = None) 
 <table class=heat><tr><th></th>{heat_head}</tr>{''.join(heat_rows)}</table>
 <small>鼠标悬停可看当周数值。</small></div>
 
-<div class=card><h2>新闻热度（近 8 周）</h2>{_heat_news_html(news.weekly_heat(all_news, asof))}</div>
+<div class=card><h2>新闻热度（近 8 周）</h2>{_heat_news_html(heat_df, rate_hist)}</div>
 
 <div class=card><h2>总分趋势（近 {years} 年）</h2>{_fig_html(trend, True, cdn)}</div>
-<div class=grid>
-<div class=card><h2>六个维度（当前）</h2>{_fig_html(radar, False)}</div>
-<div class=card><h2>维度趋势（4 周均值）</h2>{_fig_html(dim_trend, False)}</div></div>
+<div class=card><h2>温度是怎么来的</h2>{dim_html}</div>
 <div class=card><h2>评分指标明细</h2><table><tr><th>维度</th><th>指标</th><th class=n>最新值</th><th>数据日期</th><th>风险分位</th></tr>{''.join(ind_rows)}</table></div>
 <div class=card><h2>过往解读</h2>{past}</div>
 <small>风险分位 = 该指标在自身过去最多 15 年历史中的位置（方向已处理，越高越接近泡沫）。财报数据按季末后 35 天视为可见。生成于 {pd.Timestamp.now():%Y-%m-%d %H:%M}。</small>

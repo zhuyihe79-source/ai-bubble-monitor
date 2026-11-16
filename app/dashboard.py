@@ -2,7 +2,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from bubblemon import commentary, db, scoring, triggers
+from bubblemon import commentary, db, news, scoring, triggers
 from bubblemon.registry import load_config
 
 st.set_page_config(page_title="AI 泡沫监测", layout="wide")
@@ -38,6 +38,15 @@ c1, c2, c3 = st.columns([1, 1, 2])
 c1.metric("泡沫温度 (0-100)", f"{latest:.0f}", f"{latest - prev:+.0f} vs 4 周前", delta_color="inverse")
 c2.markdown(f"### 状态：<span style='color:{BAND_COLOR[b]}'>{BAND_LABEL[b]}</span>", unsafe_allow_html=True)
 c2.caption(f"截至 {result.total.index[-1].date()}，评分指标覆盖率 {result.coverage.iloc[-1]:.0%}")
+all_news = news.load()
+news_day = max((x.file_date for x in all_news if x.file_date is not None), default=pd.Timestamp.today().normalize())
+rate = news.rating(all_news, news.load_assessments(), news_day)
+alerts = news.signal_alerts(all_news, pd.Timestamp.today().normalize())
+if rate.level is None:
+    c2.caption("分析师风险评级：近 7 天新闻不足")
+else:
+    c2.markdown(f"**分析师风险评级 {rate.level}/5（{news.LEVELS[rate.level]}）**，规则值 {rate.rule_level}"
+                + (f"；{rate.reason}" if rate.reason else ""))
 
 week = scoring.last_friday(pd.Timestamp.today())
 states = triggers.evaluate(series, cfg, week)
@@ -64,6 +73,7 @@ st.dataframe(
         "当前": triggers.fmt(s.value, s.trigger.unit),
         "警戒 / 触发": f"{triggers.fmt_threshold(s.trigger.alert, s.trigger.unit)} / {triggers.fmt_threshold(s.trigger.trigger, s.trigger.unit)}",
         "上周": before[s.trigger.id].label,
+        "新闻预警": "；".join(x.title for x in alerts.get(s.trigger.id, [])),
         "数据截至": None if s.data_date is None else s.data_date.date(),
         "为什么重要": s.trigger.why,
     } for s in sorted(states, key=lambda s: triggers.SEVERITY[s.status])]),

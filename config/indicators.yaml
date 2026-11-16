@@ -2,13 +2,14 @@
 # max_stale_days: 数据超过这个天数没更新，评分时视为缺失
 # publication_lag_days: 数据实际公布比所属日期晚多少天（财报一般在季末后 35 天内），避免历史评分用到“未来”信息
 # score: false 表示只用于触发器和解读，不计入泡沫温度
+# desc: 看板上解释这个维度在问什么
 dimensions:
-  valuation:   {label: 估值与集中度, weight: 1.0}
-  capex:       {label: 投入与回报, weight: 1.0}
-  leverage:    {label: 融资与杠杆, weight: 1.0}
-  sentiment:   {label: 投机情绪, weight: 1.0}
-  demand:      {label: 真实需求, weight: 1.0}
-  macro:       {label: 宏观与流动性, weight: 1.0}
+  valuation:   {label: 估值与集中度, weight: 1.0, desc: 钱是不是过度挤在 AI 龙头上（大盘集中度、半导体相对大盘、NVDA 偏离均线）}
+  capex:       {label: 投入与回报, weight: 1.0, desc: 云厂商投入有多大、自己的现金流还撑不撑得住}
+  leverage:    {label: 融资与杠杆, weight: 1.0, desc: 借钱是不是太容易（信用利差越窄，市场越松懈）}
+  sentiment:   {label: 投机情绪, weight: 1.0, desc: 市场是不是太自满或太亢奋（“AI bubble”搜索热度、VIX）}
+  demand:      {label: 真实需求, weight: 1.0, desc: 算力租金有没有下跌（供过于求的直接证据）}
+  macro:       {label: 宏观与流动性, weight: 1.0, desc: 资金成本是否宽松（实际利率、期限利差）}
 
 indicators:
   # ---- 估值与集中度（yfinance）----
@@ -66,6 +67,9 @@ indicators:
     direction: low        # 利差越窄，市场越松懈
     frequency: daily
     max_stale_days: 10
+    # FRED 只给近 3 年，刚够最短窗口：分位只和 2023 年以来的窄利差比，且它一加入就让融资维度从 95 跳到 53。
+    # 所以不计分，只用于 hy_widening 破裂信号；融资维度由长历史的 Baa 利差代表。
+    score: false
   - id: baa_spread
     name: Moody's Baa 公司债收益率 - 10Y 国债（长历史）
     dimension: leverage
