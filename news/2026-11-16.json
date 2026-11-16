@@ -1,0 +1,210 @@
+{
+  "date": "2026-11-16",
+  "generated_at": "2026-11-16T14:30:00+08:00",
+  "window": "2026-11-09 至 2026-11-16",
+  "items": [
+    {
+      "published": "2026-11-12",
+      "title": "NVIDIA Announces CEO Transition",
+      "source": "NVIDIA Newsroom",
+      "url": "https://nvidianews.nvidia.com/news/nvidia-announces-ceo-transition",
+      "topic": "nvidia",
+      "importance": 5,
+      "direction": "risk_up",
+      "signal": "nvda_drawdown",
+      "summary": "黄仁勋即时辞去英伟达 CEO 和董事职务；CFO Kress 兼任临时 CEO，Harvey Jones 任首位董事长，董事会内外部物色继任者。",
+      "implication": "AI 周期的核心公司失去创始人，叠加出口合规调查，龙头估值溢价和它对生态的资金支持都可能收缩。"
+    },
+    {
+      "published": "2026-11-13",
+      "title": "Nvidia stock suffers longest weekly losing streak since 2012 as market value sinks by $1.7 trillion",
+      "source": "CNBC",
+      "url": "https://www.cnbc.com/2026/11/13/nvidia-stock-jensen-affair-ai.html",
+      "topic": "nvidia",
+      "importance": 4,
+      "direction": "risk_up",
+      "signal": "nvda_drawdown",
+      "summary": "英伟达当周跌 13%，连跌六周、为 2012 年来最长，市值累计蒸发约 1.7 万亿美元；市场预期本季收入 1089 亿、同比 +91%。",
+      "implication": "回撤已逼近触发线（-35%），财报若指引不及预期，回撤会直接越线。"
+    },
+    {
+      "published": "2026-11-11",
+      "title": "How Megaspeed built a network in Southeast Asia to move Nvidia chips to Chinese companies",
+      "source": "Fortune",
+      "url": "https://fortune.com/2026/11/11/megaspeed-nvidia-chips-china-singapore-malaysia/",
+      "topic": "nvidia",
+      "importance": 4,
+      "direction": "risk_up",
+      "summary": "据多家媒体报道，新加坡云服务商 Megaspeed 涉嫌借新加坡、马来西亚的数据中心把受管制的高端英伟达芯片转给中国企业，这是黄仁勋丑闻的核心。",
+      "implication": "若走私坐实，英伟达面临合规处罚和东南亚渠道收紧，部分账面上的东南亚需求可能并不真实。"
+    },
+    {
+      "published": "2026-11-13",
+      "title": "Congress weighs tougher China chip curbs as OpenAI joins the push",
+      "source": "Los Angeles Times (Bloomberg)",
+      "url": "https://www.latimes.com/business/story/2026-11-13/openai-joins-push-to-curb-chinas-access-to-ai-chips-chipmaking-tools",
+      "topic": "nvidia",
+      "importance": 4,
+      "direction": "risk_up",
+      "summary": "国会拟在年底前必须通过的国防授权法里加三项对华条款：限制高端芯片未来销售、堵住英伟达芯片转运、限制 ASML 设备出口；OpenAI 已表态支持。",
+      "implication": "黄仁勋离任削弱了英伟达在国会的影响力，年底前可能落地硬性限制，压缩中国及转口收入。"
+    },
+    {
+      "published": "2026-11-15",
+      "title": "US Treasury chief calls for outsider to lead embattled tech firm Nvidia",
+      "source": "Al Jazeera (Reuters)",
+      "url": "https://www.aljazeera.com/news/2026/11/15/us-treasury-chief-calls-for-outsider-to-lead-embattled-tech-firm-nvidia",
+      "topic": "nvidia",
+      "importance": 4,
+      "direction": "risk_up",
+      "summary": "美国财长贝森特在 Fox 节目中称英伟达需要“剧烈改组”，董事会应从外部选 CEO；另据多家媒体报道，他要求董事会 10 天内回应出口管制合规问题。",
+      "implication": "政府直接介入公司治理，政策风险从“能不能卖给中国”升级到“谁来管英伟达”。"
+    },
+    {
+      "published": "2026-11-15",
+      "title": "Jensen Huang discusses comeback as Nvidia CEO with allies, FT reports",
+      "source": "Reuters (via Yahoo Finance)",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/jensen-huang-discusses-comeback-nvidia-192628314.html",
+      "topic": "nvidia",
+      "importance": 3,
+      "direction": "neutral",
+      "summary": "据 FT 报道，黄仁勋正与亲信讨论回归，有盟友在组织硅谷高管“作战室”游说董事会和白宫；此前董事会曾接触 Arm CEO Rene Haas。",
+      "implication": "回归能部分修复信心，但与财长立场相反，领导权之争可能拉长不确定期。"
+    },
+    {
+      "published": "2026-11-13",
+      "title": "Nvidia’s turmoil is prompting a rotation across chip stocks. Here's what we know",
+      "source": "CNBC",
+      "url": "https://www.cnbc.com/2026/11/13/nvidia-jensen-huang-affairs-amd-broadcom-tsmc.html",
+      "topic": "nvidia",
+      "importance": 3,
+      "direction": "neutral",
+      "summary": "截至周四，英伟达当周跌 11%，AMD 和博通分别涨 30% 和 24%；交易员称资金转向没有管理层风险的芯片公司。",
+      "implication": "资金在 AI 硬件内部轮动而非整体撤出，市场目前把它当作公司风险而不是行业见顶。"
+    },
+    {
+      "published": "2026-11-16",
+      "title": "Asian stocks mostly decline on AI worries following Nvidia fallout",
+      "source": "AP",
+      "url": "https://apnews.com/article/stocks-markets-ai-nvidia-oil-us-35786b8f539ec95f16ae0500f71cfcc7",
+      "topic": "nvidia",
+      "importance": 3,
+      "direction": "risk_up",
+      "signal": "smh_rel_3m",
+      "summary": "周一亚洲 AI 股普跌：台股跌 4.1%、台积电跌 3.4%，铠侠跌 5.5%、东京电子跌 5.2%、软银跌 4.2%。",
+      "implication": "冲击正从英伟达传导到代工、存储和设备链，轮动逻辑开始失效的迹象。"
+    },
+    {
+      "published": "2026-11-12",
+      "title": "Memory price skyrockets as demand for AI data centers drives 369% year-over-year surge",
+      "source": "TechRadar（引 Counterpoint）",
+      "url": "https://www.techradar.com/pro/memory-price-skyrockets-as-demand-for-ai-data-centers-drives-369-percent-year-over-year-surge",
+      "topic": "memory",
+      "importance": 3,
+      "direction": "neutral",
+      "summary": "据 Counterpoint，Q3 全球 DRAM 收入近 2000 亿美元、同比 +369%，主要靠涨价，位元出货只增约 4%。",
+      "implication": "存储商利润创纪录、印证需求，但这是价格驱动，同时抬高了 AI 建设成本、压缩下游回报。"
+    },
+    {
+      "published": "2026-11-15",
+      "title": "SK Hynix Plans 20,000 More HBM4 Wafers a Month, ETNews Says",
+      "source": "FourWeekMBA（引 ETNews）",
+      "url": "https://fourweekmba.com/ai-sk-hynix-plans-20000-more-hbm4-wafers-a-month-etnews-says/",
+      "topic": "memory",
+      "importance": 3,
+      "direction": "neutral",
+      "summary": "据韩媒 ETNews，海力士为清州 P&T6 厂追加 HBM4 后段设备，满产可每月多出 2 万片以上 HBM 晶圆，约为 2025 年末产能的 13%。",
+      "implication": "厂商仍在加码说明看好需求；但若 2027–28 年需求放缓，这批产能会让 HBM 转向过剩。"
+    },
+    {
+      "published": "2026-11-12",
+      "title": "OpenAI Raises $15B At $1.25T Valuation In Latest Funding Round",
+      "source": "Benzinga（引 CNBC）",
+      "url": "https://www.benzinga.com/markets/private-markets/26/11/63213967/openai-raises-15b-at-1-25t-valuation-in-latest-funding-round-amid-ipo-plans",
+      "topic": "financing",
+      "importance": 4,
+      "direction": "risk_up",
+      "summary": "据 CNBC，OpenAI 新一轮融资 150 亿美元、投前估值 1.25 万亿美元，尚未交割，被描述为通往 2027 年 IPO 的过桥融资。",
+      "implication": "巨额亏损和算力承诺仍要靠一级市场输血，IPO 前的融资链条是关键脆弱点。"
+    },
+    {
+      "published": "2026-11-10",
+      "title": "Anthropic sets price range of $70 to $78 in upcoming IPO",
+      "source": "CNBC",
+      "url": "https://www.cnbc.com/2026/11/10/anthropic-sets-price-range-of-70-to-78-in-upcoming-ipo.html",
+      "topic": "financing",
+      "importance": 4,
+      "direction": "neutral",
+      "summary": "Anthropic 定价区间 70–78 美元，最多募资约 643 亿、完全稀释估值最高 1.405 万亿美元；计划 11-18 定价、11-19 上市。",
+      "implication": "这是公开市场对 AI 估值承受力的直接测试；破发或下调区间会是明显的风险信号。"
+    },
+    {
+      "published": "2026-11-11",
+      "title": "Anthropic Says Its Revenue Run Rate Jumped to an $81 Billion Run Rate",
+      "source": "24/7 Wall St.（引 S-1 修订稿）",
+      "url": "https://247wallst.com/investing/2026/11/11/anthropic-says-its-revenue-run-rate-jumped-to-an-81-billion-run-rate/",
+      "topic": "demand",
+      "importance": 4,
+      "direction": "risk_down",
+      "summary": "Anthropic S-1 第二次修订显示，截至 10 月 31 日年化收入约 810 亿美元，较 9 月底约 710 亿增加约 14%。",
+      "implication": "终端付费需求仍在高速增长，是“需求端没有塌”的硬证据。"
+    },
+    {
+      "published": "2026-11-12",
+      "title": "CoreWeave plans at least $4 billion investment-grade loan",
+      "source": "Quartz（引 Bloomberg）",
+      "url": "https://qz.com/coreweave-investment-grade-loan-4-billion-morgan-stanley-111226",
+      "topic": "financing",
+      "importance": 4,
+      "direction": "risk_up",
+      "signal": "debt_yoy",
+      "summary": "据彭博，CoreWeave 筹组至少 40 亿美元投资级贷款，以芯片和合同作抵押，收益率约 7–7.5%，约为其垃圾债的一半。",
+      "implication": "GPU 抵押融资继续放大，二手 GPU 价格和合同质量成为新的信用风险点。"
+    },
+    {
+      "published": "2026-11-15",
+      "title": "CoreWeave’s Results Foretell Impending Consolidation In AI Neocloud Sector",
+      "source": "Forbes",
+      "url": "https://www.forbes.com/sites/sanjitsinghdang/2026/11/15/coreweaves-results-foretell-impending-consolidation-in-ai-neocloud-sector/",
+      "topic": "financing",
+      "importance": 4,
+      "direction": "risk_up",
+      "signal": "debt_yoy",
+      "summary": "CoreWeave Q3 收入 36.6 亿美元（+168%），净亏 7.09 亿；总债务约 468 亿（年初 214 亿），季内净举债 103 亿。",
+      "implication": "neocloud 用借债撑扩张，单季利息将超 10 亿美元，行业整合和违约风险上升。"
+    },
+    {
+      "published": "2026-11-11",
+      "title": "TSMC Approves Up To $500 Million Each For OpenAI And Anthropic",
+      "source": "Dataconomy（引台积电 SEC 文件）",
+      "url": "https://dataconomy.com/2026/11/11/tsmc-approves-up-to-500-million-each-for-openai-and/",
+      "topic": "financing",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "台积电董事会批准向 Anthropic、OpenAI 各投资至多 5 亿美元（分别买 IPO 普通股和优先股），并批准约 409 亿美元资本支出。",
+      "implication": "供应商入股客户，循环交易从英伟达扩散到台积电，金额不大但方向值得记下。"
+    },
+    {
+      "published": "2026-11-11",
+      "title": "Morgan Stanley Sees Five Gigawatts of U.S. Data Center Capacity Moving to 2029",
+      "source": "EconoTimes（引 Morgan Stanley）",
+      "url": "https://econotimes.com/Morgan-Stanley-Sees-Five-Gigawatts-of-U-S-Data-Center-Capacity-Moving-to-2029-1775108",
+      "topic": "demand",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "摩根士丹利估计原定 2028 年投运的约 5GW 美国数据中心容量可能推迟到 2029 年，但认为云厂商整体维持支出计划，AI 股抛售过度。",
+      "implication": "选举后的建设放缓开始被量化：目前是推迟而不是取消，但推迟会拉长投资回收期。"
+    },
+    {
+      "published": "2026-11-12",
+      "title": "Watchdog Rebukes Largest US Grid Over Data Center Power Costs",
+      "source": "Bloomberg",
+      "url": "https://www.bloomberg.com/news/articles/2026-11-12/watchdog-rebukes-largest-us-grid-over-data-center-power-costs",
+      "topic": "demand",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "PJM 独立市场监察机构称，为数据中心预留的容量会让 2029 年 6 月起一年的电力成本再增 50–100 亿美元，此前四次拍卖已增加 294 亿。",
+      "implication": "电价负担转嫁居民，加剧选举后的政治反弹，审批和电价政策可能进一步收紧。"
+    }
+  ]
+}

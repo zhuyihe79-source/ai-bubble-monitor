@@ -2,10 +2,11 @@ import argparse
 import html
 from pathlib import Path
 
+import markdown
 import pandas as pd
 import plotly.graph_objects as go
 
-from . import commentary, db, scoring, triggers
+from . import commentary, db, news, scoring, triggers
 from .registry import ROOT, load_config
 
 COLORS = {"green": "#2e9e5b", "yellow": "#e0a800", "red": "#d64545"}
@@ -37,6 +38,13 @@ th{color:#6b7280;font-weight:600}
 .heat th{font-size:11px;font-weight:400;padding:2px}
 details{border-top:1px solid #eee;padding:8px 0}summary{cursor:pointer;font-weight:600}
 h2{font-size:16px;margin:0 0 8px}small{color:#6b7280}
+.news{border-bottom:1px solid #eee;padding:10px 0}.news a{font-weight:600;color:#1f4fbf;text-decoration:none}
+.news .meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:3px}
+.stars{color:#e0a800;letter-spacing:1px;font-size:13px}
+.tag{background:#eef1f6;color:#374151;border-radius:10px;padding:2px 8px;font-size:12px}
+.nheat td,.nheat th{text-align:center}.nheat td:first-child{text-align:left;white-space:nowrap}
+.brief h1{font-size:20px;margin:4px 0 10px}.brief h2{font-size:16px;margin:16px 0 6px}.brief h3{font-size:14px;margin:12px 0 4px}
+.brief p,.brief li{font-size:14px;line-height:1.65}
 @media(max-width:800px){.grid{grid-template-columns:1fr}}
 """
 
@@ -53,6 +61,42 @@ def _note_html(note: commentary.Note, with_headline: bool = True) -> str:
         lis = "".join(f"<li>{html.escape(x)}</li>" for x in items)
         parts.append(f"<div class=sec><h3>{html.escape(title)}</h3><ul>{lis}</ul></div>")
     return "".join(parts)
+
+
+DIR_COLOR = {"risk_up": "#d64545", "risk_down": "#2e9e5b", "neutral": "#8b93a1"}
+
+
+def _news_html(items: list, trigger_names: dict) -> str:
+    if not items:
+        return "<p><small>最近 7 天还没有新闻数据（等待分析师定时任务运行）。</small></p>"
+    rows = []
+    for x in sorted(items, key=lambda x: (-x.importance, -x.published.value))[:25]:
+        sig = f"<span class=tag>关联信号：{html.escape(trigger_names.get(x.signal, x.signal))}</span>" if x.signal else ""
+        rows.append(
+            f"<div class=news><div class=meta><span class=stars>{'★' * x.importance}{'☆' * (5 - x.importance)}</span>"
+            f"<span class=tag>{news.TOPICS[x.topic]}</span>"
+            f"<span class=badge style='background:{DIR_COLOR[x.direction]}'>{news.DIRECTIONS[x.direction]}</span>{sig}"
+            f"<small>{html.escape(x.source)}｜{x.published.date()}</small></div>"
+            f"<a href='{html.escape(x.url, quote=True)}' target=_blank rel=noopener>{html.escape(x.title)}</a>"
+            f"<div>{html.escape(x.summary)}</div><div class=why>→ {html.escape(x.implication)}</div></div>")
+    return "".join(rows)
+
+
+def _heat_news_html(df: pd.DataFrame) -> str:
+    if df.empty or df["count"].sum() == 0:
+        return "<p><small>暂无数据。</small></p>"
+    weeks = sorted(df["week_end"].unique())
+    head = "".join(f"<th>{pd.Timestamp(w):%m/%d}</th>" for w in weeks)
+    rows = []
+    for topic, label in news.TOPICS.items():
+        cells = []
+        for w in weeks:
+            r = df[(df.topic == topic) & (df.week_end == w)].iloc[0]
+            color = "#f3c4c4" if r.net > 0 else "#c9ead6" if r.net < 0 else "#f1f2f4"
+            cells.append(f"<td class=n style='background:{color}' title='净方向 {r.net:+d}'>{r['count'] or ''}</td>")
+        rows.append(f"<tr><td>{label}</td>{''.join(cells)}</tr>")
+    return (f"<table class=nheat><tr><th></th>{head}</tr>{''.join(rows)}</table>"
+            "<small>数字 = 重要性 ≥ 3 的新闻条数；红色 = 风险上升的多于下降的，绿色相反。周期为截至该日的 7 天。</small>")
 
 
 def _badge(status: str) -> str:
@@ -131,6 +175,13 @@ def build(years: int = 10, cdn: bool = False, asof: pd.Timestamp | None = None) 
             f"<td class=n>{'—' if s.empty else f'{s.iloc[-1]:,.4g}'}</td><td>{'—' if s.empty else s.index[-1].date()}</td>"
             f"<td><div class=bar><i style='width:{sc * 100 if has else 0:.0f}%'></i></div> {f'{sc:.0%}' if has else '—'}</td></tr>")
 
+    all_news = news.load()
+    week_news = news.recent(all_news, asof, 7)
+    trigger_names = {t.id: t.name for t in cfg.triggers}
+    note_md = news.latest_note()
+    brief = (f"<div class=card><h2>分析师周报（{note_md[0]}）</h2><div class=brief>"
+             f"{markdown.markdown(note_md[1], extensions=['tables'])}</div></div>") if note_md else ""
+
     past = "".join(f"<details><summary>{n.week.date()}｜{html.escape(n.headline)}</summary>{_note_html(n, False)}</details>"
                    for n in notes[1:])
 
@@ -144,7 +195,10 @@ def build(years: int = 10, cdn: bool = False, asof: pd.Timestamp | None = None) 
 <div><small>破裂信号（{len(now)} 项）</small><div class=chips>{chips}</div></div>
 </div></div>
 
-<div class=card><h2>本周解读（{week.date()}）</h2>{_note_html(note)}</div>
+{brief}
+<div class=card><h2>近 7 天要闻（{len(week_news)} 条，按重要性排序）</h2>{_news_html(week_news, trigger_names)}</div>
+
+<div class=card><h2>数据解读（{week.date()}）</h2>{_note_html(note)}</div>
 
 <div class=card><h2>破裂信号</h2>
 <small>泡沫温度衡量“有多热”；这里衡量“有没有开始破”。阈值见 config/indicators.yaml 的 triggers。</small>
@@ -153,6 +207,8 @@ def build(years: int = 10, cdn: bool = False, asof: pd.Timestamp | None = None) 
 <div class=card><h2>信号热力图（近 {HEAT_WEEKS} 周）</h2>
 <table class=heat><tr><th></th>{heat_head}</tr>{''.join(heat_rows)}</table>
 <small>鼠标悬停可看当周数值。</small></div>
+
+<div class=card><h2>新闻热度（近 8 周）</h2>{_heat_news_html(news.weekly_heat(all_news, asof))}</div>
 
 <div class=card><h2>总分趋势（近 {years} 年）</h2>{_fig_html(trend, True, cdn)}</div>
 <div class=grid>

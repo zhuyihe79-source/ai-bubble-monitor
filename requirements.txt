@@ -7,4 +7,5 @@ pytrends
 streamlit
 plotly
 pyyaml
+markdown
 pytest
