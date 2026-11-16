@@ -139,6 +139,8 @@ def aggregate(capex: dict[str, pd.Series], ocf: dict[str, pd.Series], metric: st
     cap_ttm = cap_q.rolling(4).sum().dropna()
     if metric == "capex_ttm":
         return cap_ttm
+    if metric == "capex_ttm_yoy":
+        return (cap_ttm / cap_ttm.shift(4) - 1).dropna()
     if metric == "capex_to_ocf":
         o_ttm = sum_aligned(ocf).rolling(4).sum().dropna()
         return (cap_ttm / o_ttm).dropna()

@@ -3,8 +3,8 @@ from dataclasses import dataclass, field
 import numpy as np
 import pandas as pd
 
-from . import alerts, triggers
-from .registry import Config
+from . import triggers
+from .registry import GROUPS, Config
 from .scoring import ScoreResult, band, last_friday
 
 BAND_CN = {"green": "低", "yellow": "升温", "red": "过热"}
@@ -54,7 +54,7 @@ def _drivers(result: ScoreResult, cfg: Config, week: pd.Timestamp, prev: pd.Time
     if week not in ind.index or prev not in ind.index:
         return []
     now, before = ind.loc[week], ind.loc[prev]
-    dims_now = result.dimensions.loc[week].dropna()
+    dims_now = result.dimensions.loc[week].reindex(cfg.group_dims("ai")).dropna()
     wsum = sum(cfg.dimensions[d]["weight"] for d in dims_now.index)
     rows = []
     for i in cfg.scored:
@@ -64,7 +64,7 @@ def _drivers(result: ScoreResult, cfg: Config, week: pd.Timestamp, prev: pd.Time
         contrib = (now[i.id] - before[i.id]) * cfg.dimensions[i.dimension]["weight"] / wsum / n_in_dim * 100
         rows.append((contrib, i.name, before[i.id], now[i.id]))
     rows.sort(key=lambda r: -abs(r[0]))
-    return [f"{name}：风险分位 {b:.0%} → {a:.0%}，拉动总分 {c:+.1f}" for c, name, b, a in rows[:top] if abs(c) >= 0.05]
+    return [f"{name}：风险分位 {b:.0%} → {a:.0%}，拉动温度 {c:+.1f}" for c, name, b, a in rows[:top] if abs(c) >= 0.05]
 
 
 def weekly_note(series: dict[str, pd.Series], cfg: Config, result: ScoreResult, asof: pd.Timestamp) -> Note:
@@ -77,11 +77,13 @@ def weekly_note(series: dict[str, pd.Series], cfg: Config, result: ScoreResult, 
     n_trig = sum(s.status == "triggered" for s in states)
     n_alert = sum(s.status == "alert" for s in states)
 
+    mk = _at(result.market, week) if len(result.market) else np.nan
+    market_txt = "" if np.isnan(mk) else f"市场宽松度 {mk:.0f}（较 4 周前 {_signed(mk - _at(result.market, month))}）；"
     if np.isnan(now):
-        headline = f"本周没有足够数据计算泡沫温度。{n_trig} 项信号触发、{n_alert} 项警戒。"
+        headline = f"本周没有足够数据计算 AI 泡沫温度。{market_txt}{n_trig} 项信号触发、{n_alert} 项警戒。"
     else:
-        headline = (f"泡沫温度 {now:.0f}（{BAND_CN[band(now, cfg.alerts)]}），较上周 {_signed(d1)}，较 4 周前 {_signed(d4)}；"
-                    f"{len(states)} 个破裂信号中 {n_trig} 项触发、{n_alert} 项警戒。")
+        headline = (f"AI 泡沫温度 {now:.0f}（{BAND_CN[band(now, cfg.alerts)]}），较上周 {_signed(d1)}，较 4 周前 {_signed(d4)}；"
+                    f"{market_txt}{len(states)} 个破裂信号中 {n_trig} 项触发、{n_alert} 项警戒。")
     note = Note(week, headline)
 
     changes = []
@@ -94,7 +96,7 @@ def weekly_note(series: dict[str, pd.Series], cfg: Config, result: ScoreResult, 
     note.sections.append(("信号状态变化", changes or ["本周没有信号改变状态。"]))
 
     drivers = _drivers(result, cfg, week, prev)
-    note.sections.append(("总分变化来自哪里", drivers or ["各指标风险分位基本没有变化。"]))
+    note.sections.append(("AI 温度变化来自哪里", drivers or ["各指标风险分位基本没有变化。"]))
 
     market = []
     nv, smh, spy = (_get(series, k) for k in ("nvda_price", "smh_price", "spy_price"))
@@ -133,7 +135,14 @@ def weekly_note(series: dict[str, pd.Series], cfg: Config, result: ScoreResult, 
              for s in sorted(states, key=lambda s: triggers.SEVERITY[s.status]) if s.status in ("triggered", "alert")]
     note.sections.append(("需要盯住的信号", watch or ["目前没有信号进入警戒区。"]))
 
-    extremes = [m for m in alerts.evaluate(result, cfg) if "风险分位" in m]
+    ind_week = result.indicators[result.indicators.index <= week]
+    extremes = []
+    if len(ind_week):
+        dims = {i.id: cfg.dimensions[i.dimension] for i in cfg.indicators}
+        for iid, v in ind_week.iloc[-1].dropna().items():
+            if v >= cfg.alerts["indicator_extreme_pct"]:
+                name = next(i.name for i in cfg.indicators if i.id == iid)
+                extremes.append(f"{GROUPS[dims[iid].get('group', 'ai')]}｜{name} 的泡沫风险分位达到 {v:.0%}（相对自身历史）")
     if extremes:
         note.sections.append(("处于历史极端的评分指标", extremes))
     return note

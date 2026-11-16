@@ -35,9 +35,11 @@ latest, prev = result.total.iloc[-1], result.total.iloc[-5] if len(result.total)
 b = scoring.band(latest, cfg.alerts)
 
 c1, c2, c3 = st.columns([1, 1, 2])
-c1.metric("泡沫温度 (0-100)", f"{latest:.0f}", f"{latest - prev:+.0f} vs 4 周前", delta_color="inverse")
+c1.metric("AI 泡沫温度 (0-100)", f"{latest:.0f}", f"{latest - prev:+.0f} vs 4 周前", delta_color="inverse")
+if len(result.market):
+    c1.caption(f"市场宽松度 {result.market.iloc[-1]:.0f}（信用、波动、利率；非 AI 专属）")
 c2.markdown(f"### 状态：<span style='color:{BAND_COLOR[b]}'>{BAND_LABEL[b]}</span>", unsafe_allow_html=True)
-c2.caption(f"截至 {result.total.index[-1].date()}，评分指标覆盖率 {result.coverage.iloc[-1]:.0%}")
+c2.caption(f"截至 {result.total.index[-1].date()}，指标覆盖率 {result.coverage.iloc[-1]:.0%}")
 all_news = news.load()
 news_day = max((x.file_date for x in all_news if x.file_date is not None), default=pd.Timestamp.today().normalize())
 rate = news.rating(all_news, news.load_assessments(), news_day)
@@ -84,10 +86,12 @@ with st.expander("过往解读"):
         st.markdown(f"**{n.week.date()}**｜{n.headline}")
         for title, items in n.sections:
             st.markdown(f"*{title}*\n" + "\n".join(f"- {x}" for x in items))
-years = st.slider("显示最近几年", 1, 25, 10)
-cut = result.total.index[-1] - pd.DateOffset(years=years)
-fig = go.Figure(go.Scatter(x=result.total[result.total.index >= cut].index,
-                           y=result.total[result.total.index >= cut], name="总分"))
+st.subheader(f"AI 泡沫温度走势（{result.total.index[0]:%Y} 年起）")
+st.caption("AI 泡沫温度只用和 AI 直接相关的维度，从 ChatGPT 发布后开始计算；虚线是市场宽松度（信用、波动、利率），反映大环境。")
+cut = result.total.index[0]
+mk = result.market[result.market.index >= cut]
+fig = go.Figure(go.Scatter(x=result.total.index, y=result.total.rolling(4).mean(), name="AI 泡沫温度（4 周均值）"))
+fig.add_scatter(x=mk.index, y=mk.rolling(4).mean(), name="市场宽松度（4 周均值）", line=dict(dash="dash"))
 fig.add_hline(y=cfg.alerts["score_yellow"], line_dash="dot", line_color=BAND_COLOR["yellow"])
 fig.add_hline(y=cfg.alerts["score_red"], line_dash="dot", line_color=BAND_COLOR["red"])
 fig.update_layout(height=320, margin=dict(l=0, r=0, t=10, b=0), yaxis=dict(range=[0, 100]))
@@ -95,7 +99,7 @@ st.plotly_chart(fig, width="stretch")
 
 left, right = st.columns(2)
 with left:
-    st.subheader("六个维度")
+    st.subheader("各维度（当前）")
     dims = result.dimensions.iloc[-1].dropna()
     labels = [cfg.dimensions[d]["label"] for d in dims.index]
     radar = go.Figure(go.Scatterpolar(r=list(dims.values) + [dims.values[0]], theta=labels + [labels[0]], fill="toself"))

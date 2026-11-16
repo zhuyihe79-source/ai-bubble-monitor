@@ -107,7 +107,7 @@ def test_driver_contributions_add_up_to_total_change():
     res = scoring.compute(series, cfg, asof=idx[-1])
     week, prev = idx[-1], idx[-2]
     lines = commentary._drivers(res, cfg, week, prev, top=10)
-    contribs = [float(x.split("拉动总分 ")[1]) for x in lines]
+    contribs = [float(x.split("拉动温度 ")[1]) for x in lines]
     assert sum(contribs) == pytest.approx(res.total[week] - res.total[prev], abs=0.1 * len(contribs) + 0.05)
 
 
@@ -121,6 +121,17 @@ def test_weekly_note_reports_status_change():
     changes = dict(note.sections)["信号状态变化"]
     assert any("TA" in c and "→ 触发" in c and "恶化" in c for c in changes)
     assert "1 项触发" in note.headline
+
+def test_past_weekly_notes_use_that_weeks_extremes():
+    series, cfg, idx = _scored_setup()
+    res = scoring.compute(series, cfg, asof=idx[-1])
+    inds = res.indicators.copy()
+    inds.iloc[:, :] = 0.5
+    inds.iloc[-1, 0] = 0.99  # 只有最后一周处于极端
+    res = scoring.ScoreResult(inds, res.dimensions, res.total, res.coverage, res.market)
+    now = dict(commentary.weekly_note(series, cfg, res, idx[-1]).sections)
+    past = dict(commentary.weekly_note(series, cfg, res, idx[-3]).sections)
+    assert "处于历史极端的评分指标" in now and "处于历史极端的评分指标" not in past
 
 
 def test_edgar_instant_values_and_debt_sum():

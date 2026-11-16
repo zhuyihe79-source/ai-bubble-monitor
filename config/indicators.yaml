@@ -1,15 +1,17 @@
 # direction: "high" = 数值越高越接近泡沫；"low" = 数值越低越接近泡沫
 # max_stale_days: 数据超过这个天数没更新，评分时视为缺失
 # publication_lag_days: 数据实际公布比所属日期晚多少天（财报一般在季末后 35 天内），避免历史评分用到“未来”信息
-# score: false 表示只用于触发器和解读，不计入泡沫温度
+# score: false 表示只用于触发器和解读，不计入任何分数
 # desc: 看板上解释这个维度在问什么
+# group: ai = 计入“AI 泡沫温度”；market = 计入“市场宽松度”。
+#   信用利差、VIX、利率衡量的是整个市场的风险偏好，2017、2021 年同样会很高，所以不放进 AI 温度。
 dimensions:
-  valuation:   {label: 估值与集中度, weight: 1.0, desc: 钱是不是过度挤在 AI 龙头上（大盘集中度、半导体相对大盘、NVDA 偏离均线）}
-  capex:       {label: 投入与回报, weight: 1.0, desc: 云厂商投入有多大、自己的现金流还撑不撑得住}
-  leverage:    {label: 融资与杠杆, weight: 1.0, desc: 借钱是不是太容易（信用利差越窄，市场越松懈）}
-  sentiment:   {label: 投机情绪, weight: 1.0, desc: 市场是不是太自满或太亢奋（“AI bubble”搜索热度、VIX）}
-  demand:      {label: 真实需求, weight: 1.0, desc: 算力租金有没有下跌（供过于求的直接证据）}
-  macro:       {label: 宏观与流动性, weight: 1.0, desc: 资金成本是否宽松（实际利率、期限利差）}
+  valuation:   {label: 估值与集中度, group: ai, weight: 1.0, desc: 钱是不是过度挤在 AI 龙头上（大盘集中度、半导体相对大盘、NVDA 偏离均线）}
+  capex:       {label: 投入与回报, group: ai, weight: 1.0, desc: 云厂商投入增长有多快、自己的现金流还撑不撑得住}
+  demand:      {label: 真实需求, group: ai, weight: 1.0, desc: 算力租金有没有下跌（供过于求的直接证据）}
+  leverage:    {label: 信用环境, group: market, weight: 1.0, desc: 借钱是不是太容易（信用利差越窄，市场越松懈）}
+  sentiment:   {label: 波动与自满, group: market, weight: 1.0, desc: 市场是不是太平静（VIX 越低越自满）}
+  macro:       {label: 利率环境, group: market, weight: 1.0, desc: 资金成本是否宽松（实际利率、期限利差）}
 
 indicators:
   # ---- 估值与集中度（yfinance）----
@@ -39,6 +41,16 @@ indicators:
     max_stale_days: 10
 
   # ---- 投入与回报（SEC EDGAR）----
+  # 用同比增速而不是金额：金额一路上涨，分位常年贴着 100，没有信息量
+  - id: hyperscaler_capex_yoy
+    name: 五大云厂商 capex 同比（滚动四季）
+    dimension: capex
+    source: edgar
+    params: {metric: capex_ttm_yoy}
+    direction: high
+    frequency: quarterly
+    max_stale_days: 200
+    publication_lag_days: 35
   - id: hyperscaler_capex_ttm
     name: 五大云厂商 capex 滚动四季合计 (美元)
     dimension: capex
@@ -48,6 +60,7 @@ indicators:
     frequency: quarterly
     max_stale_days: 200
     publication_lag_days: 35
+    score: false
   - id: hyperscaler_capex_to_ocf
     name: 五大云厂商 capex / 经营现金流
     dimension: capex
@@ -58,7 +71,7 @@ indicators:
     max_stale_days: 200
     publication_lag_days: 35
 
-  # ---- 融资与杠杆（FRED）----
+  # ---- 信用环境（FRED，计入市场宽松度）----
   - id: hy_spread
     name: 美国高收益债利差 (OAS，FRED 只提供近 3 年)
     dimension: leverage
@@ -79,7 +92,7 @@ indicators:
     frequency: daily
     max_stale_days: 10
 
-  # ---- 投机情绪 ----
+  # ---- 搜索热度（不计分）----
   - id: trends_ai_bubble
     name: Google Trends "AI bubble" 搜索热度
     dimension: sentiment
@@ -88,6 +101,11 @@ indicators:
     direction: high
     frequency: weekly
     max_stale_days: 21
+    # 2023 年前几乎没人搜，和自身 3 年历史比分位没有意义；2024-11 刚够 3 年时一加入就把 AI 温度抬高约 8 度。
+    # 所以不计分，只用于 bubble_search 破裂信号。
+    score: false
+
+  # ---- 波动与自满（计入市场宽松度）----
   - id: vix
     name: VIX 波动率指数
     dimension: sentiment
@@ -107,7 +125,7 @@ indicators:
     frequency: weekly
     max_stale_days: 45
 
-  # ---- 宏观与流动性（FRED）----
+  # ---- 利率环境（FRED，计入市场宽松度）----
   - id: real_yield_10y
     name: 10 年期 TIPS 实际利率
     dimension: macro
@@ -185,7 +203,11 @@ indicators:
     score: false
 
 scoring:
-  min_dimensions: 4   # 总分至少需要几个维度有数据，否则不发布
+  # AI 泡沫温度从 ChatGPT 发布后开始计算；更早的读数衡量的不是 AI，不发布。
+  # 分位仍然和各指标自身过去最多 15 年的历史比较。
+  ai_start: "2023-01-01"
+  min_dimensions: 2          # AI 温度至少需要几个维度有数据
+  market_min_dimensions: 2   # 市场宽松度至少需要几个维度有数据
 
 alerts:
   score_yellow: 60

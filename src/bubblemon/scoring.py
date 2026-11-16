@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import numpy as np
 import pandas as pd
@@ -52,9 +52,20 @@ def indicator_score(series: pd.Series, ind: Indicator, asof: pd.Timestamp) -> pd
 @dataclass
 class ScoreResult:
     indicators: pd.DataFrame   # 周 × 指标，0-1
-    dimensions: pd.DataFrame   # 周 × 维度，0-100
-    total: pd.Series           # 周，0-100
-    coverage: pd.Series        # 周，有多少比例的指标有分数
+    dimensions: pd.DataFrame   # 周 × 维度，0-100（两组维度都在）
+    total: pd.Series           # 周，AI 泡沫温度 0-100，只用 group=ai 的维度，从 ai_start 开始
+    coverage: pd.Series        # 周，AI 温度的评分指标有多少比例有分数
+    market: pd.Series = field(default_factory=lambda: pd.Series(dtype=float))  # 周，市场宽松度 0-100
+
+
+def _weighted(dim_df: pd.DataFrame, dims: list[str], cfg: Config, min_dims: int) -> pd.Series:
+    cols = [d for d in dims if d in dim_df]
+    if not cols:
+        return pd.Series(dtype=float)
+    sub = dim_df[cols]
+    weights = pd.Series({d: cfg.dimensions[d]["weight"] for d in cols})
+    total = sub.fillna(0).mul(weights, axis=1).sum(axis=1) / sub.notna().mul(weights, axis=1).sum(axis=1)
+    return total.where(sub.notna().sum(axis=1) >= min_dims).dropna()
 
 
 def compute(series_by_id: dict[str, pd.Series], cfg: Config, asof: pd.Timestamp | None = None) -> ScoreResult:
@@ -79,12 +90,14 @@ def compute(series_by_id: dict[str, pd.Series], cfg: Config, asof: pd.Timestamp 
             dim_cols[dim] = ind_df[members].mean(axis=1, skipna=True) * 100
     dim_df = pd.DataFrame(dim_cols)
 
-    weights = pd.Series({d: cfg.dimensions[d]["weight"] for d in dim_df.columns})
-    w = dim_df.notna().mul(weights, axis=1)
-    total = dim_df.fillna(0).mul(weights, axis=1).sum(axis=1) / w.sum(axis=1)
-    total = total.where(dim_df.notna().sum(axis=1) >= cfg.scoring.get("min_dimensions", 1))
-    coverage = ind_df.notna().sum(axis=1) / len(cfg.scored)
-    return ScoreResult(ind_df, dim_df.dropna(how="all"), total.dropna(), coverage)
+    ai_dims = cfg.group_dims("ai")
+    total = _weighted(dim_df, ai_dims, cfg, cfg.scoring.get("min_dimensions", 1))
+    if cfg.scoring.get("ai_start"):
+        total = total[total.index >= pd.Timestamp(cfg.scoring["ai_start"])]
+    market = _weighted(dim_df, cfg.group_dims("market"), cfg, cfg.scoring.get("market_min_dimensions", 1))
+    ai_inds = [i.id for i in cfg.scored if i.dimension in ai_dims]
+    coverage = ind_df.reindex(columns=ai_inds).notna().sum(axis=1) / max(len(ai_inds), 1)
+    return ScoreResult(ind_df, dim_df.dropna(how="all"), total, coverage, market)
 
 
 def band(score: float, alerts: dict) -> str:

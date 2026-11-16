@@ -5,6 +5,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 CONFIG_PATH = ROOT / "config" / "indicators.yaml"
+GROUPS = {"ai": "AI 泡沫温度", "market": "市场宽松度"}
 
 
 @dataclass(frozen=True)
@@ -51,6 +52,9 @@ class Config:
     def scored(self) -> list:
         return [i for i in self.indicators if i.score]
 
+    def group_dims(self, group: str) -> list[str]:
+        return [d for d, meta in self.dimensions.items() if meta.get("group", "ai") == group]
+
 
 def load_config(path: Path = CONFIG_PATH) -> Config:
     raw = yaml.safe_load(path.read_text(encoding="utf-8"))
@@ -63,6 +67,9 @@ def load_config(path: Path = CONFIG_PATH) -> Config:
             raise ValueError(f"{i.id}: 未知维度 {i.dimension}")
         if i.direction not in ("high", "low"):
             raise ValueError(f"{i.id}: direction 必须是 high 或 low")
+    for d, meta in raw["dimensions"].items():
+        if meta.get("group", "ai") not in GROUPS:
+            raise ValueError(f"维度 {d}: group 必须是 {list(GROUPS)} 之一")
     triggers = [Trigger(**t) for t in raw.get("triggers", [])]
     for t in triggers:
         if t.series not in ids:

@@ -67,3 +67,18 @@ def test_total_requires_min_dimensions():
 def test_band():
     a = {"score_yellow": 60, "score_red": 80}
     assert [scoring.band(x, a) for x in (10, 60, 85)] == ["green", "yellow", "red"]
+
+
+def test_ai_temperature_excludes_market_dims_and_starts_at_ai_start():
+    idx = pd.date_range("2015-01-02", periods=500, freq="W-FRI")
+    up = pd.Series(np.arange(500.0), index=idx)
+    inds = [make_ind(stale=30, dim="valuation", iid="a"), make_ind(stale=30, dim="macro", iid="b", direction="low")]
+    dims = {"valuation": {"label": "v", "weight": 1.0, "group": "ai"},
+            "macro": {"label": "m", "weight": 1.0, "group": "market"}}
+    cfg = Config(dims, inds, {"score_yellow": 60, "score_red": 80},
+                 {"min_dimensions": 1, "market_min_dimensions": 1, "ai_start": "2023-01-01"})
+    r = scoring.compute({"a": up, "b": up}, cfg, asof=idx[-1])
+    assert r.total.index[0] >= pd.Timestamp("2023-01-01")
+    assert r.total.iloc[-1] == 100.0          # 只有 a（一路上涨 → 100），不受 b 影响
+    assert r.market.iloc[-1] == 0.0           # b 方向为 low，一路上涨 → 0
+    assert r.market.index[0] < pd.Timestamp("2023-01-01")   # 市场宽松度保留长历史
