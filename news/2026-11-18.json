@@ -1,0 +1,67 @@
+{
+  "date": "2026-11-18",
+  "generated_at": "2026-11-18T07:34:56+08:00",
+  "window": "2026-11-17 至 2026-11-18",
+  "assessment": {
+    "level": 4,
+    "reason": "规则5级下调至4级：英伟达收入翻倍及1300亿美元下季指引构成强反向硬数据，近周治理后续仍有重复计权，但存储采购承诺和客户担保不容忽视。"
+  },
+  "items": [
+    {
+      "published": "2026-11-18",
+      "title": "NVIDIA Announces Financial Results for Third Quarter Fiscal 2027",
+      "source": "NVIDIA Newsroom（公司财报）",
+      "url": "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-third-quarter-fiscal-2027",
+      "topic": "nvidia",
+      "importance": 5,
+      "direction": "risk_down",
+      "signal": "nvda_rev_yoy",
+      "summary": "英伟达第三财季收入1158亿美元、同比增103%；下季指引1300亿美元±3%，含额外一周且不含中国数据中心计算收入。",
+      "implication": "已实现收入与指引缓和近期需求骤降担忧，但下季毛利率预计降至71%–72%，硬件销售也不能替代客户终端盈利验证。"
+    },
+    {
+      "published": "2026-11-18",
+      "title": "CFO Commentary on Third Quarter Fiscal 2027 Results",
+      "source": "NVIDIA（CFO说明原文，第3页）",
+      "url": "https://s201.q4cdn.com/141608511/files/doc_financials/2027/Q327/Q3FY27-CFO-Commentary.pdf",
+      "topic": "memory",
+      "importance": 4,
+      "direction": "risk_up",
+      "summary": "英伟达供应承诺由上季2790亿增至3900亿美元，主要涉及多年期存储采购；不是全部为HBM，也不是本季已支付采购额。",
+      "implication": "锁定存储有助保障交付，却扩大需求转弱时的采购刚性；不能把承诺增长直接等同存储涨价或新增终端需求。"
+    },
+    {
+      "published": "2026-11-18",
+      "title": "Nvidia interim CEO Kress says it’s ‘business as usual’ at company: Live updates",
+      "source": "CNBC（公司CFO说明第4页交叉核实）",
+      "url": "https://www.cnbc.com/2026/11/17/nvidia-nvda-earnings-report-q3-2027.html",
+      "topic": "financing",
+      "importance": 4,
+      "direction": "risk_up",
+      "summary": "英伟达披露担保最高敞口1180亿美元，其中1050亿关联OpenAI俄亥俄项目；尚无担保付款，后者预计最早2029财年分期生效。",
+      "implication": "供应商为客户提供或有信用支持，放大循环融资传导，但最高敞口并非本期新增借款或已经发生的损失。"
+    },
+    {
+      "published": "2026-11-17",
+      "title": "Isomorphic Labs announces Series C investment round",
+      "source": "Isomorphic Labs（公司公告）",
+      "url": "https://www.isomorphiclabs.com/articles/isomorphic-labs-announces-series-c-investment-round",
+      "topic": "financing",
+      "importance": 3,
+      "direction": "neutral",
+      "summary": "Isomorphic Labs宣布完成50亿美元C轮融资，Greenoaks与红杉共同领投，Alphabet继续参投；公告未披露估值。",
+      "implication": "资金仍流向AI制药，缓和局部融资枯竭担忧，但股权融资不是经营现金流，也不能证明药物商业回报。"
+    },
+    {
+      "published": "2026-11-18",
+      "title": "PJM Grid Overhaul Aims to Cut Data Center Connection Time to 12 Months",
+      "source": "Bloomberg（PJM官方公告交叉核实）",
+      "url": "https://www.bloomberg.com/news/articles/2026-11-17/pjm-proposes-grid-overhaul-to-speed-up-data-center-connections",
+      "topic": "demand",
+      "importance": 3,
+      "direction": "neutral",
+      "summary": "PJM拟合并发电、输电与数据中心并网研究，预计周期由24个月缩至12个月，已提交FERC；仍待批准，并非建设或供电工期减半。",
+      "implication": "提案可能疏通审批瓶颈，却不直接增加电源和输电容量，提前落实财务要求也会筛掉部分投机项目，暂不认定缺电风险下降。"
+    }
+  ]
+}
