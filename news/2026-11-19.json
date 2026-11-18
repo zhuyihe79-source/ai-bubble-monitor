@@ -1,0 +1,66 @@
+{
+  "date": "2026-11-19",
+  "generated_at": "2026-11-19T07:47:04+08:00",
+  "window": "2026-11-18 至 2026-11-19",
+  "assessment": {
+    "level": 4,
+    "reason": "维持规则4级：Anthropic超区间定价缓和龙头短期融资压力，但云厂商负债同比仍超过破裂信号阈值，芯片停供和核心机房市场审批暂缓也未解除。"
+  },
+  "items": [
+    {
+      "published": "2026-11-19",
+      "title": "Anthropic prices initial public offering",
+      "source": "Anthropic（公司公告）",
+      "url": "https://www.anthropic.com/news/anthropic-prices-initial-public-offering",
+      "topic": "financing",
+      "importance": 5,
+      "direction": "risk_down",
+      "summary": "Anthropic IPO定价83美元，高于70–78美元区间；9.8亿股发行总额813.4亿美元，公司新股毛额约793.8亿美元，尚待交割。",
+      "implication": "超区间定价和大额新股融资降低龙头短期融资中断风险，但不代表估值合理，也没有验证算力投入回报。"
+    },
+    {
+      "published": "2026-11-19",
+      "title": "Latest HBM Prices to Jump Up to 2.7-Fold Next Year",
+      "source": "Seoul Economic Daily（报道TrendForce首尔路演）",
+      "url": "https://en.sedaily.com/business/2026/11/19/latest-hbm-prices-to-jump-up-to-27-fold-next-year",
+      "topic": "memory",
+      "importance": 4,
+      "direction": "risk_up",
+      "summary": "据《首尔经济日报》报道，TrendForce预计明年HBM4为3–5.50美元/Gb（今年约2.05）；三大厂HBM晶圆投入占比23%升至近30%。",
+      "implication": "高价反映需求仍旺，但抬高加速卡成本、挤压普通DRAM供给；这是研究机构预测，并非已签合约价。"
+    },
+    {
+      "published": "2026-11-18",
+      "title": "Nvidia Stops Shipping US-Approved AI Chips to China",
+      "source": "Reuters（U.S. News转载，SEC财报附件交叉核实）",
+      "url": "https://www.usnews.com/news/top-news/articles/2026-11-18/nvidia-stops-shipping-us-approved-ai-chips-to-china",
+      "topic": "nvidia",
+      "importance": 4,
+      "direction": "risk_up",
+      "summary": "英伟达已停止向中国出货获许可的Hopper数据中心产品（含H200）；上季相关收入24亿美元，下季指引未计入中国数据中心计算收入。",
+      "implication": "实体停供不同于此前的远程算力许可限制；它关闭一项已实现的收入来源，但不能把这24亿美元再从已排除该业务的指引中扣除。"
+    },
+    {
+      "published": "2026-11-18",
+      "title": "Virginia’s Loudoun County officially adopts 12-month moratorium on data center development",
+      "source": "DatacenterDynamics（县议程材料及Loudoun Now交叉核实）",
+      "url": "https://www.datacenterdynamics.com/en/news/virginias-loudoun-county-officially-adopts-12-month-moratorium-on-data-center-development/",
+      "topic": "demand",
+      "importance": 4,
+      "direction": "risk_up",
+      "summary": "弗吉尼亚州劳登县以7票赞成、1票反对、1票弃权，通过暂缓审议特定数据中心及变电站用地申请，最长12个月，决议追溯至9月15日生效。",
+      "implication": "核心机房市场的审批积压可能推迟供电和租金兑现；不等于暂停既有设施运营，也不覆盖所有申请。"
+    },
+    {
+      "published": "2026-11-18",
+      "title": "Cameron County commissioners reject SpaceX tax break request for $24bn Texas data center",
+      "source": "DatacenterDynamics（KRGV、The Brownsville Herald交叉核实）",
+      "url": "https://www.datacenterdynamics.com/en/news/cameron-county-commissioners-reject-spacex-tax-break-request-for-24bn-texas-data-center/",
+      "topic": "demand",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "得州卡梅伦县委员以3比2拒绝继续安排SpaceX减税申请听证；申请涉及拟投资240亿美元的数据中心和燃气电厂。",
+      "implication": "失去地方税惠可能改变项目回报或建设节奏，但此次表决不是拒发建设许可，也不表示项目取消。"
+    }
+  ]
+}
