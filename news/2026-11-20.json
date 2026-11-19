@@ -1,0 +1,89 @@
+{
+  "date": "2026-11-20",
+  "generated_at": "2026-11-20T07:35:21+08:00",
+  "window": "2026-11-19 至 2026-11-20",
+  "assessment": {
+    "level": 4,
+    "reason": "维持规则4级：英伟达回撤扩大至39.0%、云厂商负债同比增127.8%均已触发信号，但强劲的收入指引和Anthropic首日发行价溢价尚不支持需求或融资全面转弱。"
+  },
+  "items": [
+    {
+      "published": "2026-11-20",
+      "title": "Wall Street ends sharply lower as Anthropic’s debut fails to revive AI fervor",
+      "source": "Reuters（Investing.com转载；收盘价与看板行情交叉核实）",
+      "url": "https://www.investing.com/news/stock-market-news/wall-street-ends-sharply-lower-asanthropics-debut-fails-to-revive-ai-fervor-5040108",
+      "topic": "nvidia",
+      "importance": 4,
+      "direction": "risk_up",
+      "signal": "nvda_drawdown",
+      "summary": "英伟达美东周四跌3.30%至145.98美元，连续第六个交易日下跌；按看板52周最高收盘价239.24美元计算，回撤39.0%，超过35%触发线。",
+      "implication": "龙头给出强劲收入指引后仍遭抛售，说明估值和市场信心承压，但不能据此推断客户订单已转弱。"
+    },
+    {
+      "published": "2026-11-19",
+      "title": "TSMC tightens China AI chip curbs as new US rules close manufacturing loophole, sources say",
+      "source": "Reuters（美国《联邦公报》核实规则生效及适用范围）",
+      "url": "https://www.reuters.com/world/china/tsmc-tightens-china-ai-chip-curbs-new-us-rules-close-manufacturing-loophole-2026-11-19/",
+      "topic": "nvidia",
+      "importance": 4,
+      "direction": "risk_up",
+      "summary": "据路透，台积电暂停受影响中国客户的16纳米及以下订单，除非取得美国许可；相关美国出口管制规则11月19日生效。",
+      "implication": "先进代工订单暂停是实质执行进展，收窄部分客户的供货渠道，但与此前远程算力限制同属一项规则，不宜视为第二次立法。"
+    },
+    {
+      "published": "2026-11-20",
+      "title": "Anthropic IPO Live: Stock Closes Day At $97—Up More Than 17%",
+      "source": "Forbes（CNBC交叉核实）",
+      "url": "https://www.forbes.com/sites/fionariley/2026/11/19/anthropic-ipo-live-stock-closes-day-at-97-up-more-than-17/",
+      "topic": "financing",
+      "importance": 4,
+      "direction": "neutral",
+      "summary": "Anthropic纳斯达克首日以111.50美元开盘，收于97.17美元，较83美元发行价高17.1%，但显著低于开盘价。",
+      "implication": "首日溢价说明有二级市场买盘，但涨幅回吐表明估值仍有分歧，且交易本身不增加公司IPO所得。"
+    },
+    {
+      "published": "2026-11-19",
+      "title": "AI memory sells out while NAND and legacy DRAM prices fall amid weak PC and smartphone demand",
+      "source": "MoneyToday（援引DRAMeXchange；TrendForce周报印证方向）",
+      "url": "https://www.mt.co.kr/en/industry/2026/11/19/2026111916105559721",
+      "topic": "memory",
+      "importance": 3,
+      "direction": "neutral",
+      "summary": "据MoneyToday援引DRAMeXchange数据，512Gb TLC NAND晶圆现货一月下跌24%至14.20美元，1Tb规格同期跌14%。",
+      "implication": "现货走弱暴露消费端备货不足，但不能外推为AI用HBM订单下滑，也不代表同幅度的合约降价。"
+    },
+    {
+      "published": "2026-11-20",
+      "title": "US signed off on sales of nearly 900,000 AI chips to China in six months, House committee says",
+      "source": "Reuters（Miami Herald转载；美国众议院外交事务委员会原件交叉核实）",
+      "url": "https://www.miamiherald.com/news/business/article318162513.html",
+      "topic": "nvidia",
+      "importance": 3,
+      "direction": "neutral",
+      "summary": "美国众议院委员会披露，截至5月11日，美商务部收到约344万颗相关芯片的申请，21份申请获批合计879,868颗；获批不等于交货。",
+      "implication": "披露为历史许可规模提供上限参考，不能当作已确认收入或解释为当下恢复供货。"
+    },
+    {
+      "published": "2026-11-19",
+      "title": "State consumer advocates call on PJM Board to delay upcoming capacity market auction",
+      "source": "Maryland Office of People’s Counsel（官方公告，Utility Dive交叉核实）",
+      "url": "https://content.govdelivery.com/accounts/MDOPC/bulletins/43354ce",
+      "topic": "demand",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "七州八个消费者代表机构要求推迟PJM原定12月9日至15日的容量拍卖，并建议把数据中心负荷移出统一预测、另行采购。",
+      "implication": "若大负荷单独采购，部分项目需更早锁定电源或承担更多成本；联名发函不是已获批延期。"
+    },
+    {
+      "published": "2026-11-19",
+      "title": "Alberta government proposing more restrictions on upcoming data centre projects",
+      "source": "CBC News（阿尔伯塔省政府及省议会交叉核实）",
+      "url": "https://www.cbc.ca/news/canada/edmonton/alberta-proposed-restrictions-data-centres-9.7427099",
+      "topic": "demand",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "加拿大阿尔伯塔省提出第42号法案，拟为10兆瓦及以上数据中心设600米住宅退距，并由开发商承担项目用地内电线费用。",
+      "implication": "若获通过，部分项目需重新选址或承担更多接电成本，但法案仅一读，不等于项目已停建。"
+    }
+  ]
+}
