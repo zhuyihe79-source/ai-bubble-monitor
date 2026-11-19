@@ -14,18 +14,34 @@ def last_friday(asof: pd.Timestamp) -> pd.Timestamp:
     return asof - pd.Timedelta(days=(asof.weekday() - 4) % 7)
 
 
+def data_day(series_by_id: dict[str, pd.Series], cfg: Config, asof: pd.Timestamp) -> pd.Timestamp:
+    """asof 当天能看到的最新行情日期（美股收盘后才发布，所以通常是前一个交易日）。"""
+    asof = pd.Timestamp(asof).normalize()
+    days = [s.index[s.index <= asof].max() for i in cfg.indicators
+            if i.publication_lag_days == 0 and i.source in ("yahoo", "fred")
+            and (s := series_by_id.get(i.id)) is not None and len(s) and (s.index <= asof).any()]
+    return max(days).normalize() if days else asof
+
+
 def to_weekly(series: pd.Series, max_stale_days: int, asof: pd.Timestamp, lag_days: int = 0) -> pd.Series:
-    """对齐到周五；按公布滞后平移，用前值填充，但超过 max_stale_days 的空档置为缺失。"""
+    """对齐到周五，最后一个点是 asof（本周还没到周五时，就是本周截至 asof 的值）。
+
+    按公布滞后平移，用前值填充，但超过 max_stale_days 的空档置为缺失。
+    """
+    asof = pd.Timestamp(asof).normalize()
     s = series.sort_index()
     s.index = s.index + pd.Timedelta(days=lag_days)
-    end = last_friday(asof)
-    s = s[s.index <= end]
+    s = s[s.index <= asof]
+    s = s[~s.index.duplicated(keep="last")]
     if s.empty:
         return s
+    end = last_friday(asof)
     grid = pd.date_range(s.index[0].to_period("W-FRI").end_time.normalize(), end, freq="W-FRI")
-    weekly = s.resample("W-FRI").last().reindex(grid).ffill()
-    last_obs = pd.Series(s.index, index=s.index).resample("W-FRI").last().reindex(grid).ffill()
-    age = (weekly.index.to_series() - last_obs).dt.days
+    if asof > end:
+        grid = grid.append(pd.DatetimeIndex([asof]))
+    weekly = s.reindex(grid, method="ffill")
+    last_obs = pd.Series(s.index, index=s.index).reindex(grid, method="ffill")
+    age = (grid.to_series() - last_obs).dt.days
     return weekly.where(age <= max_stale_days)
 
 

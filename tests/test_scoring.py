@@ -31,9 +31,17 @@ def test_to_weekly_respects_publication_lag():
 
 
 def test_to_weekly_never_goes_past_asof():
-    s = pd.Series(1.0, index=pd.date_range("2024-01-01", "2024-02-20"))
+    s = pd.Series(range(51), index=pd.date_range("2024-01-01", "2024-02-20"), dtype=float)
     w = scoring.to_weekly(s, 10, pd.Timestamp("2024-02-15"))
-    assert w.index[-1] == pd.Timestamp("2024-02-09")
+    # 周四：前面是各周五，最后一点是本周截至周四的值，不用到周四之后的数据
+    assert list(w.index[-2:]) == [pd.Timestamp("2024-02-09"), pd.Timestamp("2024-02-15")]
+    assert w.iloc[-1] == s["2024-02-15"] and w.iloc[-2] == s["2024-02-09"]
+
+
+def test_data_day_is_latest_market_date_not_today():
+    cfg = load_config()
+    s = pd.Series(1.0, index=pd.date_range("2024-01-01", "2024-02-14"))
+    assert scoring.data_day({"vix": s}, cfg, pd.Timestamp("2024-02-15")) == pd.Timestamp("2024-02-14")
 
 
 def test_percentile_monotonic_series_is_extreme():

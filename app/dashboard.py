@@ -24,7 +24,8 @@ def load():
 
 
 series, log = load()
-result = scoring.compute(series, cfg)
+day = scoring.data_day(series, cfg, pd.Timestamp.today())
+result = scoring.compute(series, cfg, day)
 st.title("AI 经济泡沫监测")
 
 if result.total.empty:
@@ -50,9 +51,8 @@ else:
     c2.markdown(f"**分析师风险评级 {rate.level}/5（{news.LEVELS[rate.level]}）**，规则值 {rate.rule_level}"
                 + (f"；{rate.reason}" if rate.reason else ""))
 
-week = scoring.last_friday(pd.Timestamp.today())
-states = triggers.evaluate(series, cfg, week)
-before = {s.trigger.id: s for s in triggers.evaluate(series, cfg, week - pd.Timedelta(days=7))}
+states = triggers.evaluate(series, cfg, day)
+before = {s.trigger.id: s for s in triggers.evaluate(series, cfg, day - pd.Timedelta(days=7))}
 with c3:
     counts = {k: sum(s.status == k for s in states) for k in ("triggered", "alert", "ok", "nodata")}
     cols = st.columns(4)

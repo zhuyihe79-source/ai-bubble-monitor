@@ -288,6 +288,8 @@ POINT = {"triggered": "#e5484d", "alert": "#f0a020", "ok": "#1f9d61", "nodata": 
 
 def _signal_charts(series, cfg, states: dict, start: pd.Timestamp, end: pd.Timestamp, cdn: bool) -> str:
     dates = pd.date_range(start, end, freq="W-FRI")
+    if end not in dates:
+        dates = dates.append(pd.DatetimeIndex([end]))
     cards = []
     for s in sorted(states.values(), key=lambda s: (triggers.SEVERITY[s.status], s.trigger.name)):
         t = s.trigger
@@ -337,12 +339,13 @@ def build(cdn: bool = False, asof: pd.Timestamp | None = None) -> str:
     con = db.connect()
     series = {i.id: db.load_series(con, i.id) for i in cfg.indicators}
     asof = pd.Timestamp(asof or pd.Timestamp.today()).normalize()
-    res = scoring.compute(series, cfg, asof)
+    day = scoring.data_day(series, cfg, asof)
+    res = scoring.compute(series, cfg, day)
     if res.total.empty:
         raise SystemExit("没有可用数据，请先运行 bubblemon-fetch")
 
-    week = scoring.last_friday(asof)
-    notes = commentary.history(series, cfg, res, asof, weeks=8)
+    week = scoring.last_friday(day)
+    notes = commentary.history(series, cfg, res, day, weeks=8)
     note = notes[0]
     tot = res.total
     latest = tot.iloc[-1]
@@ -350,9 +353,9 @@ def build(cdn: bool = False, asof: pd.Timestamp | None = None) -> str:
     d1 = latest - tot.iloc[-2] if len(tot) > 1 else 0.0
     d4 = latest - tot.iloc[-5] if len(tot) > 4 else 0.0
 
-    weeks = [week - pd.Timedelta(days=7 * k) for k in range(HEAT_WEEKS)][::-1]
+    weeks = [day - pd.Timedelta(days=7 * k) for k in range(HEAT_WEEKS)][::-1]
     by_week = {w: {s.trigger.id: s for s in triggers.evaluate(series, cfg, w)} for w in weeks}
-    now = by_week[week]
+    now = by_week[day]
     prev, month = by_week[weeks[-2]], by_week[weeks[-5]]
     counts = {k: sum(s.status == k for s in now.values()) for k in ("triggered", "alert", "ok", "nodata")}
 
@@ -397,7 +400,7 @@ def build(cdn: bool = False, asof: pd.Timestamp | None = None) -> str:
     heat_legend = "".join(f"<span><i class=h-{k}></i>{triggers.LABEL[k]}</span>" for k in ("triggered", "alert", "ok", "nodata"))
 
     mk = res.market[res.market.index >= tot.index[0]]
-    signal_charts = _signal_charts(series, cfg, now, tot.index[0], week, cdn)
+    signal_charts = _signal_charts(series, cfg, now, tot.index[0], day, cdn)
     font = "Inter,-apple-system,'PingFang SC','Microsoft YaHei','Noto Sans CJK SC',sans-serif"
     trend = go.Figure()
     trend.add_hrect(y0=cfg.alerts["score_yellow"], y1=cfg.alerts["score_red"], fillcolor="#f0a020", opacity=0.07, line_width=0, layer="below")
@@ -472,10 +475,10 @@ def build(cdn: bool = False, asof: pd.Timestamp | None = None) -> str:
 <div class=sub>AI 泡沫温度衡量“有多热”；这里衡量“有没有开始破”。阈值见 config/indicators.yaml 的 triggers。</div>
 <div class=tw><table><tr><th>状态</th><th>信号</th><th class=n>当前</th><th class=n>警戒 / 触发</th><th>上周</th><th>4 周前</th><th class=n>数据截至</th></tr>{''.join(rows)}</table></div></div>
 
-<div class=card><h2>信号走势</h2><div class=sub>{tot.index[0]:%Y} 年起每周按当时可见的数据重算；黄色底色 = 警戒区，红色 = 触发区，圆点 = 当前值。财报类信号季度更新，所以是台阶状。</div>
+<div class=card><h2>信号走势</h2><div class=sub>{tot.index[0]:%Y} 年起每周五一个点，最后一点是最新交易日，都只用当时已公布的数据；黄色底色 = 警戒区，红色 = 触发区，圆点 = 当前值。财报类信号季度更新，所以是台阶状。</div>
 {signal_charts}</div>
 
-<div class=card><h2>近 12 周状态</h2><div class=sub>每格一周。鼠标悬停可看当周数值。</div>
+<div class=card><h2>近 12 周状态</h2><div class=sub>每格一周，最右一格是最新交易日。鼠标悬停可看当时的数值。</div>
 <div class=tw><table class=heat><tr><th></th>{heat_head}</tr>{''.join(heat_rows)}</table></div>
 <div class=legend>{heat_legend}</div></div>
 
