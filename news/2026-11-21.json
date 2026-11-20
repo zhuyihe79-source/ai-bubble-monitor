@@ -1,0 +1,122 @@
+{
+  "date": "2026-11-21",
+  "generated_at": "2026-11-21T07:35:51+08:00",
+  "window": "2026-11-20 至 2026-11-21",
+  "assessment": {
+    "level": 5,
+    "reason": "维持规则5级：SEC审查英伟达会计削弱了上周财报这一最强反证，半导体相对大盘跌幅新触发信号，SpaceX表外芯片债收益率超8%显示融资成本上升；黄仁勋事件后续条目已降级以免重复计权。"
+  },
+  "items": [
+    {
+      "published": "2026-11-21",
+      "title": "Nvidia’s accounting is a focus of US SEC investigation, sources say",
+      "source": "Reuters（Investing.com转载；MarketScreener、CNBC交叉核实）",
+      "url": "https://www.investing.com/news/economy-news/exclusiveus-secs-nvidia-probe-is-examining-potential-accounting-issues-sources-say-5042460",
+      "topic": "nvidia",
+      "importance": 5,
+      "direction": "risk_up",
+      "summary": "据路透援引两位知情人士，美国SEC执法人员正审查英伟达潜在会计问题；SEC不予置评，立案时间和具体问题未明，报道后股价跌幅由约6%扩大至13%。",
+      "implication": "会计审查直指上周创纪录财报这一最强反证的可信度；调查不等于违规，但结论出来前市场会对收入证据打折。"
+    },
+    {
+      "published": "2026-11-21",
+      "title": "Wall St ends sharply lower on AI selloff, S&P 500, Dow in correction",
+      "source": "Reuters（Yahoo Finance转载；收盘价与看板行情交叉核实）",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/wall-st-futures-slip-anthropic-104746137.html",
+      "topic": "nvidia",
+      "importance": 4,
+      "direction": "risk_up",
+      "signal": "nvda_drawdown",
+      "summary": "英伟达周五收125.53美元、跌14.0%，较52周高点回撤47.5%；标普500跌3.70%确认进入修正，纳指转为年内下跌，Anthropic跌9.1%。",
+      "implication": "龙头回撤与半导体相对跌幅同处触发区，抛售已从个股扩散到指数和新上市AI股，但价格本身不证明订单转弱。"
+    },
+    {
+      "published": "2026-11-21",
+      "title": "Google reportedly cuts Broadcom-designed TPU plans, eyes more MediaTek chips",
+      "source": "Investing.com（援引郭明錤供应链调查；Seeking Alpha、GuruFocus印证股价）",
+      "url": "https://www.investing.com/news/stock-market-news/google-reportedly-cuts-broadcomdesigned-tpu-plans-eyes-more-mediatek-chips-5042253",
+      "topic": "nvidia",
+      "importance": 3,
+      "direction": "neutral",
+      "summary": "据郭明錤调查，谷歌把2027年博通设计的TPU 8i出货计划削减约100万颗、约20%，并增加联发科8t；博通周五收跌约12%，两家公司均未确认。",
+      "implication": "更像定制芯片份额在设计商之间转移，联发科增量能否抵消尚不清楚，不能直接解读为谷歌算力需求下降。"
+    },
+    {
+      "published": "2026-11-20",
+      "title": "Attorney General Bonta Serves Investigative Subpoena on Nvidia",
+      "source": "California Attorney General（官方公告；CNBC、洛杉矶时报交叉核实）",
+      "url": "https://oag.ca.gov/news/press-releases/attorney-general-bonta-serves-investigative-subpoena-nvidia",
+      "topic": "nvidia",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "加州总检察长向英伟达发出调查传票，调查其先进芯片或机密信息是否流向中国，以及公司是否就此风险误导投资者。",
+      "implication": "州级调查与SEC审查叠加，治理和法律不确定性延长，但同属黄仁勋事件后续，不宜重复加权。"
+    },
+    {
+      "published": "2026-11-20",
+      "title": "SpaceX Sells $32 Billion of AI Chip Debt at Yields Topping 8%",
+      "source": "Bloomberg（Yahoo Finance转载；Quartz、Motley Fool交叉核实）",
+      "url": "https://finance.yahoo.com/technology/ai/articles/spacex-sells-32-billion-ai-234112045.html",
+      "topic": "financing",
+      "importance": 4,
+      "direction": "risk_up",
+      "summary": "SpaceX经特殊目的信托发行320亿美元债券购买英伟达芯片并租用约五年，最大一档约252亿美元收益率8.259%，高于投资级均值5.95%。",
+      "implication": "表外GPU租赁融资规模空前且成本接近垃圾债水平，说明资金仍可得但代价上升，若成模板将放大隐性杠杆。"
+    },
+    {
+      "published": "2026-11-20",
+      "title": "Financing Compute: The $1.8 Trillion Bet on AI Data Centers",
+      "source": "BloombergNEF（Superpower Daily转述交叉核实）",
+      "url": "https://about.bnef.com/insights/data-centers/financing-compute-the-1-8-trillion-bet-on-ai-data-centers/",
+      "topic": "financing",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "BNEF统计数据中心开发商2020年至今年上半年至少融资1.8万亿美元，近半集中在最近一年；未来五年至少1万亿美元债务到期。",
+      "implication": "再融资而非新增融资将成为下一道考验，依赖英伟达和云厂商担保的新云与小型开发商最脆弱。"
+    },
+    {
+      "published": "2026-11-19",
+      "title": "Warner, Kennedy, Alsobrooks, Rounds Introduce Bipartisan Legislation to Increase Transparency and Oversight of AI Investments",
+      "source": "参议员Warner办公室（官方新闻稿；CASRAI转述交叉核实）",
+      "url": "https://www.warner.senate.gov/newsroom/press-releases/warner-kennedy-alsobrooks-rounds-introduce-bipartisan-legislation-to-increase-transparency-and-oversight-of-ai-investments/",
+      "topic": "financing",
+      "importance": 2,
+      "direction": "risk_up",
+      "summary": "美国两党四名参议员提出AUDIT AI法案，要求上市公司披露AI投资涉及的重大融资承诺、设备租赁和治理安排，矛头指向SPV等复杂结构。",
+      "implication": "法案刚提出、通过前景不明；若落地，表外租赁和SPV的真实杠杆会更透明，短期增加监管关注。"
+    },
+    {
+      "published": "2026-11-21",
+      "title": "Oracle says OpenAI infrastructure deal is fully funded after final capital raise",
+      "source": "Reuters（CNA转载）",
+      "url": "https://www.channelnewsasia.com/business/oracle-says-openai-infrastructure-deal-fully-funded-after-final-capital-raise-6570701",
+      "topic": "financing",
+      "importance": 3,
+      "direction": "neutral",
+      "summary": "甲骨文称其OpenAI基础设施合同资金已全部到位，包括供应商融资；阿比林园区接近完工，下一个吉瓦级园区已获全部许可，盘后一度涨3.3%。",
+      "implication": "缓解甲骨文短期融资缺口担忧，但资金部分来自供应商融资，对OpenAI的集中敞口没有下降。"
+    },
+    {
+      "published": "2026-11-19",
+      "title": "NAND Flash Prices Set to Decline in 2027 as Chinese CSP Order Cuts Outweigh North American Demand Growth, Says TrendForce",
+      "source": "TrendForce（官方新闻稿）",
+      "url": "https://www.trendforce.com/presscenter/news/20261119-13314.html",
+      "topic": "memory",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "TrendForce称2027年NAND将供过于求，一季度合约价环比跌0–5%、二季度起全面下行；中国云厂商削减企业级SSD订单，四季度涨幅预测降至8–13%。",
+      "implication": "存储景气开始分化、NAND率先转弱；美国云厂商仍上调需求，因此不代表HBM或美国AI需求转弱。"
+    },
+    {
+      "published": "2026-11-21",
+      "title": "Trump plans to penalize US tech companies that build AI data centers in other countries",
+      "source": "AP（CNBC交叉核实）",
+      "url": "https://apnews.com/article/trump-artificial-intelligence-data-centers-f1ac03b73d13445400eeed8631d9d879",
+      "topic": "demand",
+      "importance": 2,
+      "direction": "risk_up",
+      "summary": "特朗普称将对在海外建设AI数据中心的美国科技公司征收“巨额税”，但未给出细节，并表示尚未告知其官员。",
+      "implication": "尚无具体方案，但可能把更多项目推回电力和社区阻力已很大的美国本土。"
+    }
+  ]
+}
