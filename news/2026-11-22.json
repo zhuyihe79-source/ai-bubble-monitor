@@ -1,0 +1,99 @@
+{
+  "date": "2026-11-22",
+  "generated_at": "2026-11-22T08:05:00+08:00",
+  "window": "2026-11-21 至 2026-11-22",
+  "assessment": {
+    "level": 5,
+    "reason": "维持规则5级：七日净方向+0.504仅略高于门槛，周末新增多为低权重且方向互有抵消；但高收益利差和VIX新进警戒、台股被迫限空护盘，SEC会计审查仍未落地。"
+  },
+  "items": [
+    {
+      "published": "2026-11-21",
+      "title": "Taiwan Widens Short Sale Curbs After Shares Plunge on AI Concern",
+      "source": "Bloomberg（Taipei Times、Finimize交叉核实）",
+      "url": "https://www.bloomberg.com/news/articles/2026-11-21/taiwan-bans-short-sales-of-stocks-in-new-move-to-calm-markets",
+      "topic": "nvidia",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "台股本周跌近18%、创1991年以来最差单周，台湾金管会周六宣布禁止低于前一日收盘价的融券和借券卖出，5000亿新台币国安基金已进场护盘。",
+      "implication": "AI供应链核心市场被迫动用行政护盘，说明抛售已扩散为区域性去杠杆；限空能放缓跌势，但改变不了估值和订单预期。"
+    },
+    {
+      "published": "2026-11-21",
+      "title": "Treasury secretary says no further restrictions are needed for Nvidia chip exports to China",
+      "source": "AP（PBS、ABC News转载）",
+      "url": "https://apnews.com/article/nvidia-chip-export-restrictions-china-bessent-lutnick-88142455395552afe74caec3399a648b",
+      "topic": "nvidia",
+      "importance": 3,
+      "direction": "risk_down",
+      "summary": "美国财长贝森特周五称远程访问已受限，对华出售较旧英伟达芯片无需新增限制；此前众院报告显示商务部已批约88万颗对华AI芯片许可。",
+      "implication": "行政部门暂不追加出口管制，减轻英伟达中国业务的进一步政策冲击；但国会对华鹰派压力未减，政策仍可能反复。"
+    },
+    {
+      "published": "2026-11-21",
+      "title": "[단독] 삼성전자, 2029년까지 메모리 사실상 완판…2031년 장기 공급계약도 추진",
+      "source": "이코노미트리뷴（Economy Tribune；Wccftech转述；10家LTA见三星三季度财报）",
+      "url": "https://www.economytribune.co.kr/news/articleView.html?idxno=3904497",
+      "topic": "memory",
+      "importance": 2,
+      "direction": "neutral",
+      "summary": "据韩国Economy Tribune，三星2027–2029年存储产能大多已签约，部分客户求签至2031年；三星此前称已与10家大客户签含价格下限的LTA。",
+      "implication": "客户仍在抢长约，短期支撑存储厂业绩；但带价格下限的多年采购把下行风险转给AI买家，需求降温时固定成本更重。"
+    },
+    {
+      "published": "2026-11-21",
+      "title": "SoftBank's Son explored $1 trillion buyout of SK Hynix, the Information reports",
+      "source": "Reuters（MarketScreener转载；The Information原报道）",
+      "url": "https://www.marketscreener.com/news/softbank-s-son-explored-1-trillion-buyout-of-sk-hynix-the-information-reports-ce785ed3df8bf025",
+      "topic": "financing",
+      "importance": 2,
+      "direction": "risk_up",
+      "summary": "据The Information，孙正义曾就约1万亿美元收购SK海力士向华尔街机构询问融资；软银称已不在积极考虑，SK海力士称不知情。",
+      "implication": "OpenAI主要金主仍在试探超大杠杆交易，属周期后段的背景信号；交易已搁置，实质影响有限。"
+    },
+    {
+      "published": "2026-11-21",
+      "title": "Apollo, Goldman lead $44 billion SpaceX GPU debt financing",
+      "source": "Reuters（CNA转载）",
+      "url": "https://www.channelnewsasia.com/business/apollo-goldman-lead-44-billion-spacex-gpu-debt-financing-6570241",
+      "topic": "financing",
+      "importance": 2,
+      "direction": "neutral",
+      "summary": "阿波罗与高盛为SpaceX采购英伟达GPU定价约440亿美元债务包，认购超额后扩容；次级档收益率8.36%，贝莱德、高盛资管和KKR为锚定投资者。",
+      "implication": "资金仍愿追逐AI硬件债，但8%以上成本和以芯片为抵押的租赁结构说明融资在向高收益化迁移；同一交易后续，已降权。"
+    },
+    {
+      "published": "2026-11-21",
+      "title": "Databricks in early talks to raise funds at $225 billion valuation, WSJ reports",
+      "source": "Reuters（Investing.com转载；援引WSJ）",
+      "url": "https://www.investing.com/news/stock-market-news/databricks-in-early-talks-to-raise-funds-at-225-billion-valuation-wsj-reports-5042898",
+      "topic": "financing",
+      "importance": 2,
+      "direction": "neutral",
+      "summary": "据WSJ，Databricks正就以约2250亿美元估值融资数十亿美元进行早期谈判，较8月的1900亿美元上调约18%；条款可能变化，公司未回应。",
+      "implication": "AI股暴跌时一级市场估值仍在上调，资金面未冻结；但一二级估值差拉大，若后续降价融资会放大回调。"
+    },
+    {
+      "published": "2026-11-21",
+      "title": "Lea County approves $130B industrial revenue bond for Google data center near Hobbs",
+      "source": "Albuquerque Journal（KOB 4交叉核实）",
+      "url": "https://www.abqjournal.com/news/lea-county-approves-130-billion-google-data-center-deal/3166583",
+      "topic": "demand",
+      "importance": 3,
+      "direction": "neutral",
+      "summary": "新墨西哥州利县11月19日以4比1批准谷歌数据中心1300亿美元工业收入债券并否决暂停令；该安排不涉及借款，园区计划2029年下半年投运。",
+      "implication": "谷歌仍在锁定2029年后的超大园区，未见云厂商收缩；但1300亿美元是税收安排上限，不等于已确定的资本开支。"
+    },
+    {
+      "published": "2026-11-21",
+      "title": "Texas data centre deals may face delays until 2027 after elections",
+      "source": "ETDatacenters（援引Capacity Media采访）",
+      "url": "https://datacenters.economictimes.indiatimes.com/news/investments-deals/texas-data-centre-deals-may-face-delays-until-2027-after-elections/136043687",
+      "topic": "demand",
+      "importance": 2,
+      "direction": "risk_up",
+      "summary": "据ETDatacenters，投行人士称选举后多州酝酿暂停令，德州等地数据中心资产出售或延至2027年上半年；Jefferies估计13.3GW德州项目受威胁。",
+      "implication": "政治阻力正从审批延伸到资产交易和资本退出，项目周转放慢会抬高开发商和私募信贷的持有成本。"
+    }
+  ]
+}
