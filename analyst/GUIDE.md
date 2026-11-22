@@ -19,7 +19,7 @@
    from bubblemon.registry import load_config
    cfg = load_config(); con = db.connect()
    s = {i.id: db.load_series(con, i.id) for i in cfg.indicators}
-   n = commentary.weekly_note(s, cfg, scoring.compute(s, cfg), pd.Timestamp.today())
+   n = commentary.weekly_note(s, cfg, scoring.compute(s, cfg), scoring.today())
    print(n.headline); [print(t, items) for t, items in n.sections]"
    ```
 3. 确定时间窗口：从 `news/` 里最新文件的日期到现在（第一次运行取最近 7 天）。日期一律用北京时间。

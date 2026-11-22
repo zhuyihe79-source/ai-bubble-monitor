@@ -7,6 +7,15 @@ from .registry import Config, Indicator
 
 WINDOW_WEEKS = 15 * 52   # 滚动分位数窗口
 MIN_WEEKS = 3 * 52       # 历史不足 3 年不打分
+TZ = "Asia/Shanghai"     # 新闻文件按北京日期命名，构建机器是 UTC，"今天"必须统一用北京时间
+
+
+def now() -> pd.Timestamp:
+    return pd.Timestamp.now(tz=TZ).tz_localize(None)
+
+
+def today() -> pd.Timestamp:
+    return now().normalize()
 
 
 def last_friday(asof: pd.Timestamp) -> pd.Timestamp:
@@ -85,7 +94,7 @@ def _weighted(dim_df: pd.DataFrame, dims: list[str], cfg: Config, min_dims: int)
 
 
 def compute(series_by_id: dict[str, pd.Series], cfg: Config, asof: pd.Timestamp | None = None) -> ScoreResult:
-    asof = asof or pd.Timestamp.today().normalize()
+    asof = asof or today()
     cols = {}
     for ind in cfg.scored:
         s = series_by_id.get(ind.id)

@@ -24,7 +24,8 @@ def load():
 
 
 series, log = load()
-day = scoring.data_day(series, cfg, pd.Timestamp.today())
+today = scoring.today()
+day = scoring.data_day(series, cfg, today)
 result = scoring.compute(series, cfg, day)
 st.title("AI 经济泡沫监测")
 
@@ -42,9 +43,9 @@ if len(result.market):
 c2.markdown(f"### 状态：<span style='color:{BAND_COLOR[b]}'>{BAND_LABEL[b]}</span>", unsafe_allow_html=True)
 c2.caption(f"截至 {result.total.index[-1].date()}，指标覆盖率 {result.coverage.iloc[-1]:.0%}")
 all_news = news.load()
-news_day = max((x.file_date for x in all_news if x.file_date is not None), default=pd.Timestamp.today().normalize())
+news_day = max((x.file_date for x in all_news if x.file_date is not None and x.file_date <= today), default=today)
 rate = news.rating(all_news, news.load_assessments(), news_day)
-alerts = news.signal_alerts(all_news, pd.Timestamp.today().normalize())
+alerts = news.signal_alerts(all_news, today)
 if rate.level is None:
     c2.caption("分析师风险评级：近 7 天新闻不足")
 else:
@@ -59,7 +60,7 @@ with c3:
     for col, (k, v) in zip(cols, counts.items()):
         col.metric(f"破裂信号·{triggers.LABEL[k]}", v)
 
-notes = commentary.history(series, cfg, result, pd.Timestamp.today(), weeks=8)
+notes = commentary.history(series, cfg, result, today, weeks=8)
 st.subheader(f"本周解读（{notes[0].week.date()}）")
 st.markdown(f"**{notes[0].headline}**")
 left_n, right_n = st.columns(2)

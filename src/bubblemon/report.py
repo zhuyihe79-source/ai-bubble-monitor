@@ -338,7 +338,7 @@ def build(cdn: bool = False, asof: pd.Timestamp | None = None) -> str:
     cfg = load_config()
     con = db.connect()
     series = {i.id: db.load_series(con, i.id) for i in cfg.indicators}
-    asof = pd.Timestamp(asof or pd.Timestamp.today()).normalize()
+    asof = pd.Timestamp(asof or scoring.today()).normalize()
     day = scoring.data_day(series, cfg, asof)
     res = scoring.compute(series, cfg, day)
     if res.total.empty:
@@ -495,7 +495,7 @@ def build(cdn: bool = False, asof: pd.Timestamp | None = None) -> str:
 </div>
 
 <div class=card id=detail><h2>评分指标明细</h2><div class=tw><table><tr><th>维度</th><th>指标</th><th class=n>最新值</th><th class=n>数据日期</th><th>风险分位</th></tr>{''.join(ind_rows)}</table></div></div>
-<footer>风险分位 = 该指标在自身过去最多 15 年历史中的位置（方向已处理，越高越接近泡沫）。财报数据按季末后 35 天视为可见。本页仅供参考，不构成投资建议。生成于 {pd.Timestamp.now():%Y-%m-%d %H:%M}。</footer>
+<footer>风险分位 = 该指标在自身过去最多 15 年历史中的位置（方向已处理，越高越接近泡沫）。财报数据按季末后 35 天视为可见。本页仅供参考，不构成投资建议。生成于北京时间 {scoring.now():%Y-%m-%d %H:%M}。</footer>
 </main></body></html>"""
 
 

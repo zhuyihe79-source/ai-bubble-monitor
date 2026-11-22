@@ -9,6 +9,14 @@ def make_ind(direction="high", lag=0, stale=10, dim="valuation", iid="x"):
     return Indicator(iid, iid, dim, "manual", direction, "daily", stale, lag, {})
 
 
+def test_today_is_beijing_date_even_when_machine_is_utc(monkeypatch):
+    # 07:41 北京时间 = 前一天 23:41 UTC；新闻文件按北京日期命名，必须算作同一天
+    utc = pd.Timestamp("2026-11-21 23:41", tz="UTC")
+    monkeypatch.setattr(pd.Timestamp, "now", classmethod(lambda cls, tz=None: utc.tz_convert(tz) if tz else utc.tz_localize(None)))
+    assert scoring.today() == pd.Timestamp("2026-11-22")
+    assert scoring.now() == pd.Timestamp("2026-11-22 07:41")
+
+
 def test_config_loads_and_is_valid():
     cfg = load_config()
     assert len(cfg.indicators) >= 10
