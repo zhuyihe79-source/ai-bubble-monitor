@@ -15,133 +15,144 @@ LABELS = {"green": "低", "yellow": "升温", "red": "过热"}
 HEAT_WEEKS = 12
 
 CSS = """
-:root{--bg:#f5f6f8;--card:#fff;--ink:#0f172a;--ink2:#475569;--ink3:#8a94a6;--line:#e6e9ef;--soft:#f1f3f7;
---red:#e5484d;--amber:#f0a020;--green:#1f9d61;--r:14px}
-*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:72px}
-body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.65 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",sans-serif;-webkit-font-smoothing:antialiased}
-a{color:#2563eb;text-decoration:none}a:hover{text-decoration:underline}
+:root{--bg:#f7f6f3;--card:#fff;--ink:#14161a;--ink2:#565c68;--ink3:#9ba1ad;--line:#e9e6e0;--line2:#f0efec;--soft:#f4f3f0;
+--red:#d92d20;--amber:#dc6803;--green:#12855c;--r:16px;
+--sh:0 1px 2px rgba(20,22,26,.05),0 10px 30px -14px rgba(20,22,26,.14)}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{margin:0;background:var(--bg);color:var(--ink);font:14.5px/1.7 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:#2f6bdb;text-decoration:none}a:hover{text-decoration:underline}
 small{color:var(--ink3);font-size:12.5px}b{font-weight:650}
-.top{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.86);backdrop-filter:saturate(180%) blur(12px);-webkit-backdrop-filter:saturate(180%) blur(12px);border-bottom:1px solid var(--line)}
-.top .in{max-width:1180px;margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;gap:28px}
-.brand{font-weight:700;font-size:15px;white-space:nowrap;display:flex;align-items:center;gap:10px}
-.brand i{width:9px;height:9px;border-radius:50%;background:var(--red);box-shadow:0 0 0 4px #e5484d26}
+.top{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.85);backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--line)}
+.top .in{max-width:1200px;margin:0 auto;padding:0 28px;height:58px;display:flex;align-items:center;gap:30px}
+.brand{font-weight:750;font-size:15.5px;letter-spacing:-.01em;white-space:nowrap;display:flex;align-items:center;gap:10px}
+.brand i{width:10px;height:10px;border-radius:3px;background:linear-gradient(135deg,#e5484d,#b91c1c);box-shadow:0 0 0 4px rgba(217,45,32,.12)}
 .top nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}.top nav::-webkit-scrollbar{display:none}
-.top nav a{color:var(--ink2);padding:6px 10px;border-radius:8px;font-size:13px;white-space:nowrap}
+.top nav a{color:var(--ink2);padding:6px 11px;border-radius:999px;font-size:13px;white-space:nowrap;transition:background .15s}
 .top nav a:hover{background:var(--soft);color:var(--ink);text-decoration:none}
-main{max-width:1180px;margin:0 auto;padding:30px 24px 56px}
-.title{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:20px}
-.title h1{font-size:28px;line-height:1.2;letter-spacing:-.02em;margin:0}
-.title p{margin:6px 0 0;color:var(--ink2)}
-.stamp{color:var(--ink3);font-size:12.5px;text-align:right}
-.hero{display:grid;grid-template-columns:1.3fr 1fr 1.2fr;gap:16px;margin-bottom:20px}
-.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px;display:flex;flex-direction:column;gap:10px;min-width:0}
-.kpi.main{background:linear-gradient(160deg,#fff 40%,#fff5f5)}
-.eyebrow{font-size:12px;font-weight:600;color:var(--ink3);letter-spacing:.05em}
+main{max-width:1200px;margin:0 auto;padding:34px 28px 64px}
+.title{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.title h1{font-size:30px;line-height:1.15;letter-spacing:-.025em;margin:0;font-weight:800}
+.title p{margin:8px 0 0;color:var(--ink2);font-size:14px}
+.stamp{color:var(--ink3);font-size:12.5px;text-align:right;line-height:1.6}
+.hero{display:grid;grid-template-columns:1.25fr 1fr 1.15fr;gap:18px;margin-bottom:22px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px 24px;display:flex;flex-direction:column;gap:10px;min-width:0;box-shadow:var(--sh)}
+.kpi.main{background:linear-gradient(165deg,#fff 45%,#fef6f5)}
+.eyebrow{font-size:11px;font-weight:700;color:var(--ink3);letter-spacing:.09em;text-transform:uppercase}
 .num{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-.big{font-size:60px;font-weight:750;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
-.mid{font-size:40px;font-weight:700;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.big{font-size:58px;font-weight:780;line-height:.95;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.mid{font-size:40px;font-weight:750;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
 .mid small{font-size:15px;font-weight:600;letter-spacing:0;margin-left:2px}
-.pill{display:inline-flex;align-items:center;gap:6px;padding:2px 10px;border-radius:999px;font-size:12.5px;font-weight:600;white-space:nowrap}
-.scale{position:relative;height:8px;border-radius:999px;margin-top:6px;background:linear-gradient(90deg,#cdeedb 0 60%,#fbe3a8 60% 80%,#f9c7c8 80%)}
-.scale.gray{background:linear-gradient(90deg,#e7ebf1,#cfd6e1)}
-.scale b{position:absolute;top:-5px;width:4px;height:18px;border-radius:2px;background:var(--ink);transform:translateX(-50%);box-shadow:0 0 0 2px #fff}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 11px;border-radius:999px;font-size:12px;font-weight:650;white-space:nowrap}
+.scale{position:relative;height:6px;border-radius:999px;margin-top:8px;background:linear-gradient(90deg,#bfe6d2 0 60%,#fbe0a6 60% 80%,#f6c1c0 80%)}
+.scale.gray{background:#eceae6}
+.scale b{position:absolute;top:-5px;width:4px;height:16px;border-radius:2px;background:var(--ink);transform:translateX(-50%);box-shadow:0 0 0 2.5px #fff}
 .ticks{position:relative;height:18px;font-size:11px;color:var(--ink3);font-variant-numeric:tabular-nums}
 .ticks span{position:absolute;top:2px;white-space:nowrap}.ticks span:nth-child(2){left:60%}.ticks span:nth-child(3){left:80%}.ticks span:last-child{right:0}
 .deltas{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--ink2)}.deltas b{font-variant-numeric:tabular-nums}
 .up{color:var(--red)}.down{color:var(--green)}.flat{color:var(--ink3)}
 .counts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.counts div{background:var(--soft);border-radius:10px;padding:8px 10px}
-.counts b{display:block;font-size:24px;line-height:1.1;font-variant-numeric:tabular-nums}
+.counts div{background:var(--soft);border-radius:12px;padding:10px 12px}
+.counts b{display:block;font-size:23px;line-height:1.1;font-variant-numeric:tabular-nums}
 .counts span{font-size:12px;color:var(--ink2)}
-.seg{display:flex;gap:4px;margin-top:4px}.seg i{flex:1;height:8px;border-radius:3px;background:#e7ebf1}
-.kpi .note{font-size:12px;color:var(--ink3);line-height:1.55}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px 24px;margin-bottom:20px;min-width:0}
-.card>h2{font-size:17px;line-height:1.35;margin:0;letter-spacing:-.01em}
-.card>.sub{color:var(--ink3);font-size:12.5px;margin:4px 0 14px}
-.card>h2+*:not(.sub){margin-top:14px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;align-items:start}
-.grid-news{display:grid;grid-template-columns:1.7fr 1fr;gap:20px;margin-bottom:20px;align-items:start}
+.seg{display:flex;gap:4px;margin-top:4px}.seg i{flex:1;height:9px;border-radius:4px;background:#ebe9e5}
+.kpi .note{font-size:12px;color:var(--ink3);line-height:1.6}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:24px 26px;margin-bottom:22px;min-width:0;box-shadow:var(--sh)}
+.card>h2{font-size:17.5px;line-height:1.35;margin:0;letter-spacing:-.01em;font-weight:750;display:flex;align-items:center;gap:10px}
+.card>h2::before{content:"";width:4px;height:15px;border-radius:2px;background:var(--ink)}
+.card>.sub{color:var(--ink3);font-size:12.5px;margin:6px 0 16px}
+.card>h2+*:not(.sub){margin-top:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:22px;align-items:start}
+.grid-news{display:grid;grid-template-columns:1.7fr 1fr;gap:22px;margin-bottom:22px;align-items:start}
 .grid2>.card,.grid-news>.card{margin-bottom:0}
-.sticky{position:sticky;top:76px}
+.sticky{position:sticky;top:78px}
 .tw{overflow-x:auto;margin:0 -4px;padding:0 4px}
 table{border-collapse:collapse;width:100%;font-size:13.5px}
-th{font-size:12px;font-weight:600;color:var(--ink3);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
-td{padding:12px 10px;border-bottom:1px solid #eff1f5;vertical-align:top}
+th{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);text-align:left;padding:10px 12px;border-bottom:2px solid var(--line);white-space:nowrap}
+td{padding:13px 12px;border-bottom:1px solid var(--line2);vertical-align:top}
+tbody tr:not(.lay):hover td{background:#faf9f7}
 tr:last-child td{border-bottom:0}
 .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-.why{color:var(--ink2);font-size:12.5px;line-height:1.55;margin-top:2px}
-.badge{display:inline-flex;align-items:center;gap:6px;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+td.n>b,td.n b{font-size:14.5px}
+.why{color:var(--ink3);font-size:12.5px;line-height:1.6;margin-top:3px}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-size:11.5px;font-weight:700;white-space:nowrap;letter-spacing:.01em}
 .badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
-.s-triggered{background:#fdeced;color:#c4242b}.s-alert{background:#fdf3dc;color:#9a6200}
-.s-ok{background:#e4f5eb;color:#17794a}.s-nodata{background:var(--soft);color:var(--ink3)}
-.s-news{background:#fdeced;color:#c4242b}
-.bar{display:inline-block;width:84px;height:6px;background:#eceff4;border-radius:999px;vertical-align:middle;margin-right:6px;overflow:hidden}
+.s-triggered{background:#fef3f2;color:#b42318}.s-alert{background:#fffaeb;color:#b54708}
+.s-ok{background:#ecfdf3;color:#067647}.s-nodata{background:#f2f4f3;color:#667085}
+.s-news{background:#fef3f2;color:#b42318}
+.bar{display:inline-block;width:84px;height:6px;background:#eceae6;border-radius:999px;vertical-align:middle;margin-right:8px;overflow:hidden}
 .bar i{display:block;height:100%;border-radius:999px}
-.headline{font-size:15.5px;font-weight:600;line-height:1.6;padding:12px 16px;background:#f8fafc;border-left:3px solid var(--red);border-radius:0 10px 10px 0;margin:14px 0 6px}
-.sec h3{font-size:13px;font-weight:650;margin:16px 0 4px;color:var(--ink)}
-.sec ul{margin:0;padding-left:18px}.sec li{margin:3px 0;font-size:13.5px;line-height:1.6;color:var(--ink2)}
+.headline{font-size:15.5px;font-weight:650;line-height:1.65;padding:14px 18px;background:#faf9f7;border-left:3px solid var(--red);border-radius:0 12px 12px 0;margin:16px 0 8px}
+.sec h3{font-size:13px;font-weight:700;margin:18px 0 6px;color:var(--ink)}
+.sec ul{margin:0;padding-left:18px}.sec li{margin:4px 0;font-size:13.5px;line-height:1.65;color:var(--ink2)}
 .heat{border-collapse:separate;border-spacing:3px;width:auto}
-.heat td{padding:0;border:0;width:30px;height:24px;border-radius:5px}
+.heat td{padding:0;border:0;width:31px;height:25px;border-radius:6px}
 .heat td.name{width:auto;padding:0 14px 0 0;font-size:12.5px;color:var(--ink2);white-space:nowrap;border-radius:0}
-.heat th{font-size:11px;font-weight:500;padding:0 0 4px;border:0;text-align:center;color:var(--ink3)}
-.h-triggered{background:#e5484d}.h-alert{background:#f3b23f}.h-ok{background:#c3e9d3}.h-nodata{background:#eef0f4}
-.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--ink2)}
-.legend span{display:inline-flex;align-items:center;gap:6px}.legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
-.minis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.mini{border:1px solid var(--line);border-radius:12px;padding:12px 14px 6px;min-width:0}
-.mhead{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;font-size:13px;line-height:1.45}
-.mval{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;margin:2px 0 2px}.mval small{font-size:11.5px;font-weight:500;margin-left:4px}
+.heat th{font-size:11px;font-weight:600;padding:0 0 6px;border:0;text-align:center;color:var(--ink3);letter-spacing:0;text-transform:none}
+.h-triggered{background:#e5484d}.h-alert{background:#f3b23f}.h-ok{background:#b7e4cd}.h-nodata{background:#efeeeb}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--ink2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}.legend i{width:12px;height:12px;border-radius:4px;display:inline-block}
+.minis{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.mini{border:1px solid var(--line);border-radius:14px;padding:14px 16px 8px;min-width:0;background:#fff;transition:box-shadow .15s}
+.mini:hover{box-shadow:var(--sh)}
+.mhead{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;font-size:13px;line-height:1.45;font-weight:600}
+.mval{font-size:20px;font-weight:750;font-variant-numeric:tabular-nums;margin:3px 0;letter-spacing:-.01em}.mval small{font-size:11.5px;font-weight:500;margin-left:4px;color:var(--ink3)}
 @media(max-width:1000px){.minis{grid-template-columns:1fr 1fr}}@media(max-width:700px){.minis{grid-template-columns:1fr}}
-.past details{border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-top:10px}
-.past details[open]{background:#fbfcfd}
+.past details{border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-top:10px;transition:background .15s}
+.past details:hover{background:#faf9f7}
+.past details[open]{background:#faf9f7}
 .past summary{cursor:pointer;font-weight:600;font-size:13.5px;line-height:1.55;list-style:none}
 .past summary::-webkit-details-marker{display:none}
 .past summary::before{content:"›";display:inline-block;margin-right:8px;color:var(--ink3);transition:transform .15s}
 .past details[open] summary::before{transform:rotate(90deg)}
-.news{padding:14px 0;border-bottom:1px solid #eff1f5}.news:first-of-type{padding-top:4px}.news:last-child{border-bottom:0}
-.news .meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
-.news a.t{display:block;font-weight:650;color:var(--ink);font-size:14.5px;line-height:1.5}
-.news a.t:hover{color:#2563eb;text-decoration:none}
-.news .sum{color:var(--ink2);font-size:13.5px;margin-top:4px}
-.news .imp{margin-top:6px;font-size:12.5px;color:var(--ink);background:#f8fafc;border-radius:8px;padding:6px 10px}
-.stars{color:#f0a020;letter-spacing:1px;font-size:12px}.stars em{color:#dde1e8;font-style:normal}
-.tag{background:var(--soft);color:var(--ink2);border-radius:6px;padding:1px 8px;font-size:12px}
+.news{padding:16px 0;border-bottom:1px solid var(--line2)}.news:first-of-type{padding-top:4px}.news:last-child{border-bottom:0}
+.news .meta{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:7px}
+.news a.t{display:block;font-weight:650;color:var(--ink);font-size:14.5px;line-height:1.55}
+.news a.t:hover{color:#2f6bdb;text-decoration:none}
+.news .sum{color:var(--ink2);font-size:13.5px;margin-top:5px}
+.news .imp{margin-top:8px;font-size:12.5px;color:var(--ink2);background:#faf9f7;border-left:2px solid #d8d5cf;border-radius:0 8px 8px 0;padding:8px 12px}
+.stars{color:#e8a33d;letter-spacing:1.5px;font-size:12px}.stars em{color:#e3e1dc;font-style:normal}
+.tag{background:var(--soft);color:var(--ink2);border-radius:6px;padding:2px 8px;font-size:12px;font-weight:500}
 .nheat{border-collapse:separate;border-spacing:3px}
 .nheat td,.nheat th{text-align:center;border:0;padding:4px 2px;font-size:12px}
-.nheat td{border-radius:5px;font-weight:600;font-variant-numeric:tabular-nums}
-.nheat td:first-child{text-align:left;white-space:nowrap;padding-right:10px;font-weight:500;color:var(--ink2)}
+.nheat td{border-radius:6px;font-weight:650;font-variant-numeric:tabular-nums}
+.nheat td:first-child{text-align:left;white-space:nowrap;padding-right:12px;font-weight:500;color:var(--ink2)}
 .prose{max-width:none}
-.prose h1{font-size:21px;line-height:1.45;letter-spacing:-.01em;margin:14px 0 12px}
-.prose h2{font-size:15.5px;margin:22px 0 8px;padding-top:16px;border-top:1px solid var(--line)}
-.prose h3{font-size:14px;margin:14px 0 4px}
-.prose p,.prose li{font-size:14.5px;line-height:1.8;color:#1e293b}
-.prose ul,.prose ol{padding-left:22px}.prose li{margin:4px 0}
-.prose table{margin:10px 0}.prose th,.prose td{border-bottom:1px solid var(--line)}
-.nalert{margin-top:8px;font-size:12.5px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}.nalert a{color:#c4242b}
-.lead{color:var(--ink2);margin:6px 0 14px}.lead b{color:var(--ink)}
-footer{color:var(--ink3);font-size:12px;line-height:1.7;margin-top:8px}
-.phase{display:grid;grid-template-columns:1.55fr 1fr;gap:32px;align-items:start}
-.pname{font-size:30px;font-weight:750;line-height:1.25;letter-spacing:-.02em;margin:6px 0 8px}
-.pdesc{font-size:14.5px;margin:0 0 10px;line-height:1.75}
-.basis{margin:0;padding:0;list-style:none}
-.basis li{font-size:13px;color:var(--ink2);line-height:1.7;padding:8px 0;border-top:1px solid #eff1f5}.basis li b{color:var(--ink)}
+.prose h1{font-size:21px;line-height:1.45;letter-spacing:-.01em;margin:16px 0 12px}
+.prose h2{font-size:15.5px;margin:24px 0 8px;padding-top:18px;border-top:1px solid var(--line)}
+.prose h3{font-size:14px;margin:16px 0 4px}
+.prose p,.prose li{font-size:14.5px;line-height:1.85;color:#2b2f36}
+.prose ul,.prose ol{padding-left:22px}.prose li{margin:5px 0}
+.prose table{margin:12px 0}.prose th,.prose td{border-bottom:1px solid var(--line)}
+.nalert{margin-top:10px;font-size:12.5px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}.nalert a{color:#b42318}
+.lead{color:var(--ink2);margin:8px 0 16px;font-size:14px;line-height:1.75}.lead b{color:var(--ink)}
+footer{color:var(--ink3);font-size:12px;line-height:1.75;margin-top:12px;text-align:center}
+.phase{display:grid;grid-template-columns:1.5fr 1fr;gap:36px;align-items:start}
+.pname{font-size:34px;font-weight:800;line-height:1.2;letter-spacing:-.025em;margin:8px 0 10px}
+.pdesc{font-size:14.5px;margin:0 0 12px;line-height:1.8;color:var(--ink2)}
+.basis{margin:6px 0 0;padding:0;list-style:none}
+.basis li{font-size:13px;color:var(--ink2);line-height:1.75;padding:10px 0;border-top:1px solid var(--line2)}.basis li b{color:var(--ink)}
 .mx{display:grid;grid-template-columns:auto 1fr 1fr;gap:6px;font-size:12px;color:var(--ink3)}
-.mx .h{text-align:center}.mx .v{display:flex;align-items:center;padding-right:4px;white-space:nowrap}
-.mx .c{border:1px solid var(--line);border-radius:10px;padding:16px 6px;text-align:center;font-weight:600;font-size:13.5px;color:#a3acba;background:#fafbfc}
-.mx .c.on{color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(15,23,42,.12)}
-.layers{margin-top:16px;display:grid;gap:8px}
-.layers div{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px}.layers small{margin-left:8px}
-.dimrow{display:grid;grid-template-columns:5.5em 1fr 2em;gap:8px;align-items:center;font-size:12.5px;color:var(--ink2);margin:3px 0}
+.mx .h{text-align:center;padding-bottom:2px;font-weight:600}
+.mx .v{display:flex;align-items:center;padding-right:6px;white-space:nowrap;font-weight:600}
+.mx .c{border:1px solid var(--line);border-radius:12px;padding:18px 6px;text-align:center;font-weight:650;font-size:13.5px;color:#b6bcc6;background:#faf9f7}
+.mx .c.on{color:#fff;border-color:transparent;box-shadow:0 6px 16px -6px rgba(20,22,26,.28)}
+.layers{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.layers>div{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;font-weight:600;background:#faf9f7;border:1px solid var(--line2);border-radius:10px;padding:8px 12px}
+.layers .dot{display:inline-block;width:8px;height:8px;border-radius:3px;margin-right:8px;vertical-align:1px}
+.layers small{margin-left:7px;font-weight:500}
+.dimrow{display:grid;grid-template-columns:5.5em 1fr 2em;gap:10px;align-items:center;font-size:12.5px;color:var(--ink2);margin:5px 0}
 .dimrow .bar{width:100%;margin:0}.dimrow b{text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
-tr.lay td{background:#f8fafc;font-size:12.5px;font-weight:650;padding:8px 10px;border-bottom:1px solid var(--line)}tr.lay small{font-weight:400;margin-left:10px}
-tr.lay .badge{margin-left:8px}
-.h3{font-size:14.5px;margin:22px 0 8px}.h3:first-of-type{margin-top:6px}
-.callout{background:#fff8e6;border:1px solid #f5dfa3;border-radius:10px;padding:10px 14px;font-size:13px;line-height:1.65;color:#7a5200;margin:0 0 14px}
-.method ul{margin:0;padding-left:20px}.method li{margin:8px 0;font-size:13.5px;line-height:1.75;color:var(--ink2)}.method li b{color:var(--ink)}
-@media(max-width:1000px){.phase{grid-template-columns:1fr;gap:20px}}
+tr.lay td{font-size:12px;font-weight:700;letter-spacing:.05em;padding:9px 12px;border-bottom:1px solid var(--line);text-transform:uppercase}
+tr.lay small{font-weight:500;margin-left:10px;text-transform:none;letter-spacing:0}
+tr.lay .badge{margin-left:10px}
+.h3{font-size:15px;margin:26px 0 10px;font-weight:700;letter-spacing:-.01em}.h3:first-of-type{margin-top:8px}
+.callout{background:#fffaeb;border:1px solid #fedf89;border-radius:12px;padding:12px 16px;font-size:13px;line-height:1.7;color:#93370d;margin:0 0 16px}
+.method ul{margin:0;padding-left:20px;columns:2;column-gap:36px}.method li{margin:0 0 10px;font-size:13.5px;line-height:1.8;color:var(--ink2);break-inside:avoid}.method li b{color:var(--ink)}
+@media(max-width:1000px){.phase{grid-template-columns:1fr;gap:24px}.method ul{columns:1}}
 @media(max-width:1000px){.hero{grid-template-columns:1fr 1fr}.grid-news{grid-template-columns:1fr}.sticky{position:static}}
-@media(max-width:700px){.hero,.grid2{grid-template-columns:1fr}main{padding:20px 14px 40px}.card{padding:18px 16px}
-.big{font-size:52px}.title h1{font-size:23px}.stamp{text-align:left}.top .in{padding:0 14px;gap:14px}.brand span{display:none}}
+@media(max-width:700px){.hero,.grid2{grid-template-columns:1fr}main{padding:22px 16px 48px}.card{padding:20px 18px}
+.big{font-size:50px}.pname{font-size:27px}.title h1{font-size:24px}.stamp{text-align:left}.top .in{padding:0 16px;gap:16px}.brand span{display:none}.layers{grid-template-columns:1fr}.pq{display:none}.big-t{min-width:560px}}
+.big-t{min-width:700px}
 """
 
 
@@ -165,6 +176,7 @@ def _note_html(note: commentary.Note, with_headline: bool = True) -> str:
 
 
 DIR_CLASS = {"risk_up": "s-triggered", "risk_down": "s-ok", "neutral": "s-nodata"}
+LAYER_COLOR = {"demand": "#2563eb", "price": "#d92d20", "financing": "#7c3aed", "climate": "#64748b"}
 
 
 def _news_html(items: list, trigger_names: dict) -> str:
@@ -193,8 +205,8 @@ def _heat_news_html(df: pd.DataFrame, rate_hist: dict | None = None) -> str:
         cells = []
         for w in weeks:
             r = df[(df.topic == topic) & (df.week_end == w)].iloc[0]
-            style = ("background:#fbd5d6;color:#a3181e" if r.net > 0 else "background:#cdeedb;color:#11653c" if r.net < 0
-                     else "background:#f1f3f7;color:#64748b")
+            style = ("background:#fce4e2;color:#b42318" if r.net > 0 else "background:#dcf2e7;color:#067647" if r.net < 0
+                     else "background:#f4f3f1;color:#667085")
             cells.append(f"<td style='{style}' title='净方向 {r.net:+d}'>{r['count'] or ''}</td>")
         rows.append(f"<tr><td>{label}</td>{''.join(cells)}</tr>")
     if rate_hist:
@@ -342,9 +354,9 @@ def _signal_charts(series, cfg, states: dict, start: pd.Timestamp, end: pd.Times
                         marker=dict(size=8, color=POINT[s.status], line=dict(color="#fff", width=2)))
         fig.update_layout(height=150, margin=dict(l=0, r=4, t=4, b=0), showlegend=False,
                           paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-                          font=dict(family="Inter,-apple-system,'PingFang SC',sans-serif", size=10.5, color="#8a94a6"),
-                          xaxis=dict(showgrid=False, linecolor="#e6e9ef", tickformat="%y年%-m月", nticks=4),
-                          yaxis=dict(range=[lo, hi], gridcolor="#f1f3f7", zeroline=False, tickformat=TICK.get(t.unit, ".2f"), nticks=4))
+                          font=dict(family="Inter,-apple-system,'PingFang SC',sans-serif", size=10.5, color="#9ba1ad"),
+                          xaxis=dict(showgrid=False, linecolor="#e9e6e0", tickformat="%y年%-m月", nticks=4),
+                          yaxis=dict(range=[lo, hi], gridcolor="#f0efec", zeroline=False, tickformat=TICK.get(t.unit, ".2f"), nticks=4))
         cards.append(
             f"<div class=mini><div class=mhead><b>{html.escape(t.name)}</b>{_badge(s.status)}</div>"
             f"<div class=mval>{triggers.fmt(s.value, t.unit)} <small>警戒 {triggers.fmt_threshold(t.alert, t.unit)} · 触发 {triggers.fmt_threshold(t.trigger, t.unit)}</small></div>"
@@ -468,8 +480,10 @@ def _phase_card(ph: int, layers: dict, now: dict, cfg, episodes: list, alerts: d
     matrix = (f"<div class=mx><div></div><div class=h>需求没破</div><div class=h>需求已破</div>"
               f"<div class=v>价格没破</div>{cell(1)}{cell(3)}<div class=v>价格已破</div>{cell(2)}{cell(4)}</div>")
     role = {"demand": "定阶段", "price": "定阶段", "financing": "背景", "climate": "背景"}
-    lay = "".join(f"<div><span>{label}<small>{role[k]}</small></span>{_badge(layers[k])}</div>" for k, label in LAYERS.items())
-    return (f"<section class='card phase'><div><div class=eyebrow>当前阶段</div>"
+    lay = "".join(f"<div><span><i class=dot style='background:{LAYER_COLOR[k]}'></i>{label}<small>{role[k]}</small></span>"
+                  f"{_badge(layers[k])}</div>" for k, label in LAYERS.items())
+    return (f"<section class='card phase' style='border-top:3px solid {color};background:linear-gradient(165deg,{color}0a 0%,#fff 50%)'>"
+            f"<div><div class=eyebrow>当前阶段</div>"
             f"<div class=pname style='color:{color}'>{name}</div><p class=pdesc>{desc}</p><ul class=basis>{''.join(basis)}</ul></div>"
             f"<div>{matrix}<div class=layers>{lay}</div>"
             f"<div class=note style='margin-top:10px'>“破”= 该层有信号越过触发线。融资、情绪与利率不改变阶段，但它们越差，回调来了越疼。</div></div></section>")
@@ -527,7 +541,9 @@ def build(cdn: bool = False, asof: pd.Timestamp | None = None) -> str:
         if not members:
             continue
         role = "和价格一起决定阶段" if layer == "demand" else "和需求一起决定阶段" if layer == "price" else "背景，不改变阶段"
-        rows.append(f"<tr class=lay><td colspan=8>{label}层 {_badge(layers[layer])}<small>{role}</small></td></tr>")
+        c = LAYER_COLOR[layer]
+        rows.append(f"<tr class=lay><td colspan=8 style='background:{c}0a;box-shadow:inset 3px 0 0 {c}'>"
+                    f"{label}层 {_badge(layers[layer])}<small>{role}</small></td></tr>")
         for s in members:
             t = s.trigger
             dd = "—" if s.data_date is None else str(s.data_date.date())
@@ -541,7 +557,7 @@ def build(cdn: bool = False, asof: pd.Timestamp | None = None) -> str:
                 f"<tr><td>{_badge(s.status)}</td><td><b>{html.escape(t.name)}</b><div class=why>{html.escape(t.why)}</div>{na}</td>"
                 f"<td class=n><b>{triggers.fmt(s.value, t.unit)}</b></td>"
                 f"<td class=n>{triggers.fmt_threshold(t.alert, t.unit)} / {triggers.fmt_threshold(t.trigger, t.unit)}</td>"
-                f"<td>{_badge(prev[t.id].status)}</td><td>{_badge(month[t.id].status)}</td><td class=n>{freq}</td><td class=n><small>{dd}</small></td></tr>"
+                f"<td class=pq>{_badge(prev[t.id].status)}</td><td class=pq>{_badge(month[t.id].status)}</td><td class=n>{freq}</td><td class=n><small>{dd}</small></td></tr>"
             )
 
     heat_head = "".join(f"<th>{w:%m/%d}</th>" for w in weeks)
@@ -564,16 +580,16 @@ def build(cdn: bool = False, asof: pd.Timestamp | None = None) -> str:
     trend.add_hrect(y0=cfg.alerts["score_yellow"], y1=cfg.alerts["score_red"], fillcolor="#f0a020", opacity=0.07, line_width=0, layer="below")
     trend.add_hrect(y0=cfg.alerts["score_red"], y1=100, fillcolor="#e5484d", opacity=0.07, line_width=0, layer="below")
     trend.add_scatter(x=mk.index, y=mk.rolling(4).mean(), name="市场宽松度（非 AI 专属）", visible="legendonly",
-                      line=dict(width=1.6, dash="dot", color="#94a3b8"), hovertemplate="%{y:.0f}")
+                      line=dict(width=1.6, dash="dot", color="#9ba1ad"), hovertemplate="%{y:.0f}")
     for d, c in zip(ai_dims, ("#2563eb", "#d98a00")):
         s = res.dimensions[d][res.dimensions.index >= tot.index[0]]
         trend.add_scatter(x=s.index, y=s.rolling(4).mean(), name=cfg.dimensions[d]["label"], line=dict(width=1.5, color=c), hovertemplate="%{y:.0f}")
     trend.add_scatter(x=tot.index, y=tot.rolling(4).mean(), name="AI 泡沫温度", line=dict(width=3, color="#e5484d"), hovertemplate="%{y:.0f}")
     trend.update_layout(height=340, margin=dict(l=0, r=8, t=8, b=0), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-                        font=dict(family=font, size=12, color="#475569"), hovermode="x unified",
+                        font=dict(family=font, size=12, color="#565c68"), hovermode="x unified",
                         legend=dict(orientation="h", y=1.02, yanchor="bottom", x=0, bgcolor="rgba(0,0,0,0)"),
-                        yaxis=dict(range=[0, 100], gridcolor="#eef0f4", zeroline=False, tickvals=[0, 20, 40, 60, 80, 100]),
-                        xaxis=dict(showgrid=False, linecolor="#e6e9ef", tickformat="%Y-%m"))
+                        yaxis=dict(range=[0, 100], gridcolor="#f0efec", zeroline=False, tickvals=[0, 20, 40, 60, 80, 100]),
+                        xaxis=dict(showgrid=False, linecolor="#e9e6e0", tickformat="%Y-%m"))
 
     dim_html = _dimension_section(res, cfg, "ai")
     market_html = _dimension_section(res, cfg, "market")
@@ -642,7 +658,7 @@ def build(cdn: bool = False, asof: pd.Timestamp | None = None) -> str:
 
 <div class=card id=signals><h2>破裂信号</h2>
 <div class=sub>按层看，不要数个数。“历史频率”= {bt_start:%Y} 年以来这个信号有多大比例的周处于警戒或触发：比例高说明这条线平时就常被越过。阈值见 config/indicators.yaml。</div>
-<div class=tw><table><tr><th>状态</th><th>信号</th><th class=n>当前</th><th class=n>警戒 / 触发</th><th>上周</th><th>4 周前</th><th class=n>历史频率</th><th class=n>数据截至</th></tr>{''.join(rows)}</table></div></div>
+<div class=tw><table class=big-t><tr><th>状态</th><th>信号</th><th class=n>当前</th><th class=n>警戒 / 触发</th><th class=pq>上周</th><th class=pq>4 周前</th><th class=n>历史频率</th><th class=n>数据截至</th></tr>{''.join(rows)}</table></div></div>
 
 <div class=card id=analog><h2>历史对照</h2><div class=sub>同样的局面过去发生过几次，之后怎么样了。按当时已公布的数据回算。</div>
 <h3 class=h3>四个阶段的历史记录</h3>{_track_html(track, ph, day, bt_start)}
