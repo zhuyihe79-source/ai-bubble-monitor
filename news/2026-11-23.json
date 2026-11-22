@@ -1,0 +1,88 @@
+{
+  "date": "2026-11-23",
+  "generated_at": "2026-11-23T07:50:00+08:00",
+  "window": "2026-11-22 至 2026-11-23",
+  "assessment": {
+    "level": 5,
+    "reason": "上调一级至5：规则值由5落到4主要因11月16日一批条目滚出窗口，而非出现新反证；数据面价格层和融资层均已触发，亚洲三地同时放宽杠杆护盘，新云开始收缩开支；H100租金上涨是本次唯一有分量的反面证据。"
+  },
+  "items": [
+    {
+      "published": "2026-11-23",
+      "title": "US seeks answers on Nvidia’s sale of chips to China, Bessent says",
+      "source": "Reuters（Investing.com转载；CNN交叉核实）",
+      "url": "https://www.investing.com/news/stock-market-news/us-seeks-answers-on-nvidias-sale-of-chips-to-china-bessent-says-5044083",
+      "topic": "nvidia",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "财长贝森特周日称已与英伟达临时管理层和董事接触，要求说明对华芯片销售及合规由谁负责；国家情报总监同日称中国很可能已拿到英伟达先进芯片。",
+      "implication": "行政部门从前日“无需新限制”转向追责，合规调查可能扩大并压低中国收入预期；仍属黄仁勋事件后续，尚无正式处罚。"
+    },
+    {
+      "published": "2026-11-22",
+      "title": "Tech suppliers raise AI server prices up to 45% months after deals are signed",
+      "source": "Financial Times（헤럴드경제转述细节）",
+      "url": "https://www.ft.com/content/dd2a6594-6146-4ff1-ac8e-54749c1fc99f",
+      "topic": "memory",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "据FT，戴尔、HPE、联想、超微交付时要求比合同价最多高45%，GPU服务器至少涨20%–30%，内存密集的CPU节点涨至三倍以上；XTX已起诉戴尔。",
+      "implication": "存储短缺的成本正转嫁给算力买家：需求仍旺，但按固定价合同融资的新云和自建者回报被压缩，项目预算可能追加或延后。"
+    },
+    {
+      "published": "2026-11-22",
+      "title": "Asian countries take steps to aid stock markets after AI rout",
+      "source": "Investing.com（Reuters、Bloomberg交叉核实）",
+      "url": "https://www.investing.com/news/stock-market-news/asian-countries-take-steps-to-aid-stock-markets-after-ai-rout-5044034",
+      "topic": "financing",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "韩国周日准备股市稳定基金并放宽回购，KOSPI较6月高点跌近47%；沪深北交易所将融资保证金比例由100%降至80%；台湾拟把维持率由130%降至120%。",
+      "implication": "三地监管同时出手且都在放宽杠杆，说明亚洲芯片股去杠杆压力大；护盘可缓和强平，但不改变AI订单和估值预期。台湾限空已在前日计入。"
+    },
+    {
+      "published": "2026-11-22",
+      "title": "GPU prices are rising for Nvidia's older chips even as the stock keeps going down: Chart of the Day",
+      "source": "Yahoo Finance（Silicon Data H100租金指数）",
+      "url": "https://finance.yahoo.com/markets/article/gpu-prices-are-rising-for-nvidias-older-chips-even-as-the-stock-keeps-going-down-chart-of-the-day-123721121.html",
+      "topic": "demand",
+      "importance": 3,
+      "direction": "risk_down",
+      "summary": "Silicon Data指数显示H100租金一年涨近60%至约3.11美元/时；CoreWeave称旧款GPU报价环比涨30%–50%，并签长于折旧年限的合约。",
+      "implication": "旧卡租金走高说明实际算力需求仍紧，削弱“GPU折旧过快”的担忧；但部分涨幅可能来自贷方压低垫款比例、买家被迫转租。"
+    },
+    {
+      "published": "2026-11-23",
+      "title": "Elon Musk warns data center delays could leave AI companies short on cash: 'Going to be nuts'",
+      "source": "Business Insider",
+      "url": "https://www.businessinsider.com/elon-musk-warning-ai-compute-data-centers-cash-spacex-tesla-2026-11",
+      "topic": "financing",
+      "importance": 2,
+      "direction": "risk_up",
+      "summary": "马斯克周六在X上称明年AI行业“现金短缺会很疯狂”，数据中心延迟上线将使AI公司额外需要“数千亿美元”资本，并反问钱从哪来。",
+      "implication": "最大AI硬件借款人之一的掌门公开预警融资缺口，印证建设延迟正把资金压力推向债市；属表态，未附具体数据。"
+    },
+    {
+      "published": "2026-11-22",
+      "title": "British AI giant Nscale slows hiring in cost-cutting drive",
+      "source": "The Telegraph（FT跟进）",
+      "url": "https://www.telegraph.co.uk/business/2026/11/21/british-ai-giant-nscale-halts-hiring-in-cost-cutting-drive/",
+      "topic": "financing",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "英伟达支持的新云Nscale暂停数月非关键招聘并压缩开支；员工今年由300增至逾1100人，已融资逾130亿美元、筹备350亿美元上市，此前披露一年内需再融资。",
+      "implication": "新云在上市前主动收缩，说明股价暴跌和借贷成本上升已传到经营端；若IPO推迟，已签合同的交付资金将更依赖债务。"
+    },
+    {
+      "published": "2026-11-23",
+      "title": "A ‘mismatch in timing’: Data center power demand is growing 19% a year. The grid is growing 2%",
+      "source": "Fortune（援引Howden、Marsh）",
+      "url": "https://fortune.com/2026/11/22/ai-data-centers-power-grid-capacity/",
+      "topic": "demand",
+      "importance": 2,
+      "direction": "risk_up",
+      "summary": "Howden测算2000年以来美国数据中心用电年均增19%，电网容量仅增约2%；Marsh人士预计50%–60%的数据中心项目将晚于开发商预期的1–2年工期。",
+      "implication": "电力瓶颈拉长资本开支到收入确认的时间差，与马斯克所说的现金缺口同源；属行业测算，不是新的项目取消。"
+    }
+  ]
+}
