@@ -5,9 +5,10 @@ from pathlib import Path
 import markdown
 import pandas as pd
 import plotly.graph_objects as go
+from plotly.offline import get_plotlyjs, get_plotlyjs_version
 
-from . import commentary, db, news, scoring, triggers
-from .registry import GROUPS, ROOT, load_config
+from . import commentary, db, news, phase, scoring, triggers
+from .registry import GROUPS, LAYERS, ROOT, load_config
 
 COLORS = {"green": "#1f9d61", "yellow": "#d98a00", "red": "#e5484d"}
 LABELS = {"green": "低", "yellow": "升温", "red": "过热"}
@@ -32,7 +33,7 @@ main{max-width:1180px;margin:0 auto;padding:30px 24px 56px}
 .title h1{font-size:28px;line-height:1.2;letter-spacing:-.02em;margin:0}
 .title p{margin:6px 0 0;color:var(--ink2)}
 .stamp{color:var(--ink3);font-size:12.5px;text-align:right}
-.hero{display:grid;grid-template-columns:1.45fr 1fr 1fr 1.25fr;gap:16px;margin-bottom:20px}
+.hero{display:grid;grid-template-columns:1.3fr 1fr 1.2fr;gap:16px;margin-bottom:20px}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px;display:flex;flex-direction:column;gap:10px;min-width:0}
 .kpi.main{background:linear-gradient(160deg,#fff 40%,#fff5f5)}
 .eyebrow{font-size:12px;font-weight:600;color:var(--ink3);letter-spacing:.05em}
@@ -44,7 +45,8 @@ main{max-width:1180px;margin:0 auto;padding:30px 24px 56px}
 .scale{position:relative;height:8px;border-radius:999px;margin-top:6px;background:linear-gradient(90deg,#cdeedb 0 60%,#fbe3a8 60% 80%,#f9c7c8 80%)}
 .scale.gray{background:linear-gradient(90deg,#e7ebf1,#cfd6e1)}
 .scale b{position:absolute;top:-5px;width:4px;height:18px;border-radius:2px;background:var(--ink);transform:translateX(-50%);box-shadow:0 0 0 2px #fff}
-.ticks{display:flex;justify-content:space-between;font-size:11px;color:var(--ink3);font-variant-numeric:tabular-nums}
+.ticks{position:relative;height:18px;font-size:11px;color:var(--ink3);font-variant-numeric:tabular-nums}
+.ticks span{position:absolute;top:2px;white-space:nowrap}.ticks span:nth-child(2){left:60%}.ticks span:nth-child(3){left:80%}.ticks span:last-child{right:0}
 .deltas{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--ink2)}.deltas b{font-variant-numeric:tabular-nums}
 .up{color:var(--red)}.down{color:var(--green)}.flat{color:var(--ink3)}
 .counts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
@@ -118,15 +120,40 @@ tr:last-child td{border-bottom:0}
 .nalert{margin-top:8px;font-size:12.5px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}.nalert a{color:#c4242b}
 .lead{color:var(--ink2);margin:6px 0 14px}.lead b{color:var(--ink)}
 footer{color:var(--ink3);font-size:12px;line-height:1.7;margin-top:8px}
+.phase{display:grid;grid-template-columns:1.55fr 1fr;gap:32px;align-items:start}
+.pname{font-size:30px;font-weight:750;line-height:1.25;letter-spacing:-.02em;margin:6px 0 8px}
+.pdesc{font-size:14.5px;margin:0 0 10px;line-height:1.75}
+.basis{margin:0;padding:0;list-style:none}
+.basis li{font-size:13px;color:var(--ink2);line-height:1.7;padding:8px 0;border-top:1px solid #eff1f5}.basis li b{color:var(--ink)}
+.mx{display:grid;grid-template-columns:auto 1fr 1fr;gap:6px;font-size:12px;color:var(--ink3)}
+.mx .h{text-align:center}.mx .v{display:flex;align-items:center;padding-right:4px;white-space:nowrap}
+.mx .c{border:1px solid var(--line);border-radius:10px;padding:16px 6px;text-align:center;font-weight:600;font-size:13.5px;color:#a3acba;background:#fafbfc}
+.mx .c.on{color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(15,23,42,.12)}
+.layers{margin-top:16px;display:grid;gap:8px}
+.layers div{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px}.layers small{margin-left:8px}
+.dimrow{display:grid;grid-template-columns:5.5em 1fr 2em;gap:8px;align-items:center;font-size:12.5px;color:var(--ink2);margin:3px 0}
+.dimrow .bar{width:100%;margin:0}.dimrow b{text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+tr.lay td{background:#f8fafc;font-size:12.5px;font-weight:650;padding:8px 10px;border-bottom:1px solid var(--line)}tr.lay small{font-weight:400;margin-left:10px}
+tr.lay .badge{margin-left:8px}
+.h3{font-size:14.5px;margin:22px 0 8px}.h3:first-of-type{margin-top:6px}
+.callout{background:#fff8e6;border:1px solid #f5dfa3;border-radius:10px;padding:10px 14px;font-size:13px;line-height:1.65;color:#7a5200;margin:0 0 14px}
+.method ul{margin:0;padding-left:20px}.method li{margin:8px 0;font-size:13.5px;line-height:1.75;color:var(--ink2)}.method li b{color:var(--ink)}
+@media(max-width:1000px){.phase{grid-template-columns:1fr;gap:20px}}
 @media(max-width:1000px){.hero{grid-template-columns:1fr 1fr}.grid-news{grid-template-columns:1fr}.sticky{position:static}}
 @media(max-width:700px){.hero,.grid2{grid-template-columns:1fr}main{padding:20px 14px 40px}.card{padding:18px 16px}
 .big{font-size:52px}.title h1{font-size:23px}.stamp{text-align:left}.top .in{padding:0 14px;gap:14px}.brand span{display:none}}
 """
 
 
-def _fig_html(fig: go.Figure, first: bool, cdn: bool = False) -> str:
-    js = ("cdn" if cdn else True) if first else False
-    return fig.to_html(full_html=False, include_plotlyjs=js, config={"displayModeBar": False, "responsive": True})
+def _plotly_tag(cdn: bool) -> str:
+    """plotly.js 放在 <head> 里加载一次。跟着某一张图加载的话，页面上排在它前面的图会画不出来。"""
+    if cdn:
+        return f"<script src='https://cdn.plot.ly/plotly-{get_plotlyjs_version()}.min.js' charset=utf-8></script>"
+    return f"<script>{get_plotlyjs()}</script>"
+
+
+def _fig_html(fig: go.Figure) -> str:
+    return fig.to_html(full_html=False, include_plotlyjs=False, config={"displayModeBar": False, "responsive": True})
 
 
 def _note_html(note: commentary.Note, with_headline: bool = True) -> str:
@@ -286,7 +313,7 @@ TICK = {"pct": ".0%", "pp": "+.2f", "num": ".3~g"}
 POINT = {"triggered": "#e5484d", "alert": "#f0a020", "ok": "#1f9d61", "nodata": "#94a3b8"}
 
 
-def _signal_charts(series, cfg, states: dict, start: pd.Timestamp, end: pd.Timestamp, cdn: bool) -> str:
+def _signal_charts(series, cfg, states: dict, start: pd.Timestamp, end: pd.Timestamp) -> str:
     dates = pd.date_range(start, end, freq="W-FRI")
     if end not in dates:
         dates = dates.append(pd.DatetimeIndex([end]))
@@ -321,7 +348,7 @@ def _signal_charts(series, cfg, states: dict, start: pd.Timestamp, end: pd.Times
         cards.append(
             f"<div class=mini><div class=mhead><b>{html.escape(t.name)}</b>{_badge(s.status)}</div>"
             f"<div class=mval>{triggers.fmt(s.value, t.unit)} <small>警戒 {triggers.fmt_threshold(t.alert, t.unit)} · 触发 {triggers.fmt_threshold(t.trigger, t.unit)}</small></div>"
-            f"{_fig_html(fig, False, cdn)}</div>")
+            f"{_fig_html(fig)}</div>")
     return f"<div class=minis>{''.join(cards)}</div>"
 
 
@@ -332,6 +359,120 @@ def _badge(status: str) -> str:
 def _delta(v: float, label: str) -> str:
     cls = "up" if v >= 0.5 else "down" if v <= -0.5 else "flat"
     return f"<span>{label} <b class={cls}>{v:+.0f}</b></span>"
+
+
+def _pct_range(values: list[float]) -> str:
+    lo, hi = min(values), max(values)
+    return f"{abs(lo):.0%}" if round(lo, 2) == round(hi, 2) else f"{abs(hi):.0%}–{abs(lo):.0%}"
+
+
+def _episode_summary(episodes: list, dd_trigger) -> str:
+    """一句话：过去每次跌破这条线之后怎么样了。"""
+    past = [e for e in episodes if not e.ongoing]
+    if not past:
+        return ""
+    conf, unconf = [e for e in past if e.confirmed], [e for e in past if not e.confirmed]
+    line = triggers.fmt_threshold(dd_trigger.trigger, dd_trigger.unit)
+    txt = f"{past[0].start.year} 年以来 NVDA 跌破 {line} 共 {len(past)} 次（不含进行中的）。"
+    if conf:
+        txt += (f"其中 {len(conf)} 次前后三个季度内单季收入环比跌超 10%，这几次从跌破那天算又跌了 "
+                f"{_pct_range([e.further for e in conf])}；")
+    if unconf:
+        worst = min(e.further for e in unconf)
+        txt += (f"{len(unconf)} 次收入没有掉，" + ("跌破那几天就是低点。" if worst > -0.03 else
+                f"跌破后最多再跌 {_pct_range([e.further for e in unconf])}。"))
+    seen = [e for e in conf if not pd.isna(e.drop_at_confirm)]
+    if seen:
+        txt += (f"财报比股价慢：这 {len(seen)} 次等财报证实时，股价已经比高点低了 {_pct_range([e.drop_at_confirm for e in seen])}，"
+                f"之后又跌了 {_pct_range([e.after_confirm for e in seen])}。")
+    return txt
+
+
+def _episodes_html(episodes: list, dd_trigger) -> str:
+    if not episodes:
+        return "<p><small>数据不足。</small></p>"
+    line = triggers.fmt_threshold(dd_trigger.trigger, dd_trigger.unit)
+    rows = []
+    for e in episodes[::-1]:
+        if e.confirmed:
+            rev = f"<span class='badge s-triggered'>掉了</span> 截至 {e.demand_quarter.date()} 的财季环比 {e.demand_qoq:+.0%}"
+            conf = ("—" if pd.isna(e.drop_at_confirm) else
+                    f"{e.confirm_date.date()}：已比高点低 {abs(e.drop_at_confirm):.0%}，之后最多再跌 {abs(e.after_confirm):.0%}")
+        elif e.ongoing:
+            rev, conf = "<span class='badge s-nodata'>还不知道</span> 等之后三个季度的财报", "—"
+        else:
+            rev, conf = "<span class='badge s-ok'>没掉</span>", "—"
+        rows.append(
+            f"<tr><td><b>{e.start.date()}</b>{' <span class=tag>进行中</span>' if e.ongoing else ''}</td>"
+            f"<td class=n>{e.max_drawdown:.0%}<br><small>{e.trough.date()}</small></td><td>{rev}</td>"
+            f"<td class=n><b>{e.further:.0%}</b>{'<br><small>到目前为止</small>' if e.ongoing else ''}</td>"
+            f"<td class=n>{'—' if pd.isna(e.after_12m) else f'{e.after_12m:+.0%}'}</td><td class=why>{conf}</td></tr>")
+    return (f"<p class=lead>{_episode_summary(episodes, dd_trigger)}</p>"
+            f"<div class=tw><table><tr><th>第一次跌破 {line}</th><th class=n>距高点最深</th><th>收入有没有跟着掉</th>"
+            f"<th class=n>跌破后最多再跌</th><th class=n>跌破后 12 个月</th><th>财报证实需求转差那天</th></tr>{''.join(rows)}</table></div>"
+            "<p><small>“收入跟着掉”= 跌破前后三个季度内，有一个财季的收入环比跌超 10%（和需求层的触发线一致）。"
+            "样本很少，2010–2012 年英伟达还是 PC 显卡公司，这张表只用来说明两种结局差别有多大，不能当概率用。</small></p>")
+
+
+def _span_text(spans: list, last: pd.Timestamp) -> str:
+    out = []
+    for a, b in spans:
+        if b >= last:
+            out.append(f"{a:%Y-%m} 至今")
+        else:
+            out.append(f"{a:%Y-%m}" if (a.year, a.month) == (b.year, b.month) else f"{a:%Y-%m} 至 {b:%Y-%m}")
+    return "；".join(out) or "没有出现过"
+
+
+def _track_html(track: dict, current: int, last: pd.Timestamp, start: pd.Timestamp) -> str:
+    rows = []
+    for p, r in track.items():
+        name = f"<b style='color:{phase.PHASE_COLOR[p]}'>{phase.PHASES[p][0]}</b>" + (" <span class=tag>当前</span>" if p == current else "")
+        ret = "—" if pd.isna(r["median_return"]) else f"{r['median_return']:+.0%}"
+        worst = "—" if pd.isna(r["median_worst"]) else f"{r['median_worst']:.0%}"
+        rows.append(f"<tr><td>{name}</td><td class=n>{r['share']:.0%}</td><td class=why>{_span_text(r['spans'], last)}</td>"
+                    f"<td class=n>{ret}</td><td class=n>{worst}</td></tr>")
+    return (f"<div class=tw><table><tr><th>阶段</th><th class=n>{start:%Y} 年以来占多少周</th><th>出现在什么时候</th>"
+            f"<th class=n>之后半年 NVDA 涨跌（中位数）</th><th class=n>半年内最深跌到（中位数）</th></tr>{''.join(rows)}</table></div>"
+            "<p><small>按现在的规则和当时已公布的数据逐周回算。每个阶段只来自两三段行情，同一段里相邻的周高度相关，"
+            "这些数字只说明方向。能看出的是：最难受的是“价格回调”这一格；等到“破裂确认”，大部分跌幅已经发生。</small></p>")
+
+
+def _phase_card(ph: int, layers: dict, now: dict, cfg, episodes: list, alerts: dict) -> str:
+    name, desc = phase.PHASES[ph]
+    color = phase.PHASE_COLOR[ph]
+
+    def members(layer: str) -> str:
+        return " · ".join(f"{html.escape(s.trigger.name)} <b>{triggers.fmt(s.value, s.trigger.unit)}</b>"
+                          for s in now.values() if s.trigger.layer == layer and s.status != "nodata")
+
+    def data_date(layer: str) -> str:
+        days = [s.data_date for s in now.values() if s.trigger.layer == layer and s.data_date is not None]
+        return f"{max(days).date()}" if days else "—"
+
+    basis = [f"<li>{_badge(layers['price'])} <b>价格</b>：{members('price') or '无数据'}</li>",
+             f"<li>{_badge(layers['demand'])} <b>需求</b>：{members('demand') or '无数据'}"
+             f"<br><small>来自财报，最新一期截至 {data_date('demand')}；季末后约 35 天才更新</small></li>"]
+    early = [x for t in cfg.triggers if t.layer == "demand" for x in alerts.get(t.id, [])]
+    if early:
+        links = "；".join(f"<a href='{html.escape(x.url, quote=True)}' target=_blank rel=noopener>{html.escape(x.title)}</a>" for x in early[:3])
+        basis.append(f"<li><span class='badge s-news'>新闻预警</span> 财报出来之前，近 7 天有 {len(early)} 条指向需求转弱的重要新闻：{links}</li>")
+    dd = now.get("nvda_drawdown")
+    if dd is not None and dd.status == "triggered" and episodes:
+        basis.append(f"<li>{_episode_summary(episodes, dd.trigger)} <a href=#analog>看每一次的明细</a></li>")
+
+    def cell(p: int) -> str:
+        on = f" on' style='background:{phase.PHASE_COLOR[p]}" if p == ph else ""
+        return f"<div class='c{on}'>{phase.SHORT[p]}</div>"
+
+    matrix = (f"<div class=mx><div></div><div class=h>需求没破</div><div class=h>需求已破</div>"
+              f"<div class=v>价格没破</div>{cell(1)}{cell(3)}<div class=v>价格已破</div>{cell(2)}{cell(4)}</div>")
+    role = {"demand": "定阶段", "price": "定阶段", "financing": "背景", "climate": "背景"}
+    lay = "".join(f"<div><span>{label}<small>{role[k]}</small></span>{_badge(layers[k])}</div>" for k, label in LAYERS.items())
+    return (f"<section class='card phase'><div><div class=eyebrow>当前阶段</div>"
+            f"<div class=pname style='color:{color}'>{name}</div><p class=pdesc>{desc}</p><ul class=basis>{''.join(basis)}</ul></div>"
+            f"<div>{matrix}<div class=layers>{lay}</div>"
+            f"<div class=note style='margin-top:10px'>“破”= 该层有信号越过触发线。融资、情绪与利率不改变阶段，但它们越差，回调来了越疼。</div></div></section>")
 
 
 def build(cdn: bool = False, asof: pd.Timestamp | None = None) -> str:
@@ -358,6 +499,20 @@ def build(cdn: bool = False, asof: pd.Timestamp | None = None) -> str:
     now = by_week[day]
     prev, month = by_week[weeks[-2]], by_week[weeks[-5]]
     counts = {k: sum(s.status == k for s in now.values()) for k in ("triggered", "alert", "ok", "nodata")}
+    phase_by_week = {w: phase.phase_of(phase.layer_states({k: s.status for k, s in by_week[w].items()}, cfg)) for w in weeks}
+    layers = phase.layer_states({k: s.status for k, s in now.items()}, cfg)
+    ph = phase_by_week[day]
+
+    # 回测：信号的历史频率、各阶段之后发生了什么、NVDA 每次深度回撤的结局
+    bt_start = pd.Timestamp(cfg.scoring.get("backtest_start", "2016-01-01"))
+    bt_weeks = pd.date_range(bt_start, day, freq="W-FRI")
+    if day not in bt_weeks:
+        bt_weeks = bt_weeks.append(pd.DatetimeIndex([day]))
+    status_hist = triggers.history(series, cfg, bt_weeks)
+    rates = triggers.base_rates(status_hist)
+    track = phase.track_record(phase.history(status_hist, cfg)["phase"], series["nvda_price"])
+    has_dd = any(t.id == "nvda_drawdown" for t in cfg.triggers)
+    episodes = phase.drawdown_episodes(series["nvda_price"], series["nvda_revenue_q"], cfg) if has_dd else []
 
     all_news = news.load()
     assessments = news.load_assessments()
@@ -366,58 +521,66 @@ def build(cdn: bool = False, asof: pd.Timestamp | None = None) -> str:
     rate = news.rating(all_news, assessments, news_day)
     alerts = news.signal_alerts(all_news, asof)
 
-    count_cells = "".join(
-        f"<div><b style='color:{c}'>{counts[k]}</b><span>{triggers.LABEL[k]}</span></div>"
-        for k, c in (("triggered", "#e5484d"), ("alert", "#d98a00"), ("ok", "#1f9d61")))
-    extra = []
-    if counts["nodata"]:
-        extra.append(f"{counts['nodata']} 项无数据")
-    if alerts:
-        extra.append(f"<span class=up>新闻预警 {len(alerts)} 项</span>")
-    signal_note = "；".join(extra) or "衡量“有没有开始破”，与温度分开看"
-
     rows = []
-    for s in sorted(now.values(), key=lambda s: (triggers.SEVERITY[s.status], s.trigger.name)):
-        t = s.trigger
-        dd = "—" if s.data_date is None else str(s.data_date.date())
-        na = "".join(f"<div class=nalert><span class='badge s-news'>新闻预警</span> "
-                     f"<a href='{html.escape(x.url, quote=True)}' target=_blank rel=noopener>{html.escape(x.title)}</a>"
-                     f" <small>{x.published.date()}</small></div>" for x in alerts.get(t.id, []))
-        rows.append(
-            f"<tr><td>{_badge(s.status)}</td><td><b>{html.escape(t.name)}</b><div class=why>{html.escape(t.why)}</div>{na}</td>"
-            f"<td class=n><b>{triggers.fmt(s.value, t.unit)}</b></td>"
-            f"<td class=n>{triggers.fmt_threshold(t.alert, t.unit)} / {triggers.fmt_threshold(t.trigger, t.unit)}</td>"
-            f"<td>{_badge(prev[t.id].status)}</td><td>{_badge(month[t.id].status)}</td><td class=n><small>{dd}</small></td></tr>"
-        )
+    for layer, label in LAYERS.items():
+        members = sorted((s for s in now.values() if s.trigger.layer == layer), key=lambda s: triggers.SEVERITY[s.status])
+        if not members:
+            continue
+        role = "和价格一起决定阶段" if layer == "demand" else "和需求一起决定阶段" if layer == "price" else "背景，不改变阶段"
+        rows.append(f"<tr class=lay><td colspan=8>{label}层 {_badge(layers[layer])}<small>{role}</small></td></tr>")
+        for s in members:
+            t = s.trigger
+            dd = "—" if s.data_date is None else str(s.data_date.date())
+            na = "".join(f"<div class=nalert><span class='badge s-news'>新闻预警</span> "
+                         f"<a href='{html.escape(x.url, quote=True)}' target=_blank rel=noopener>{html.escape(x.title)}</a>"
+                         f" <small>{x.published.date()}</small></div>" for x in alerts.get(t.id, []))
+            r = rates.get(t.id)
+            freq = "—" if r is None else (f"<span title='{bt_start:%Y} 年以来有数据的 {r[1]} 周里，处于警戒或触发的比例'>{r[0]:.0%}</span>"
+                                           + (f"<br><small>只有 {r[1]} 周</small>" if r[1] < 156 else ""))
+            rows.append(
+                f"<tr><td>{_badge(s.status)}</td><td><b>{html.escape(t.name)}</b><div class=why>{html.escape(t.why)}</div>{na}</td>"
+                f"<td class=n><b>{triggers.fmt(s.value, t.unit)}</b></td>"
+                f"<td class=n>{triggers.fmt_threshold(t.alert, t.unit)} / {triggers.fmt_threshold(t.trigger, t.unit)}</td>"
+                f"<td>{_badge(prev[t.id].status)}</td><td>{_badge(month[t.id].status)}</td><td class=n>{freq}</td><td class=n><small>{dd}</small></td></tr>"
+            )
 
     heat_head = "".join(f"<th>{w:%m/%d}</th>" for w in weeks)
-    heat_rows = []
+    heat_rows = ["<tr><td class=name><b>阶段</b></td>" + "".join(
+        f"<td style='background:{phase.PHASE_COLOR[phase_by_week[w]]}' title='{w.date()} {phase.PHASES[phase_by_week[w]][0]}'></td>"
+        for w in weeks) + "</tr>"]
     for t in cfg.triggers:
         cells = "".join(
             f"<td class=h-{by_week[w][t.id].status} title='{w.date()} {by_week[w][t.id].label} {triggers.fmt(by_week[w][t.id].value, t.unit)}'></td>"
             for w in weeks)
-        heat_rows.append(f"<tr><td class=name>{html.escape(t.name)}</td>{cells}</tr>")
-    heat_legend = "".join(f"<span><i class=h-{k}></i>{triggers.LABEL[k]}</span>" for k in ("triggered", "alert", "ok", "nodata"))
+        heat_rows.append(f"<tr><td class=name><small>{LAYERS[t.layer]}</small> {html.escape(t.name)}</td>{cells}</tr>")
+    heat_legend = ("".join(f"<span><i class=h-{k}></i>{triggers.LABEL[k]}</span>" for k in ("triggered", "alert", "ok", "nodata"))
+                   + "".join(f"<span><i style='background:{phase.PHASE_COLOR[p]}'></i>阶段：{phase.SHORT[p]}</span>" for p in phase.PHASES))
 
     mk = res.market[res.market.index >= tot.index[0]]
-    signal_charts = _signal_charts(series, cfg, now, tot.index[0], day, cdn)
+    signal_charts = _signal_charts(series, cfg, now, tot.index[0], day)
     font = "Inter,-apple-system,'PingFang SC','Microsoft YaHei','Noto Sans CJK SC',sans-serif"
+    ai_dims = [d for d in cfg.group_dims("ai") if d in res.dimensions]
     trend = go.Figure()
     trend.add_hrect(y0=cfg.alerts["score_yellow"], y1=cfg.alerts["score_red"], fillcolor="#f0a020", opacity=0.07, line_width=0, layer="below")
     trend.add_hrect(y0=cfg.alerts["score_red"], y1=100, fillcolor="#e5484d", opacity=0.07, line_width=0, layer="below")
-    trend.add_scatter(x=mk.index, y=mk.rolling(4).mean(), name="市场宽松度（非 AI 专属）",
+    trend.add_scatter(x=mk.index, y=mk.rolling(4).mean(), name="市场宽松度（非 AI 专属）", visible="legendonly",
                       line=dict(width=1.6, dash="dot", color="#94a3b8"), hovertemplate="%{y:.0f}")
-    trend.add_scatter(x=tot.index, y=tot.rolling(4).mean(), name="AI 泡沫温度", line=dict(width=2.8, color="#e5484d", shape="spline"),
-                      fill="tozeroy", fillcolor="rgba(229,72,77,0.06)", hovertemplate="%{y:.0f}")
+    for d, c in zip(ai_dims, ("#2563eb", "#d98a00")):
+        s = res.dimensions[d][res.dimensions.index >= tot.index[0]]
+        trend.add_scatter(x=s.index, y=s.rolling(4).mean(), name=cfg.dimensions[d]["label"], line=dict(width=1.5, color=c), hovertemplate="%{y:.0f}")
+    trend.add_scatter(x=tot.index, y=tot.rolling(4).mean(), name="AI 泡沫温度", line=dict(width=3, color="#e5484d"), hovertemplate="%{y:.0f}")
     trend.update_layout(height=340, margin=dict(l=0, r=8, t=8, b=0), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
                         font=dict(family=font, size=12, color="#475569"), hovermode="x unified",
                         legend=dict(orientation="h", y=1.02, yanchor="bottom", x=0, bgcolor="rgba(0,0,0,0)"),
                         yaxis=dict(range=[0, 100], gridcolor="#eef0f4", zeroline=False, tickvals=[0, 20, 40, 60, 80, 100]),
-                        xaxis=dict(showgrid=False, linecolor="#e6e9ef"))
+                        xaxis=dict(showgrid=False, linecolor="#e6e9ef", tickformat="%Y-%m"))
 
     dim_html = _dimension_section(res, cfg, "ai")
     market_html = _dimension_section(res, cfg, "market")
     mk_now = res.market.iloc[-1] if len(res.market) else float("nan")
+    dim_rows = "".join(
+        f"<div class=dimrow><span>{html.escape(cfg.dimensions[d]['label'])}</span>{_bar(v)}<b>{v:.0f}</b></div>"
+        for d in ai_dims if pd.notna(v := res.dimensions[d].iloc[-1]))
 
     last = res.indicators.iloc[-1]
     ind_rows = []
@@ -437,43 +600,53 @@ def build(cdn: bool = False, asof: pd.Timestamp | None = None) -> str:
     rate_hist = {w: news.rating(all_news, assessments, w) for w in heat_df["week_end"].unique()}
     trigger_names = {t.id: t.name for t in cfg.triggers}
     note_md = news.latest_note()
-    brief = (f"<div class=card id=brief><h2>分析师周报</h2><div class=sub>{note_md[0]} · AI 分析师阅读新闻后撰写</div><div class=prose>"
+    changed = cfg.scoring.get("method_changed")
+    stale = (f"<div class=callout>这篇周报写于 {changed} 算法调整之前，里面引用的 AI 泡沫温度和破裂信号个数是旧口径，"
+             f"和本页现在的数字对不上；新闻事实和判断不受影响。</div>") if note_md and changed and note_md[0] < str(changed) else ""
+    brief = (f"<div class=card id=brief><h2>分析师周报</h2><div class=sub>{note_md[0]} · AI 分析师阅读新闻后撰写</div>{stale}<div class=prose>"
              f"{markdown.markdown(note_md[1], extensions=['tables'])}</div></div>") if note_md else ""
 
     past = "".join(f"<details><summary>{n.week.date()}｜{html.escape(n.headline)}</summary>{_note_html(n, False)}</details>"
                    for n in notes[1:])
     asof_day = tot.index[-1].date()
+    n_dir = {k: sum(x.direction == k for x in week_news) for k in news.DIRECTIONS}
+    dd_trigger = now["nvda_drawdown"].trigger if has_dd else None
+    analog = (f"<h3 class=h3>NVDA 每次跌破 {triggers.fmt_threshold(dd_trigger.trigger, dd_trigger.unit)} 之后</h3>"
+              f"{_episodes_html(episodes, dd_trigger)}") if has_dd else ""
 
     return f"""<!doctype html><html lang=zh><head><meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1"><title>AI 泡沫监测 · {latest:.0f}°</title><style>{CSS}</style></head><body>
+<meta name=viewport content="width=device-width,initial-scale=1"><title>AI 泡沫监测 · {phase.SHORT[ph]} · {latest:.0f}°</title><style>{CSS}</style>{_plotly_tag(cdn)}</head><body>
 <header class=top><div class=in><div class=brand><i></i>AI 泡沫监测</div>
-<nav><a href=#overview>概览</a><a href=#brief>周报</a><a href=#trend>走势</a><a href=#signals>破裂信号</a><a href=#news>新闻</a><a href=#build>分数构成</a><a href=#note>数据解读</a><a href=#detail>指标明细</a></nav></div></header>
+<nav><a href=#overview>概览</a><a href=#brief>周报</a><a href=#signals>破裂信号</a><a href=#analog>历史对照</a><a href=#trend>温度走势</a><a href=#news>新闻</a><a href=#build>分数构成</a><a href=#note>数据解读</a><a href=#detail>指标明细</a><a href=#method>方法与局限</a></nav></div></header>
 <main>
-<div class=title id=overview><div><h1>AI 经济泡沫监测</h1><p>AI 这一轮有多热，泡沫有没有开始破。每个工作日用公开数据更新。</p></div>
+<div class=title id=overview><div><h1>AI 经济泡沫监测</h1><p>先看处在哪个阶段，再看有多热。每个工作日用公开数据更新。</p></div>
 <div class=stamp>数据截至 {asof_day}<br>指标覆盖率 {res.coverage.iloc[-1]:.0%}</div></div>
+
+{_phase_card(ph, layers, now, cfg, episodes, alerts)}
 
 <section class=hero>
 <div class="kpi main"><div class=eyebrow>AI 泡沫温度 (0-100)</div>
 <div class=num><div class=big style='color:{COLORS[b]}'>{latest:.0f}</div><span class=pill style='background:{COLORS[b]}1f;color:{COLORS[b]}'>{LABELS[b]}</span></div>
-<div><div class=scale><b style='left:{min(max(latest, 1), 99):.0f}%'></b></div><div class=ticks><span>0</span><span>60 升温</span><span>80 过热</span><span>100</span></div></div>
-<div class=deltas>{_delta(d1, '较上周')}{_delta(d4, '较 4 周前')}</div></div>
+<div><div class=scale><b style='left:{min(max(latest, 1), 99):.0f}%'></b></div><div class=ticks><span>0</span><span>60 升温</span><span>80 过热</span><span></span></div></div>
+<div class=deltas>{_delta(d1, '较上周')}{_delta(d4, '较 4 周前')}</div>
+<div>{dim_rows}</div><div class=note>温度 = 这两项的平均。衡量“吹得多大”，不衡量“破没破”。</div></div>
 <div class=kpi><div class=eyebrow>市场宽松度 · 大环境</div>
 <div class=num><div class=mid>{mk_now:.0f}</div><span class=pill style='background:#eef1f6;color:#475569'>{_level_word(mk_now)}</span></div>
 <div class="scale gray"><b style='left:{min(max(mk_now, 1), 99):.0f}%'></b></div>
-<div class=note>信用、波动、利率。高 = 资金松、市场自满，泡沫更容易被吹大。</div></div>
-<div class=kpi><div class=eyebrow>破裂信号 · {len(now)} 项</div><div class=counts>{count_cells}</div><div class=note>{signal_note}</div></div>
+<div class=note>信用、波动、利率，不是 AI 专属。高 = 资金松、市场自满，泡沫更容易被吹大。</div>
+<div class=note>破裂信号 {len(now)} 项：<b class=up>{counts['triggered']}</b> 触发 · <b style='color:#d98a00'>{counts['alert']}</b> 警戒 · <b class=down>{counts['ok']}</b> 正常{f" · {counts['nodata']} 无数据" if counts['nodata'] else ''}。个数只作参考，价格类信号总是一起亮。</div></div>
 {_rating_html(rate)}
 </section>
 
 {brief}
 
-<div class=card id=trend><h2>AI 泡沫温度走势</h2><div class=sub>{tot.index[0]:%Y} 年起，4 周均值。黄色和红色底色是升温区和过热区。</div>{_fig_html(trend, True, cdn)}
-<p><small>AI 泡沫温度只用和 AI 直接相关的维度，从 ChatGPT 发布后开始计算；更早的读数衡量的是整个市场的风险偏好，不发布。
-市场宽松度（虚线）由信用利差、VIX、利率构成，反映的是大环境：它高说明资金松、市场自满，泡沫更容易被吹大，也更经不起冲击。</small></p></div>
-
 <div class=card id=signals><h2>破裂信号</h2>
-<div class=sub>AI 泡沫温度衡量“有多热”；这里衡量“有没有开始破”。阈值见 config/indicators.yaml 的 triggers。</div>
-<div class=tw><table><tr><th>状态</th><th>信号</th><th class=n>当前</th><th class=n>警戒 / 触发</th><th>上周</th><th>4 周前</th><th class=n>数据截至</th></tr>{''.join(rows)}</table></div></div>
+<div class=sub>按层看，不要数个数。“历史频率”= {bt_start:%Y} 年以来这个信号有多大比例的周处于警戒或触发：比例高说明这条线平时就常被越过。阈值见 config/indicators.yaml。</div>
+<div class=tw><table><tr><th>状态</th><th>信号</th><th class=n>当前</th><th class=n>警戒 / 触发</th><th>上周</th><th>4 周前</th><th class=n>历史频率</th><th class=n>数据截至</th></tr>{''.join(rows)}</table></div></div>
+
+<div class=card id=analog><h2>历史对照</h2><div class=sub>同样的局面过去发生过几次，之后怎么样了。按当时已公布的数据回算。</div>
+<h3 class=h3>四个阶段的历史记录</h3>{_track_html(track, ph, day, bt_start)}
+{analog}</div>
 
 <div class=card><h2>信号走势</h2><div class=sub>{tot.index[0]:%Y} 年起每周五一个点，最后一点是最新交易日，都只用当时已公布的数据；黄色底色 = 警戒区，红色 = 触发区，圆点 = 当前值。财报类信号季度更新，所以是台阶状。</div>
 {signal_charts}</div>
@@ -482,8 +655,12 @@ def build(cdn: bool = False, asof: pd.Timestamp | None = None) -> str:
 <div class=tw><table class=heat><tr><th></th>{heat_head}</tr>{''.join(heat_rows)}</table></div>
 <div class=legend>{heat_legend}</div></div>
 
+<div class=card id=trend><h2>AI 泡沫温度走势</h2><div class=sub>{tot.index[0]:%Y} 年起，4 周均值。红线是温度，蓝线和黄线是它的两个组成部分。黄色和红色底色是升温区和过热区。</div>{_fig_html(trend)}
+<p><small>两条细线分开走的时候最值得看：价格与估值回落而投资强度不降，说明股价已经在消化，但投入的规模还没有调整。
+点图例里的“市场宽松度”可以叠加大环境（信用利差、VIX、利率）。</small></p></div>
+
 <div class=card id=news><h2>新闻热度</h2><div class=sub>近 8 周，按主题</div>{_heat_news_html(heat_df, rate_hist)}</div>
-<div class=card><h2>近 7 天要闻</h2><div class=sub>{len(week_news)} 条，按重要性排序</div><div class=prose>{_news_html(week_news, trigger_names)}</div></div>
+<div class=card><h2>近 7 天要闻</h2><div class=sub>{len(week_news)} 条，按重要性排序：风险上升 {n_dir['risk_up']} 条 · 风险下降 {n_dir['risk_down']} 条 · 中性 {n_dir['neutral']} 条</div><div class=prose>{_news_html(week_news, trigger_names)}</div></div>
 
 <div class=card id=build><h2>AI 泡沫温度是怎么来的</h2>{dim_html}
 <p><small>维度分 = 该维度内各指标风险分位的平均 × 100；风险分位 = 指标在自身过去最多 15 年里的位置，越高越接近泡沫。贡献合计等于分数变化（有数据的维度数变化时会有小误差）。</small></p></div>
@@ -495,6 +672,16 @@ def build(cdn: bool = False, asof: pd.Timestamp | None = None) -> str:
 </div>
 
 <div class=card id=detail><h2>评分指标明细</h2><div class=tw><table><tr><th>维度</th><th>指标</th><th class=n>最新值</th><th class=n>数据日期</th><th>风险分位</th></tr>{''.join(ind_rows)}</table></div></div>
+
+<div class="card method" id=method><h2>方法与局限</h2><div class=sub>这个看板能回答什么，不能回答什么</div><ul>
+<li><b>阶段</b>只看两件事：价格层有没有信号触发、需求层有没有信号触发。这是对现状的分类，不是预测。它的用处是把“跌了很多”和“需求真的坏了”分开。</li>
+<li><b>财报比股价慢一到两个季度。</b>需求层用的是已提交给 SEC 的季报，季末后约 35 天才更新。过去每次真的破裂，都是股价先跌、财报后证实。所以需求层显示“正常”不等于安全，要同时看新闻预警和分析师评级。</li>
+<li><b>AI 泡沫温度</b>衡量吹得多大：价格相对收入和大盘走了多远，投资相对现金流有多重。它是各指标在自身 15 年历史里的分位，高不代表马上会破，也不能和 2000 年直接比。它不是择时工具。</li>
+<li><b>破裂信号的阈值是人定的</b>，表里的“历史频率”用来校准：平时就常亮的信号（比如 NVDA 回撤 20%）单独出现不值得紧张。需求层的警戒线是按这一轮的高增速定的，在 2023 年以前属于常态，所以只有“触发”才改变阶段。</li>
+<li><b>样本很少。</b>英伟达深度回撤 2010 年以来只有几次，云厂商有息负债只有 2 年数据，高收益债利差只有 3 年。历史对照说明的是方向，不是概率。</li>
+<li><b>分析师评级只基于新闻</b>，而收录新闻本身偏向坏消息（见“近 7 天要闻”里上升和下降的条数）。评级高说明坏消息密集，不代表数据已经转差。</li>
+<li>没有覆盖：未上市公司（OpenAI、Anthropic 等）的财务、表外和私募信贷融资、GPU 租金、企业端 AI 实际付费。这些只能靠新闻。</li>
+</ul></div>
 <footer>风险分位 = 该指标在自身过去最多 15 年历史中的位置（方向已处理，越高越接近泡沫）。财报数据按季末后 35 天视为可见。本页仅供参考，不构成投资建议。生成于北京时间 {scoring.now():%Y-%m-%d %H:%M}。</footer>
 </main></body></html>"""
 

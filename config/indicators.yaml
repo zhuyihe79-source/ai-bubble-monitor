@@ -6,40 +6,43 @@
 # group: ai = 计入“AI 泡沫温度”；market = 计入“市场宽松度”。
 #   信用利差、VIX、利率衡量的是整个市场的风险偏好，2017、2021 年同样会很高，所以不放进 AI 温度。
 dimensions:
-  valuation:   {label: 估值与集中度, group: ai, weight: 1.0, desc: 钱是不是过度挤在 AI 龙头上（大盘集中度、半导体相对大盘、NVDA 偏离均线）}
-  capex:       {label: 投入与回报, group: ai, weight: 1.0, desc: 云厂商投入增长有多快、自己的现金流还撑不撑得住}
+  valuation:   {label: 价格与估值, group: ai, weight: 1.0, desc: 股价是不是跑在收入和大盘前面（NVDA 市销率、半导体和龙头股相对自身三年均值的偏离）}
+  capex:       {label: 投资强度, group: ai, weight: 1.0, desc: 云厂商投入增长有多快、自己的现金流还撑不撑得住}
   leverage:    {label: 信用环境, group: market, weight: 1.0, desc: 借钱是不是太容易（信用利差越窄，市场越松懈）}
   sentiment:   {label: 波动与自满, group: market, weight: 1.0, desc: 市场是不是太平静（VIX 越低越自满）}
   macro:       {label: 利率环境, group: market, weight: 1.0, desc: 资金成本是否宽松（实际利率、期限利差）}
 
 indicators:
-  # ---- 估值与集中度（yfinance）----
-  - id: spy_rsp_ratio
-    name: 市值加权/等权标普500 (SPY/RSP)
+  # ---- 价格与估值 ----
+  # 旧版用 SPY/RSP、SMH/SPY 的比值本身取分位。这两个比值十几年一路上行，2023 年以来 90% 以上的周分位都在 0.9 以上，
+  # NVDA 跌掉一半温度也只动 2 度。现在改用“相对自身三年均值的偏离”，并加入真正的估值指标（市销率）。
+  - id: nvda_ps
+    name: NVDA 市销率（市值 / 近四季收入）
     dimension: valuation
-    source: yahoo
-    params: {kind: ratio, num: SPY, den: RSP}
+    source: valuation
+    # 收入按季末后 35 天才算可见，在采集时就处理好，所以这里不再设 publication_lag_days
+    params: {ticker: NVDA, cik: "0001045810", lag_days: 35}
     direction: high
     frequency: daily
     max_stale_days: 10
-  - id: smh_spy_ratio
-    name: 半导体 ETF 相对标普500 (SMH/SPY)
+  - id: smh_spy_dev
+    name: 半导体相对标普500，比三年均值高出多少
     dimension: valuation
     source: yahoo
-    params: {kind: ratio, num: SMH, den: SPY}
+    params: {kind: ratio_dev, num: SMH, den: SPY, window: 756}
     direction: high
     frequency: daily
     max_stale_days: 10
-  - id: nvda_ma200_gap
-    name: NVDA 偏离 200 日均线
+  - id: spy_rsp_dev
+    name: 市值加权相对等权标普500，比三年均值高出多少
     dimension: valuation
     source: yahoo
-    params: {kind: ma_gap, ticker: NVDA, window: 200}
+    params: {kind: ratio_dev, num: SPY, den: RSP, window: 756}
     direction: high
     frequency: daily
     max_stale_days: 10
 
-  # ---- 投入与回报（SEC EDGAR）----
+  # ---- 投资强度（SEC EDGAR）----
   # 用同比增速而不是金额：金额一路上涨，分位常年贴着 100，没有信息量
   - id: hyperscaler_capex_yoy
     name: 五大云厂商 capex 同比（滚动四季）
@@ -50,16 +53,6 @@ indicators:
     frequency: quarterly
     max_stale_days: 200
     publication_lag_days: 35
-  - id: hyperscaler_capex_ttm
-    name: 五大云厂商 capex 滚动四季合计 (美元)
-    dimension: capex
-    source: edgar
-    params: {metric: capex_ttm}
-    direction: high
-    frequency: quarterly
-    max_stale_days: 200
-    publication_lag_days: 35
-    score: false
   - id: hyperscaler_capex_to_ocf
     name: 五大云厂商 capex / 经营现金流
     dimension: capex
@@ -136,6 +129,15 @@ indicators:
     max_stale_days: 10
 
   # ---- 只用于触发器和解读，不计入泡沫温度（score: false）----
+  - id: smh_spy_ratio
+    name: 半导体 ETF 相对标普500 (SMH/SPY)
+    dimension: valuation
+    source: yahoo
+    params: {kind: ratio, num: SMH, den: SPY}
+    direction: high
+    frequency: daily
+    max_stale_days: 10
+    score: false
   - id: nvda_price
     name: NVDA 收盘价
     dimension: valuation
@@ -200,51 +202,102 @@ scoring:
   ai_start: "2023-01-01"
   min_dimensions: 2          # AI 温度至少需要几个维度有数据
   market_min_dimensions: 2   # 市场宽松度至少需要几个维度有数据
+  # 这一天起温度和信号换了算法；更早写的分析师周报引用的是旧口径的数字，看板会提示
+  method_changed: "2026-11-22"
+  backtest_start: "2016-01-01"   # 信号历史频率和阶段回测从这里算起（云厂商 capex 数据 2016 年才齐）
 
 alerts:
   score_yellow: 60
   score_red: 80
   indicator_extreme_pct: 0.95
 
-# 破裂触发器。transform:
+# 破裂信号。transform:
 #   level        当前值
 #   pct_change   相对 days 天前的涨跌幅（就近取 tolerance_days 内的观测）
 #   diff         相对 days 天前的差值
 #   drawdown     相对过去 days 天最高点的回撤
 # direction: above = 数值越高越危险；below = 越低越危险
 # unit: pct（显示为百分比）、pp（百分点）、num（原值）
+# layer: demand 需求 / price 价格 / financing 融资 / climate 情绪与利率
+#   阶段判断只看 demand 和 price 两层（见 src/bubblemon/phase.py）。
 triggers:
-  - id: capex_qoq
-    name: 云厂商单季 capex 环比
-    series: hyperscaler_capex_q
-    transform: pct_change
-    days: 91
-    direction: below
-    alert: 0.0
-    trigger: -0.10
-    unit: pct
-    why: 资本开支第一次环比下降，意味着 AI 基建需求见顶，英伟达等供应链收入会直接受影响。
+  # ---- 需求：买方还在不在加码，卖方收入还在不在涨。财报数据，季末后 35 天可见 ----
+  # 旧版的“单季 capex 环比”已删除：云厂商一季度 capex 季节性回落，2017、2019、2023 年的一季度都因此误报。
+  # 同比不受季节影响；2016 年以来单季同比转负只有 2019 年和 2023 年两段，都是真实的投资消化期。
   - id: capex_yoy
-    name: 云厂商 capex 同比（滚动四季）
-    series: hyperscaler_capex_ttm
+    name: 云厂商单季 capex 同比
+    layer: demand
+    series: hyperscaler_capex_q
     transform: pct_change
     days: 365
     direction: below
     alert: 0.25
     trigger: 0.0
     unit: pct
-    why: 当前估值隐含 capex 持续高增长；增速放缓本身就足以让供应链估值下修。
+    why: 英伟达的收入就是云厂商的 capex。同比转负意味着买方开始消化库存；警戒线 +25% 是按这一轮 60% 以上的增速定的，2023 年以前属于常态。
+  - id: nvda_rev_qoq
+    name: NVDA 单季收入环比
+    layer: demand
+    series: nvda_revenue_q
+    transform: pct_change
+    days: 91
+    direction: below
+    alert: 0.0
+    trigger: -0.10
+    unit: pct
+    tolerance_days: 25
+    why: 2023 年以来每个季度都在环比增长，第一次下降就是拐点。2016 年以来跌超 10% 有三次：2019 年初和 2022 年下半年股价都从高点跌了一半以上，2017 年初那次是季节性回落。
+  - id: nvda_rev_yoy
+    name: NVDA 单季收入同比
+    layer: demand
+    series: nvda_revenue_q
+    transform: pct_change
+    days: 365
+    direction: below
+    alert: 0.25
+    trigger: 0.0
+    unit: pct
+    tolerance_days: 25
+    why: 比环比慢，但能抓住“不跌只是不涨”的慢性降速。2018 年那次，收入环比大跌的前一个季度，同比先掉到了 21%。
+
+  # ---- 价格：AI 资产自己有没有破 ----
+  - id: nvda_drawdown
+    name: NVDA 距 52 周高点回撤
+    layer: price
+    series: nvda_price
+    transform: drawdown
+    days: 365
+    direction: below
+    alert: -0.20
+    trigger: -0.35
+    unit: pct
+    why: 英伟达波动大，回撤 20% 很常见；跌过 35% 少见，每一次之后怎么样了见下面的历史对照。
+  - id: smh_rel_3m
+    name: 半导体相对标普500，3 个月变化
+    layer: price
+    series: smh_spy_ratio
+    transform: pct_change
+    days: 91
+    direction: below
+    alert: -0.10
+    trigger: -0.20
+    unit: pct
+    why: AI 主线跑输大盘，说明资金在撤离领涨板块，而不只是大盘一起跌。
+
+  # ---- 融资：钱从哪里来，还借不借得到 ----
   - id: capex_vs_ocf
     name: 云厂商 capex / 经营现金流
+    layer: financing
     series: hyperscaler_capex_to_ocf
     transform: level
     direction: above
     alert: 0.9
     trigger: 1.0
     unit: num
-    why: 超过 1 意味着投资已经花光经营现金流，需要靠借债或减少回购来支撑，财务弹性下降。
+    why: 超过 1 意味着投资已经花光经营现金流，要靠借债或减少回购来支撑。2023 年以前从没超过 0.55。
   - id: debt_yoy
     name: 云厂商有息负债同比
+    layer: financing
     series: hyperscaler_debt
     transform: pct_change
     days: 365
@@ -253,39 +306,9 @@ triggers:
     trigger: 0.50
     unit: pct
     why: 从现金流投资转向借债投资，是周期后段的典型特征（参考 1999–2001 年电信业）。
-  - id: nvda_rev_yoy
-    name: NVDA 单季收入同比
-    series: nvda_revenue_q
-    transform: pct_change
-    days: 365
-    direction: below
-    alert: 0.30
-    trigger: 0.10
-    unit: pct
-    tolerance_days: 25
-    why: 英伟达是 AI 资本开支的最终收款方，收入增速是整个链条需求的最直接读数。
-  - id: nvda_drawdown
-    name: NVDA 距 52 周高点回撤
-    series: nvda_price
-    transform: drawdown
-    days: 365
-    direction: below
-    alert: -0.20
-    trigger: -0.35
-    unit: pct
-    why: 龙头深度回撤会通过指数权重和财富效应传导到整个 AI 板块。
-  - id: smh_rel_3m
-    name: 半导体相对标普500，3 个月变化
-    series: smh_spy_ratio
-    transform: pct_change
-    days: 91
-    direction: below
-    alert: -0.10
-    trigger: -0.20
-    unit: pct
-    why: AI 主线跑输大盘，说明资金在撤离领涨板块。
   - id: hy_widening
     name: 高收益债利差，3 个月变化
+    layer: financing
     series: hy_spread
     transform: diff
     days: 91
@@ -294,17 +317,21 @@ triggers:
     trigger: 1.50
     unit: pp
     why: 信用市场通常先于股市定价风险；利差急升会抬高数据中心项目和 AI 新贵的融资成本。
+
+  # ---- 情绪与利率：大环境 ----
   - id: vix_level
     name: VIX 波动率
+    layer: climate
     series: vix
     transform: level
     direction: above
     alert: 25
     trigger: 35
     unit: num
-    why: 恐慌升温时，高估值、高集中度的板块最先被抛售。
+    why: 恐慌升温时，高估值、高集中度的板块最先被抛售。但历史上 VIX 冲高之后，半导体三个月回报反而高于平均，它不是卖出信号。
   - id: real_yield_3m
     name: 10 年期实际利率，3 个月变化
+    layer: climate
     series: real_yield_10y
     transform: diff
     days: 91
@@ -315,6 +342,7 @@ triggers:
     why: AI 股票的价值主要来自远期现金流，对贴现率最敏感。
   - id: bubble_search
     name: Google 搜索 "AI bubble" + "AI crash" 热度
+    layer: climate
     series: trends_ai_bubble
     transform: level
     direction: above

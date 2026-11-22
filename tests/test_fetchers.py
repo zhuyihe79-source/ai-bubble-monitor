@@ -1,4 +1,5 @@
 import pandas as pd
+import pytest
 
 from bubblemon import db
 from bubblemon.fetchers import edgar, yahoo
@@ -42,6 +43,39 @@ def test_aggregate_only_uses_quarters_all_companies_report():
     b = pd.Series(1.0, index=idx[:6])
     out = edgar.aggregate({"A": a, "B": b}, {}, "capex_ttm")
     assert out.index[-1] == idx[5] and out.iloc[-1] == 8.0
+
+
+def test_same_quarter_tagged_with_two_end_dates_is_counted_once():
+    # 英伟达 2010 财年二季度：后来的 10-K 把结束日标成 7/31，原始 10-Q 是 8/1，起点分组也不同
+    entries = [
+        entry("2010-02-01", "2010-05-02", 1000), entry("2010-02-01", "2010-08-01", 1800),
+        entry("2010-02-01", "2010-10-31", 2650), entry("2010-05-03", "2010-07-31", 800), entry("2010-05-03", "2010-08-01", 800),
+    ]
+    s = edgar.quarterly_from_cumulative(entries)
+    assert list(s.index) == list(pd.to_datetime(["2010-05-02", "2010-08-01", "2010-10-31"]))
+    assert s.tolist() == [1000, 800, 850]
+
+
+def test_price_to_sales_adjusts_splits_and_waits_for_the_filing():
+    from bubblemon.fetchers import valuation
+    shares = valuation.split_adjusted(
+        pd.Series([100.0, 400.0], index=pd.to_datetime(["2023-12-31", "2024-12-31"])),
+        pd.Series([4.0], index=pd.to_datetime(["2024-06-10"])))
+    assert shares.tolist() == [400.0, 400.0]            # 拆股前申报的 100 股 = 今天的 400 股
+    rev = pd.Series([10.0, 10, 10, 10, 30], index=pd.to_datetime(["2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31"]))
+    px = pd.Series(1.0, index=pd.date_range("2024-01-01", "2024-06-30"))
+    ps = valuation.price_to_sales(px, shares, rev, lag_days=35)
+    assert ps.index[0] == pd.Timestamp("2024-02-04")    # 12/31 的财报 35 天后才可见
+    assert ps["2024-05-04"] == pytest.approx(400 / 40) and ps["2024-05-05"] == pytest.approx(400 / 60)
+    gap = rev.drop(pd.Timestamp("2023-09-30"))          # 缺一个季度就不凑四季
+    assert valuation.trailing_four_quarters(gap).empty
+
+
+def test_yahoo_ratio_dev_is_deviation_from_own_average():
+    idx = pd.date_range("2024-01-01", periods=4)
+    data = {"A": pd.Series([1.0, 1, 1, 3], index=idx), "B": pd.Series([1.0] * 4, index=idx)}
+    d = yahoo.compute("ratio_dev", {"num": "A", "den": "B", "window": 3}, load=data.__getitem__)
+    assert d.tolist() == pytest.approx([0.0, 3 / (5 / 3) - 1])
 
 
 def test_yahoo_ratio_and_ma_gap():

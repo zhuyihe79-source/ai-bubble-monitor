@@ -2,7 +2,7 @@ import argparse
 import logging
 
 from . import db
-from .fetchers import edgar, fred, manual, trends, yahoo
+from .fetchers import edgar, fred, manual, trends, valuation, yahoo
 from .registry import load_config
 
 log = logging.getLogger("bubblemon")
@@ -13,6 +13,7 @@ FETCHERS = {
     "edgar": edgar.fetch,
     "trends": trends.fetch,
     "manual": manual.fetch,
+    "valuation": valuation.fetch,
 }
 
 

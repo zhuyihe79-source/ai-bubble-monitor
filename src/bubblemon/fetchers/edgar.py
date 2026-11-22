@@ -36,10 +36,22 @@ def _headers() -> dict:
 
 
 @lru_cache(maxsize=None)
-def _gaap(cik: str) -> dict:
+def _facts(cik: str) -> dict:
     resp = requests.get(URL.format(cik=cik), headers=_headers(), timeout=60)
     resp.raise_for_status()
-    return resp.json()["facts"]["us-gaap"]
+    return resp.json()["facts"]
+
+
+def _gaap(cik: str) -> dict:
+    return _facts(cik)["us-gaap"]
+
+
+def shares_outstanding(cik: str) -> pd.Series:
+    """申报封面上的流通股数（未按之后的拆股调整），索引是封面日期。"""
+    units = _facts(cik).get("dei", {}).get("EntityCommonStockSharesOutstanding", {}).get("units", {}).get("shares") or []
+    if not units:
+        raise RuntimeError(f"CIK {cik} 找不到流通股数")
+    return instant_values(units)
 
 
 def _usd_entries(cik: str, concept: str) -> list[dict]:
@@ -69,14 +81,20 @@ def quarterly_from_cumulative(entries: list[dict]) -> pd.Series:
         first_days = (pd.Timestamp(items[0]["end"]) - pd.Timestamp(start)).days
         if not 80 <= first_days <= 100:
             continue
-        prev_val = 0.0
+        prev_val, prev_days = 0.0, 0
         for e in items:
             days = (pd.Timestamp(e["end"]) - pd.Timestamp(start)).days
             if days > 380:
                 break
+            # 同一期间偶尔被后来的申报标成差一两天的结束日，不是新的一季
+            if days - prev_days < 30:
+                continue
             out[pd.Timestamp(e["end"])] = e["val"] - prev_val
-            prev_val = e["val"]
-    return pd.Series(out, dtype=float).sort_index()
+            prev_val, prev_days = e["val"], days
+    s = pd.Series(out, dtype=float).sort_index()
+    # 上面那种差一两天的结束日如果起点也不同，会落在不同分组里各算一次；同一季只留后一个日期
+    gap_to_next = s.index.to_series().diff().shift(-1).dt.days
+    return s[~(gap_to_next < 30)]
 
 
 def instant_values(entries: list[dict]) -> pd.Series:

@@ -3,8 +3,8 @@ from dataclasses import dataclass, field
 import numpy as np
 import pandas as pd
 
-from . import triggers
-from .registry import GROUPS, Config
+from . import phase, triggers
+from .registry import GROUPS, LAYERS, Config
 from .scoring import ScoreResult, band, last_friday
 
 BAND_CN = {"green": "低", "yellow": "升温", "red": "过热"}
@@ -79,12 +79,28 @@ def weekly_note(series: dict[str, pd.Series], cfg: Config, result: ScoreResult, 
 
     mk = _at(result.market, week) if len(result.market) else np.nan
     market_txt = "" if np.isnan(mk) else f"市场宽松度 {mk:.0f}（较 4 周前 {_signed(mk - _at(result.market, month))}）；"
+    layers = phase.layer_states({s.trigger.id: s.status for s in states}, cfg)
+    ph = phase.phase_of(layers)
+    ph_before = phase.phase_of(phase.layer_states({k: s.status for k, s in before.items()}, cfg))
+    parts = [f"{cfg.dimensions[d]['label']} {v:.0f}" for d in cfg.group_dims("ai")
+             if d in result.dimensions and not np.isnan(v := _at(result.dimensions[d].dropna(), week))]
     if np.isnan(now):
-        headline = f"本周没有足够数据计算 AI 泡沫温度。{market_txt}{n_trig} 项信号触发、{n_alert} 项警戒。"
+        headline = f"阶段：{phase.PHASES[ph][0]}。本周没有足够数据计算 AI 泡沫温度。{market_txt}{n_trig} 项信号触发、{n_alert} 项警戒。"
     else:
-        headline = (f"AI 泡沫温度 {now:.0f}（{BAND_CN[band(now, cfg.alerts)]}），较上周 {_signed(d1)}，较 4 周前 {_signed(d4)}；"
+        headline = (f"阶段：{phase.PHASES[ph][0]}。AI 泡沫温度 {now:.0f}（{BAND_CN[band(now, cfg.alerts)]}"
+                    f"{'；' + '、'.join(parts) if parts else ''}），较上周 {_signed(d1)}，较 4 周前 {_signed(d4)}；"
                     f"{market_txt}{len(states)} 个破裂信号中 {n_trig} 项触发、{n_alert} 项警戒。")
     note = Note(week, headline)
+
+    basis = [f"{phase.PHASES[ph][0]}：{phase.PHASES[ph][1]}"]
+    if ph != ph_before:
+        basis.append(f"⚠ 阶段变化：上周是「{phase.PHASES[ph_before][0]}」。")
+    for layer, label in LAYERS.items():
+        members = [s for s in states if s.trigger.layer == layer]
+        if members:
+            vals = "、".join(f"{s.trigger.name} {triggers.fmt(s.value, s.trigger.unit)}" for s in members)
+            basis.append(f"{label}层 {triggers.LABEL[layers[layer]]}：{vals}")
+    note.sections.append(("阶段判断", basis))
 
     changes = []
     for s in states:
@@ -116,9 +132,11 @@ def weekly_note(series: dict[str, pd.Series], cfg: Config, result: ScoreResult, 
     capq = _visible(series, cfg, "hyperscaler_capex_q", week)
     if len(capq):
         yoy = _pct(capq, capq.index[-1], 365)
+        base = triggers.value_near(capq, capq.index[-1] - pd.Timedelta(days=91), 10)
+        qoq = capq.iloc[-1] / base - 1 if base else np.nan
         ocf = by_id.get("capex_vs_ocf")
         fund.append(f"最新可见季度 {_quarter(capq.index[-1])}：五大云厂商单季 capex {capq.iloc[-1] / 1e8:,.0f} 亿美元"
-                    f"（同比 {yoy:+.0%}，环比 {triggers.fmt(by_id['capex_qoq'].value if 'capex_qoq' in by_id else np.nan, 'pct')}）"
+                    f"（同比 {yoy:+.0%}，环比 {triggers.fmt(qoq, 'pct')}）"
                     + (f"；滚动四季 capex / 经营现金流 = {ocf.value:.2f}" if ocf and not np.isnan(ocf.value) else "") + "。")
     rev = _visible(series, cfg, "nvda_revenue_q", week)
     if len(rev):

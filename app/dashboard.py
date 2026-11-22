@@ -2,8 +2,8 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from bubblemon import commentary, db, news, scoring, triggers
-from bubblemon.registry import load_config
+from bubblemon import commentary, db, news, phase, scoring, triggers
+from bubblemon.registry import LAYERS, load_config
 
 st.set_page_config(page_title="AI 泡沫监测", layout="wide")
 cfg = load_config()
@@ -54,11 +54,13 @@ else:
 
 states = triggers.evaluate(series, cfg, day)
 before = {s.trigger.id: s for s in triggers.evaluate(series, cfg, day - pd.Timedelta(days=7))}
+layers = phase.layer_states({s.trigger.id: s.status for s in states}, cfg)
+ph = phase.phase_of(layers)
 with c3:
-    counts = {k: sum(s.status == k for s in states) for k in ("triggered", "alert", "ok", "nodata")}
-    cols = st.columns(4)
-    for col, (k, v) in zip(cols, counts.items()):
-        col.metric(f"破裂信号·{triggers.LABEL[k]}", v)
+    st.markdown(f"### 阶段：<span style='color:{phase.PHASE_COLOR[ph]}'>{phase.PHASES[ph][0]}</span>", unsafe_allow_html=True)
+    st.caption(phase.PHASES[ph][1])
+    st.caption(" · ".join(f"{label}层 {triggers.LABEL[layers[k]]}" for k, label in LAYERS.items())
+               + "。阶段只看需求层和价格层有没有触发。")
 
 notes = commentary.history(series, cfg, result, today, weeks=8)
 st.subheader(f"本周解读（{notes[0].week.date()}）")
@@ -71,6 +73,7 @@ for idx, (title, items) in enumerate(notes[0].sections):
 st.subheader("破裂信号")
 st.dataframe(
     pd.DataFrame([{
+        "层": LAYERS[s.trigger.layer],
         "状态": s.label,
         "信号": s.trigger.name,
         "当前": triggers.fmt(s.value, s.trigger.unit),
@@ -79,7 +82,7 @@ st.dataframe(
         "新闻预警": "；".join(x.title for x in alerts.get(s.trigger.id, [])),
         "数据截至": None if s.data_date is None else s.data_date.date(),
         "为什么重要": s.trigger.why,
-    } for s in sorted(states, key=lambda s: triggers.SEVERITY[s.status])]),
+    } for s in sorted(states, key=lambda s: (list(LAYERS).index(s.trigger.layer), triggers.SEVERITY[s.status]))]),
     hide_index=True, width="stretch",
 )
 with st.expander("过往解读"):

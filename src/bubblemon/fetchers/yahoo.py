@@ -2,8 +2,9 @@ import pandas as pd
 import yfinance as yf
 
 
-def _close(ticker: str) -> pd.Series:
-    df = yf.download(ticker, period="max", auto_adjust=True, progress=False)
+def _close(ticker: str, dividends: bool = True) -> pd.Series:
+    """dividends=False 时只按拆股调整，不把分红折进历史价格（算市值要用这个）。"""
+    df = yf.download(ticker, period="max", auto_adjust=dividends, progress=False)
     if df.empty:
         raise RuntimeError(f"yfinance 没有返回 {ticker} 的数据")
     close = df["Close"]
@@ -17,6 +18,10 @@ def compute(kind: str, params: dict, load=_close) -> pd.Series:
     if kind == "ratio":
         num, den = load(params["num"]), load(params["den"])
         return (num / den).dropna()
+    if kind == "ratio_dev":
+        # 比值相对自身滚动均值的偏离：长期上行的比值直接取分位会常年贴着 100
+        ratio = (load(params["num"]) / load(params["den"])).dropna()
+        return (ratio / ratio.rolling(params["window"]).mean() - 1).dropna()
     if kind == "ma_gap":
         px = load(params["ticker"])
         ma = px.rolling(params["window"]).mean()

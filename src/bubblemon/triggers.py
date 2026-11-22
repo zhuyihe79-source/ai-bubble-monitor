@@ -82,6 +82,24 @@ def evaluate(series_by_id: dict[str, pd.Series], cfg: Config, asof: pd.Timestamp
     return out
 
 
+def history(series_by_id: dict[str, pd.Series], cfg: Config, dates) -> pd.DataFrame:
+    """每个日期按当时可见的数据重算全部信号。行 = 日期，列 = 信号 id，值 = 状态。"""
+    return pd.DataFrame({d: {s.trigger.id: s.status for s in evaluate(series_by_id, cfg, d)} for d in dates}).T
+
+
+def base_rates(hist: pd.DataFrame) -> dict[str, tuple[float, int]]:
+    """每个信号有数据的那些周里，多大比例处于警戒或触发；以及有数据的周数。
+
+    比例高说明这条线平时就常被越过，单独亮起来不算稀奇。
+    """
+    out = {}
+    for tid in hist:
+        col = hist[tid][hist[tid] != "nodata"]
+        if len(col):
+            out[tid] = (float(col.isin(["alert", "triggered"]).mean()), len(col))
+    return out
+
+
 def fmt(value: float, unit: str) -> str:
     if value is None or np.isnan(value):
         return "—"
