@@ -10,42 +10,44 @@ from plotly.offline import get_plotlyjs, get_plotlyjs_version
 from . import commentary, db, news, phase, scoring, triggers
 from .registry import GROUPS, LAYERS, ROOT, load_config
 
-COLORS = {"green": "#1f9d61", "yellow": "#d98a00", "red": "#e5484d"}
+COLORS = {"green": "#2fd08c", "yellow": "#f5a524", "red": "#ff5459"}
 LABELS = {"green": "低", "yellow": "升温", "red": "过热"}
 HEAT_WEEKS = 12
 
 CSS = """
-:root{--bg:#f7f6f3;--card:#fff;--ink:#14161a;--ink2:#565c68;--ink3:#9ba1ad;--line:#e9e6e0;--line2:#f0efec;--soft:#f4f3f0;
---red:#d92d20;--amber:#dc6803;--green:#12855c;--r:16px;
---sh:0 1px 2px rgba(20,22,26,.05),0 10px 30px -14px rgba(20,22,26,.14)}
+:root{--bg:#0b0e13;--card:#12161e;--ink:#e8eaf0;--ink2:#9aa3b2;--ink3:#5f6b7d;--line:#212836;--line2:#1a212e;--soft:#1a212e;
+--red:#ff5459;--amber:#f5a524;--green:#2fd08c;--r:14px;color-scheme:dark;
+--mono:ui-monospace,"SF Mono","JetBrains Mono","Roboto Mono",Menlo,Consolas,monospace;
+--sh:0 1px 2px rgba(0,0,0,.35),0 14px 34px -18px rgba(0,0,0,.6)}
 *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:76px}
-body{margin:0;background:var(--bg);color:var(--ink);font:14.5px/1.7 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
-a{color:#2f6bdb;text-decoration:none}a:hover{text-decoration:underline}
+body{margin:0;background:radial-gradient(1200px 480px at 50% -120px,#141b28 0%,var(--bg) 62%) var(--bg);color:var(--ink);font:14.5px/1.7 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:#4c8dff;text-decoration:none}a:hover{text-decoration:underline}
 small{color:var(--ink3);font-size:12.5px}b{font-weight:650}
-.top{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.85);backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--line)}
+.top{position:sticky;top:0;z-index:10;background:rgba(11,14,19,.82);backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--line)}
 .top .in{max-width:1200px;margin:0 auto;padding:0 28px;height:58px;display:flex;align-items:center;gap:30px}
-.brand{font-weight:750;font-size:15.5px;letter-spacing:-.01em;white-space:nowrap;display:flex;align-items:center;gap:10px}
-.brand i{width:10px;height:10px;border-radius:3px;background:linear-gradient(135deg,#e5484d,#b91c1c);box-shadow:0 0 0 4px rgba(217,45,32,.12)}
+.brand{font-weight:750;font-size:15.5px;letter-spacing:-.01em;white-space:nowrap;display:flex;align-items:center;gap:10px;color:var(--ink)}
+.brand i{width:10px;height:10px;border-radius:3px;background:linear-gradient(135deg,#ff5459,#c81e2b);box-shadow:0 0 0 4px rgba(255,84,89,.14)}
 .top nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}.top nav::-webkit-scrollbar{display:none}
 .top nav a{color:var(--ink2);padding:6px 11px;border-radius:999px;font-size:13px;white-space:nowrap;transition:background .15s}
 .top nav a:hover{background:var(--soft);color:var(--ink);text-decoration:none}
 main{max-width:1200px;margin:0 auto;padding:34px 28px 64px}
 .title{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:22px}
-.title h1{font-size:30px;line-height:1.15;letter-spacing:-.025em;margin:0;font-weight:800}
+.title h1{font-size:30px;line-height:1.15;letter-spacing:-.025em;margin:0;font-weight:800;color:#f2f4f8}
 .title p{margin:8px 0 0;color:var(--ink2);font-size:14px}
 .stamp{color:var(--ink3);font-size:12.5px;text-align:right;line-height:1.6}
 .hero{display:grid;grid-template-columns:1.25fr 1fr 1.15fr;gap:18px;margin-bottom:22px}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px 24px;display:flex;flex-direction:column;gap:10px;min-width:0;box-shadow:var(--sh)}
-.kpi.main{background:linear-gradient(165deg,#fff 45%,#fef6f5)}
+.kpi.main{background:linear-gradient(165deg,var(--card) 45%,#1a1216)}
 .eyebrow{font-size:11px;font-weight:700;color:var(--ink3);letter-spacing:.09em;text-transform:uppercase}
 .num{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-.big{font-size:58px;font-weight:780;line-height:.95;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
-.mid{font-size:40px;font-weight:750;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.big{font-size:58px;font-weight:750;line-height:.95;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.mid{font-size:40px;font-weight:700;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
 .mid small{font-size:15px;font-weight:600;letter-spacing:0;margin-left:2px}
+.big,.mid,.mval,.counts b,td.n{font-family:var(--mono)}
 .pill{display:inline-flex;align-items:center;gap:6px;padding:3px 11px;border-radius:999px;font-size:12px;font-weight:650;white-space:nowrap}
-.scale{position:relative;height:6px;border-radius:999px;margin-top:8px;background:linear-gradient(90deg,#bfe6d2 0 60%,#fbe0a6 60% 80%,#f6c1c0 80%)}
-.scale.gray{background:#eceae6}
-.scale b{position:absolute;top:-5px;width:4px;height:16px;border-radius:2px;background:var(--ink);transform:translateX(-50%);box-shadow:0 0 0 2.5px #fff}
+.scale{position:relative;height:6px;border-radius:999px;margin-top:8px;background:linear-gradient(90deg,#164a37 0 60%,#5c430f 60% 80%,#6b1f24 80%)}
+.scale.gray{background:#232b3a}
+.scale b{position:absolute;top:-5px;width:4px;height:16px;border-radius:2px;background:#f2f4f8;transform:translateX(-50%);box-shadow:0 0 0 2.5px var(--card)}
 .ticks{position:relative;height:18px;font-size:11px;color:var(--ink3);font-variant-numeric:tabular-nums}
 .ticks span{position:absolute;top:2px;white-space:nowrap}.ticks span:nth-child(2){left:60%}.ticks span:nth-child(3){left:80%}.ticks span:last-child{right:0}
 .deltas{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--ink2)}.deltas b{font-variant-numeric:tabular-nums}
@@ -54,10 +56,10 @@ main{max-width:1200px;margin:0 auto;padding:34px 28px 64px}
 .counts div{background:var(--soft);border-radius:12px;padding:10px 12px}
 .counts b{display:block;font-size:23px;line-height:1.1;font-variant-numeric:tabular-nums}
 .counts span{font-size:12px;color:var(--ink2)}
-.seg{display:flex;gap:4px;margin-top:4px}.seg i{flex:1;height:9px;border-radius:4px;background:#ebe9e5}
+.seg{display:flex;gap:4px;margin-top:4px}.seg i{flex:1;height:9px;border-radius:4px;background:#232b3a}
 .kpi .note{font-size:12px;color:var(--ink3);line-height:1.6}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:24px 26px;margin-bottom:22px;min-width:0;box-shadow:var(--sh)}
-.card>h2{font-size:17.5px;line-height:1.35;margin:0;letter-spacing:-.01em;font-weight:750;display:flex;align-items:center;gap:10px}
+.card>h2{font-size:17.5px;line-height:1.35;margin:0;letter-spacing:-.01em;font-weight:750;display:flex;align-items:center;gap:10px;color:var(--ink)}
 .card>h2::before{content:"";width:4px;height:15px;border-radius:2px;background:var(--ink)}
 .card>.sub{color:var(--ink3);font-size:12.5px;margin:6px 0 16px}
 .card>h2+*:not(.sub){margin-top:16px}
@@ -69,61 +71,61 @@ main{max-width:1200px;margin:0 auto;padding:34px 28px 64px}
 table{border-collapse:collapse;width:100%;font-size:13.5px}
 th{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);text-align:left;padding:10px 12px;border-bottom:2px solid var(--line);white-space:nowrap}
 td{padding:13px 12px;border-bottom:1px solid var(--line2);vertical-align:top}
-tbody tr:not(.lay):hover td{background:#faf9f7}
+tbody tr:not(.lay):hover td{background:#161d29}
 tr:last-child td{border-bottom:0}
 .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 td.n>b,td.n b{font-size:14.5px}
 .why{color:var(--ink3);font-size:12.5px;line-height:1.6;margin-top:3px}
 .badge{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-size:11.5px;font-weight:700;white-space:nowrap;letter-spacing:.01em}
 .badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
-.s-triggered{background:#fef3f2;color:#b42318}.s-alert{background:#fffaeb;color:#b54708}
-.s-ok{background:#ecfdf3;color:#067647}.s-nodata{background:#f2f4f3;color:#667085}
-.s-news{background:#fef3f2;color:#b42318}
-.bar{display:inline-block;width:84px;height:6px;background:#eceae6;border-radius:999px;vertical-align:middle;margin-right:8px;overflow:hidden}
+.s-triggered{background:rgba(255,84,89,.14);color:#ff8a8e}.s-alert{background:rgba(245,165,36,.13);color:#ffb84d}
+.s-ok{background:rgba(47,208,140,.12);color:#3fe0a0}.s-nodata{background:#1e2530;color:#7a8496}
+.s-news{background:rgba(255,84,89,.14);color:#ff8a8e}
+.bar{display:inline-block;width:84px;height:6px;background:#232b3a;border-radius:999px;vertical-align:middle;margin-right:8px;overflow:hidden}
 .bar i{display:block;height:100%;border-radius:999px}
-.headline{font-size:15.5px;font-weight:650;line-height:1.65;padding:14px 18px;background:#faf9f7;border-left:3px solid var(--red);border-radius:0 12px 12px 0;margin:16px 0 8px}
+.headline{font-size:15.5px;font-weight:650;line-height:1.65;padding:14px 18px;background:#161b25;border-left:3px solid var(--red);border-radius:0 12px 12px 0;margin:16px 0 8px;color:var(--ink)}
 .sec h3{font-size:13px;font-weight:700;margin:18px 0 6px;color:var(--ink)}
 .sec ul{margin:0;padding-left:18px}.sec li{margin:4px 0;font-size:13.5px;line-height:1.65;color:var(--ink2)}
 .heat{border-collapse:separate;border-spacing:3px;width:auto}
 .heat td{padding:0;border:0;width:31px;height:25px;border-radius:6px}
 .heat td.name{width:auto;padding:0 14px 0 0;font-size:12.5px;color:var(--ink2);white-space:nowrap;border-radius:0}
 .heat th{font-size:11px;font-weight:600;padding:0 0 6px;border:0;text-align:center;color:var(--ink3);letter-spacing:0;text-transform:none}
-.h-triggered{background:#e5484d}.h-alert{background:#f3b23f}.h-ok{background:#b7e4cd}.h-nodata{background:#efeeeb}
+.h-triggered{background:#ff5459}.h-alert{background:#f5a524}.h-ok{background:#1b4a39}.h-nodata{background:#1a212e}
 .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--ink2)}
 .legend span{display:inline-flex;align-items:center;gap:6px}.legend i{width:12px;height:12px;border-radius:4px;display:inline-block}
 .minis{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.mini{border:1px solid var(--line);border-radius:14px;padding:14px 16px 8px;min-width:0;background:#fff;transition:box-shadow .15s}
-.mini:hover{box-shadow:var(--sh)}
-.mhead{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;font-size:13px;line-height:1.45;font-weight:600}
-.mval{font-size:20px;font-weight:750;font-variant-numeric:tabular-nums;margin:3px 0;letter-spacing:-.01em}.mval small{font-size:11.5px;font-weight:500;margin-left:4px;color:var(--ink3)}
+.mini{border:1px solid var(--line);border-radius:14px;padding:14px 16px 8px;min-width:0;background:var(--card);transition:border-color .15s}
+.mini:hover{border-color:#2a3342}
+.mhead{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;font-size:13px;line-height:1.45;font-weight:600;color:var(--ink)}
+.mval{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;margin:3px 0;letter-spacing:-.01em;color:#fff}.mval small{font-size:11.5px;font-weight:500;margin-left:4px;color:var(--ink3)}
 @media(max-width:1000px){.minis{grid-template-columns:1fr 1fr}}@media(max-width:700px){.minis{grid-template-columns:1fr}}
 .past details{border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-top:10px;transition:background .15s}
-.past details:hover{background:#faf9f7}
-.past details[open]{background:#faf9f7}
-.past summary{cursor:pointer;font-weight:600;font-size:13.5px;line-height:1.55;list-style:none}
+.past details:hover{background:#161b25}
+.past details[open]{background:#161b25}
+.past summary{cursor:pointer;font-weight:600;font-size:13.5px;line-height:1.55;list-style:none;color:var(--ink)}
 .past summary::-webkit-details-marker{display:none}
 .past summary::before{content:"›";display:inline-block;margin-right:8px;color:var(--ink3);transition:transform .15s}
 .past details[open] summary::before{transform:rotate(90deg)}
 .news{padding:16px 0;border-bottom:1px solid var(--line2)}.news:first-of-type{padding-top:4px}.news:last-child{border-bottom:0}
 .news .meta{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:7px}
 .news a.t{display:block;font-weight:650;color:var(--ink);font-size:14.5px;line-height:1.55}
-.news a.t:hover{color:#2f6bdb;text-decoration:none}
+.news a.t:hover{color:#4c8dff;text-decoration:none}
 .news .sum{color:var(--ink2);font-size:13.5px;margin-top:5px}
-.news .imp{margin-top:8px;font-size:12.5px;color:var(--ink2);background:#faf9f7;border-left:2px solid #d8d5cf;border-radius:0 8px 8px 0;padding:8px 12px}
-.stars{color:#e8a33d;letter-spacing:1.5px;font-size:12px}.stars em{color:#e3e1dc;font-style:normal}
-.tag{background:var(--soft);color:var(--ink2);border-radius:6px;padding:2px 8px;font-size:12px;font-weight:500}
+.news .imp{margin-top:8px;font-size:12.5px;color:var(--ink2);background:#161b25;border-left:2px solid #3a4557;border-radius:0 8px 8px 0;padding:8px 12px}
+.stars{color:#f5a524;letter-spacing:1.5px;font-size:12px}.stars em{color:#2a3242;font-style:normal}
+.tag{background:#1e2530;color:var(--ink2);border-radius:6px;padding:2px 8px;font-size:12px;font-weight:500}
 .nheat{border-collapse:separate;border-spacing:3px}
 .nheat td,.nheat th{text-align:center;border:0;padding:4px 2px;font-size:12px}
 .nheat td{border-radius:6px;font-weight:650;font-variant-numeric:tabular-nums}
 .nheat td:first-child{text-align:left;white-space:nowrap;padding-right:12px;font-weight:500;color:var(--ink2)}
 .prose{max-width:none}
-.prose h1{font-size:21px;line-height:1.45;letter-spacing:-.01em;margin:16px 0 12px}
-.prose h2{font-size:15.5px;margin:24px 0 8px;padding-top:18px;border-top:1px solid var(--line)}
-.prose h3{font-size:14px;margin:16px 0 4px}
-.prose p,.prose li{font-size:14.5px;line-height:1.85;color:#2b2f36}
+.prose h1{font-size:21px;line-height:1.45;letter-spacing:-.01em;margin:16px 0 12px;color:var(--ink)}
+.prose h2{font-size:15.5px;margin:24px 0 8px;padding-top:18px;border-top:1px solid var(--line);color:var(--ink)}
+.prose h3{font-size:14px;margin:16px 0 4px;color:var(--ink)}
+.prose p,.prose li{font-size:14.5px;line-height:1.85;color:#c6ccd8}
 .prose ul,.prose ol{padding-left:22px}.prose li{margin:5px 0}
 .prose table{margin:12px 0}.prose th,.prose td{border-bottom:1px solid var(--line)}
-.nalert{margin-top:10px;font-size:12.5px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}.nalert a{color:#b42318}
+.nalert{margin-top:10px;font-size:12.5px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}.nalert a{color:#ff8a8e}
 .lead{color:var(--ink2);margin:8px 0 16px;font-size:14px;line-height:1.75}.lead b{color:var(--ink)}
 footer{color:var(--ink3);font-size:12px;line-height:1.75;margin-top:12px;text-align:center}
 .phase{display:grid;grid-template-columns:1.5fr 1fr;gap:36px;align-items:start}
@@ -134,19 +136,19 @@ footer{color:var(--ink3);font-size:12px;line-height:1.75;margin-top:12px;text-al
 .mx{display:grid;grid-template-columns:auto 1fr 1fr;gap:6px;font-size:12px;color:var(--ink3)}
 .mx .h{text-align:center;padding-bottom:2px;font-weight:600}
 .mx .v{display:flex;align-items:center;padding-right:6px;white-space:nowrap;font-weight:600}
-.mx .c{border:1px solid var(--line);border-radius:12px;padding:18px 6px;text-align:center;font-weight:650;font-size:13.5px;color:#b6bcc6;background:#faf9f7}
-.mx .c.on{color:#fff;border-color:transparent;box-shadow:0 6px 16px -6px rgba(20,22,26,.28)}
+.mx .c{border:1px solid #2a3342;border-radius:12px;padding:18px 6px;text-align:center;font-weight:650;font-size:13.5px;color:#5f6b7d;background:#161b25}
+.mx .c.on{color:#fff;border-color:transparent;box-shadow:0 6px 20px -6px rgba(0,0,0,.5)}
 .layers{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.layers>div{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;font-weight:600;background:#faf9f7;border:1px solid var(--line2);border-radius:10px;padding:8px 12px}
+.layers>div{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;font-weight:600;background:#161b25;border:1px solid var(--line2);border-radius:10px;padding:8px 12px;color:var(--ink)}
 .layers .dot{display:inline-block;width:8px;height:8px;border-radius:3px;margin-right:8px;vertical-align:1px}
-.layers small{margin-left:7px;font-weight:500}
+.layers small{margin-left:7px;font-weight:500;color:var(--ink3)}
 .dimrow{display:grid;grid-template-columns:5.5em 1fr 2em;gap:10px;align-items:center;font-size:12.5px;color:var(--ink2);margin:5px 0}
 .dimrow .bar{width:100%;margin:0}.dimrow b{text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
-tr.lay td{font-size:12px;font-weight:700;letter-spacing:.05em;padding:9px 12px;border-bottom:1px solid var(--line);text-transform:uppercase}
-tr.lay small{font-weight:500;margin-left:10px;text-transform:none;letter-spacing:0}
+tr.lay td{font-size:12px;font-weight:700;letter-spacing:.05em;padding:9px 12px;border-bottom:1px solid var(--line);text-transform:uppercase;color:var(--ink)}
+tr.lay small{font-weight:500;margin-left:10px;text-transform:none;letter-spacing:0;color:var(--ink3)}
 tr.lay .badge{margin-left:10px}
-.h3{font-size:15px;margin:26px 0 10px;font-weight:700;letter-spacing:-.01em}.h3:first-of-type{margin-top:8px}
-.callout{background:#fffaeb;border:1px solid #fedf89;border-radius:12px;padding:12px 16px;font-size:13px;line-height:1.7;color:#93370d;margin:0 0 16px}
+.h3{font-size:15px;margin:26px 0 10px;font-weight:700;letter-spacing:-.01em;color:var(--ink)}.h3:first-of-type{margin-top:8px}
+.callout{background:rgba(245,165,36,.08);border:1px solid rgba(245,165,36,.32);border-radius:12px;padding:12px 16px;font-size:13px;line-height:1.7;color:#ffb84d;margin:0 0 16px}
 .method ul{margin:0;padding-left:20px;columns:2;column-gap:36px}.method li{margin:0 0 10px;font-size:13.5px;line-height:1.8;color:var(--ink2);break-inside:avoid}.method li b{color:var(--ink)}
 @media(max-width:1000px){.phase{grid-template-columns:1fr;gap:24px}.method ul{columns:1}}
 @media(max-width:1000px){.hero{grid-template-columns:1fr 1fr}.grid-news{grid-template-columns:1fr}.sticky{position:static}}
@@ -176,7 +178,7 @@ def _note_html(note: commentary.Note, with_headline: bool = True) -> str:
 
 
 DIR_CLASS = {"risk_up": "s-triggered", "risk_down": "s-ok", "neutral": "s-nodata"}
-LAYER_COLOR = {"demand": "#2563eb", "price": "#d92d20", "financing": "#7c3aed", "climate": "#64748b"}
+LAYER_COLOR = {"demand": "#4c8dff", "price": "#ff5459", "financing": "#a78bfa", "climate": "#8b94a7"}
 
 
 def _news_html(items: list, trigger_names: dict) -> str:
@@ -205,25 +207,25 @@ def _heat_news_html(df: pd.DataFrame, rate_hist: dict | None = None) -> str:
         cells = []
         for w in weeks:
             r = df[(df.topic == topic) & (df.week_end == w)].iloc[0]
-            style = ("background:#fce4e2;color:#b42318" if r.net > 0 else "background:#dcf2e7;color:#067647" if r.net < 0
-                     else "background:#f4f3f1;color:#667085")
+            style = ("background:rgba(255,84,89,.16);color:#ff8a8e" if r.net > 0 else "background:rgba(47,208,140,.13);color:#3fe0a0" if r.net < 0
+                     else "background:#1a212e;color:#7a8496")
             cells.append(f"<td style='{style}' title='净方向 {r.net:+d}'>{r['count'] or ''}</td>")
         rows.append(f"<tr><td>{label}</td>{''.join(cells)}</tr>")
     if rate_hist:
         cells = "".join(
-            f"<td style='color:{LEVEL_COLOR.get(rate_hist[w].level, '#c4c8cf')};font-size:13px'>{rate_hist[w].level or '—'}</td>"
+            f"<td style='color:{LEVEL_COLOR.get(rate_hist[w].level, '#3d4b63')};font-size:13px'>{rate_hist[w].level or '—'}</td>"
             for w in weeks)
         rows.append(f"<tr><td><b>分析师评级</b></td>{cells}</tr>")
     return (f"<div class=tw><table class=nheat><tr><th></th>{head}</tr>{''.join(rows)}</table></div>"
             "<p><small>数字 = 重要性 ≥ 3 的新闻条数。红 = 风险上升的多于下降的，绿相反。每列为截至该日的 7 天。</small></p>")
 
 
-LEVEL_COLOR = {1: "#1f9d61", 2: "#6cbf8a", 3: "#8a94a6", 4: "#f0a020", 5: "#e5484d"}
+LEVEL_COLOR = {1: "#23b26d", 2: "#5fd39a", 3: "#8b94a7", 4: "#f5a524", 5: "#ff5459"}
 
 
 def _rating_html(r: news.Rating) -> str:
     if r.level is None:
-        return ("<div class=kpi><div class=eyebrow>分析师风险评级</div><div class=mid style='color:#c4c8cf'>—</div>"
+        return ("<div class=kpi><div class=eyebrow>分析师风险评级</div><div class=mid style='color:#3d4b63'>—</div>"
                 "<div class=note>近 7 天新闻不足</div></div>")
     rule = f"规则值 {r.rule_level}（近 7 天新闻净方向 {r.balance:+.2f}，权重 {r.weight:g}）"
     if r.forced:
@@ -231,7 +233,7 @@ def _rating_html(r: news.Rating) -> str:
     if r.reason:
         adj = r.level - r.rule_level
         rule += f"；分析师{'维持' if adj == 0 else '上调' if adj > 0 else '下调'}{'' if adj == 0 else f' {abs(adj)} 级'}：{html.escape(r.reason)}"
-    seg = "".join(f"<i style='background:{LEVEL_COLOR[r.level] if k <= r.level else '#e7ebf1'}'></i>" for k in range(1, 6))
+    seg = "".join(f"<i style='background:{LEVEL_COLOR[r.level] if k <= r.level else '#232b3a'}'></i>" for k in range(1, 6))
     return (f"<div class=kpi><div class=eyebrow>分析师风险评级 · 新闻</div>"
             f"<div class=num><div class=mid style='color:{LEVEL_COLOR[r.level]}'>{r.level}<small>/5</small></div>"
             f"<span class=pill style='background:{LEVEL_COLOR[r.level]}1f;color:{LEVEL_COLOR[r.level]}'>{news.LEVELS[r.level]}</span></div>"
@@ -244,7 +246,7 @@ def _level_word(v: float) -> str:
 
 def _bar(v: float) -> str:
     """v 是 0–100。"""
-    color = "#e5484d" if v >= 80 else "#f0a020" if v >= 60 else "#94a3b8"
+    color = "#ff5459" if v >= 80 else "#f5a524" if v >= 60 else "#5f6b7d"
     return f"<div class=bar><i style='width:{v:.0f}%;background:{color}'></i></div>"
 
 
@@ -322,7 +324,7 @@ def _signal_history(raw: pd.Series, t, ind, dates) -> pd.Series:
 
 
 TICK = {"pct": ".0%", "pp": "+.2f", "num": ".3~g"}
-POINT = {"triggered": "#e5484d", "alert": "#f0a020", "ok": "#1f9d61", "nodata": "#94a3b8"}
+POINT = {"triggered": "#ff5459", "alert": "#f5a524", "ok": "#2fd08c", "nodata": "#5f6b7d"}
 
 
 def _signal_charts(series, cfg, states: dict, start: pd.Timestamp, end: pd.Timestamp) -> str:
@@ -345,18 +347,18 @@ def _signal_charts(series, cfg, states: dict, start: pd.Timestamp, end: pd.Times
         else:
             warn, bad = (t.trigger, t.alert), (lo, t.trigger)
         fig = go.Figure()
-        fig.add_hrect(y0=warn[0], y1=warn[1], fillcolor="#f0a020", opacity=0.12, line_width=0, layer="below")
-        fig.add_hrect(y0=bad[0], y1=bad[1], fillcolor="#e5484d", opacity=0.12, line_width=0, layer="below")
+        fig.add_hrect(y0=warn[0], y1=warn[1], fillcolor="#f5a524", opacity=0.13, line_width=0, layer="below")
+        fig.add_hrect(y0=bad[0], y1=bad[1], fillcolor="#ff5459", opacity=0.13, line_width=0, layer="below")
         quarterly = cfg.indicator(t.series).publication_lag_days > 0
-        fig.add_scatter(x=hist.index, y=hist.values, mode="lines", line=dict(color="#334155", width=1.8, shape="hv" if quarterly else "linear"),
+        fig.add_scatter(x=hist.index, y=hist.values, mode="lines", line=dict(color="#c9d5e8", width=1.8, shape="hv" if quarterly else "linear"),
                         hovertemplate=f"%{{x|%Y-%m-%d}}<br>%{{y:{TICK.get(t.unit, '.2f')}}}<extra></extra>")
         fig.add_scatter(x=[hist.index[-1]], y=[hist.iloc[-1]], mode="markers", hoverinfo="skip",
                         marker=dict(size=8, color=POINT[s.status], line=dict(color="#fff", width=2)))
         fig.update_layout(height=150, margin=dict(l=0, r=4, t=4, b=0), showlegend=False,
                           paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-                          font=dict(family="Inter,-apple-system,'PingFang SC',sans-serif", size=10.5, color="#9ba1ad"),
-                          xaxis=dict(showgrid=False, linecolor="#e9e6e0", tickformat="%y年%-m月", nticks=4),
-                          yaxis=dict(range=[lo, hi], gridcolor="#f0efec", zeroline=False, tickformat=TICK.get(t.unit, ".2f"), nticks=4))
+                          font=dict(family="Inter,-apple-system,'PingFang SC',sans-serif", size=10.5, color="#5f6b7d"),
+                          xaxis=dict(showgrid=False, linecolor="#212836", tickformat="%y年%-m月", nticks=4),
+                          yaxis=dict(range=[lo, hi], gridcolor="#1a212e", zeroline=False, tickformat=TICK.get(t.unit, ".2f"), nticks=4))
         cards.append(
             f"<div class=mini><div class=mhead><b>{html.escape(t.name)}</b>{_badge(s.status)}</div>"
             f"<div class=mval>{triggers.fmt(s.value, t.unit)} <small>警戒 {triggers.fmt_threshold(t.alert, t.unit)} · 触发 {triggers.fmt_threshold(t.trigger, t.unit)}</small></div>"
@@ -482,7 +484,7 @@ def _phase_card(ph: int, layers: dict, now: dict, cfg, episodes: list, alerts: d
     role = {"demand": "定阶段", "price": "定阶段", "financing": "背景", "climate": "背景"}
     lay = "".join(f"<div><span><i class=dot style='background:{LAYER_COLOR[k]}'></i>{label}<small>{role[k]}</small></span>"
                   f"{_badge(layers[k])}</div>" for k, label in LAYERS.items())
-    return (f"<section class='card phase' style='border-top:3px solid {color};background:linear-gradient(165deg,{color}0a 0%,#fff 50%)'>"
+    return (f"<section class='card phase' style='border-top:3px solid {color};background:linear-gradient(165deg,{color}14 0%,#12161e 55%)'>"
             f"<div><div class=eyebrow>当前阶段</div>"
             f"<div class=pname style='color:{color}'>{name}</div><p class=pdesc>{desc}</p><ul class=basis>{''.join(basis)}</ul></div>"
             f"<div>{matrix}<div class=layers>{lay}</div>"
@@ -577,19 +579,19 @@ def build(cdn: bool = False, asof: pd.Timestamp | None = None) -> str:
     font = "Inter,-apple-system,'PingFang SC','Microsoft YaHei','Noto Sans CJK SC',sans-serif"
     ai_dims = [d for d in cfg.group_dims("ai") if d in res.dimensions]
     trend = go.Figure()
-    trend.add_hrect(y0=cfg.alerts["score_yellow"], y1=cfg.alerts["score_red"], fillcolor="#f0a020", opacity=0.07, line_width=0, layer="below")
-    trend.add_hrect(y0=cfg.alerts["score_red"], y1=100, fillcolor="#e5484d", opacity=0.07, line_width=0, layer="below")
+    trend.add_hrect(y0=cfg.alerts["score_yellow"], y1=cfg.alerts["score_red"], fillcolor="#f5a524", opacity=0.07, line_width=0, layer="below")
+    trend.add_hrect(y0=cfg.alerts["score_red"], y1=100, fillcolor="#ff5459", opacity=0.07, line_width=0, layer="below")
     trend.add_scatter(x=mk.index, y=mk.rolling(4).mean(), name="市场宽松度（非 AI 专属）", visible="legendonly",
-                      line=dict(width=1.6, dash="dot", color="#9ba1ad"), hovertemplate="%{y:.0f}")
-    for d, c in zip(ai_dims, ("#2563eb", "#d98a00")):
+                      line=dict(width=1.6, dash="dot", color="#5f6b7d"), hovertemplate="%{y:.0f}")
+    for d, c in zip(ai_dims, ("#4c8dff", "#f5a524")):
         s = res.dimensions[d][res.dimensions.index >= tot.index[0]]
         trend.add_scatter(x=s.index, y=s.rolling(4).mean(), name=cfg.dimensions[d]["label"], line=dict(width=1.5, color=c), hovertemplate="%{y:.0f}")
-    trend.add_scatter(x=tot.index, y=tot.rolling(4).mean(), name="AI 泡沫温度", line=dict(width=3, color="#e5484d"), hovertemplate="%{y:.0f}")
+    trend.add_scatter(x=tot.index, y=tot.rolling(4).mean(), name="AI 泡沫温度", line=dict(width=3, color="#ff5459"), hovertemplate="%{y:.0f}")
     trend.update_layout(height=340, margin=dict(l=0, r=8, t=8, b=0), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-                        font=dict(family=font, size=12, color="#565c68"), hovermode="x unified",
+                        font=dict(family=font, size=12, color="#9aa3b2"), hovermode="x unified",
                         legend=dict(orientation="h", y=1.02, yanchor="bottom", x=0, bgcolor="rgba(0,0,0,0)"),
-                        yaxis=dict(range=[0, 100], gridcolor="#f0efec", zeroline=False, tickvals=[0, 20, 40, 60, 80, 100]),
-                        xaxis=dict(showgrid=False, linecolor="#e9e6e0", tickformat="%Y-%m"))
+                        yaxis=dict(range=[0, 100], gridcolor="#1a212e", zeroline=False, tickvals=[0, 20, 40, 60, 80, 100]),
+                        xaxis=dict(showgrid=False, linecolor="#212836", tickformat="%Y-%m"))
 
     dim_html = _dimension_section(res, cfg, "ai")
     market_html = _dimension_section(res, cfg, "market")
@@ -647,10 +649,10 @@ def build(cdn: bool = False, asof: pd.Timestamp | None = None) -> str:
 <div class=deltas>{_delta(d1, '较上周')}{_delta(d4, '较 4 周前')}</div>
 <div>{dim_rows}</div><div class=note>温度 = 这两项的平均。衡量“吹得多大”，不衡量“破没破”。</div></div>
 <div class=kpi><div class=eyebrow>市场宽松度 · 大环境</div>
-<div class=num><div class=mid>{mk_now:.0f}</div><span class=pill style='background:#eef1f6;color:#475569'>{_level_word(mk_now)}</span></div>
+<div class=num><div class=mid>{mk_now:.0f}</div><span class=pill style='background:#1e2530;color:#9aa3b2'>{_level_word(mk_now)}</span></div>
 <div class="scale gray"><b style='left:{min(max(mk_now, 1), 99):.0f}%'></b></div>
 <div class=note>信用、波动、利率，不是 AI 专属。高 = 资金松、市场自满，泡沫更容易被吹大。</div>
-<div class=note>破裂信号 {len(now)} 项：<b class=up>{counts['triggered']}</b> 触发 · <b style='color:#d98a00'>{counts['alert']}</b> 警戒 · <b class=down>{counts['ok']}</b> 正常{f" · {counts['nodata']} 无数据" if counts['nodata'] else ''}。个数只作参考，价格类信号总是一起亮。</div></div>
+<div class=note>破裂信号 {len(now)} 项：<b class=up>{counts['triggered']}</b> 触发 · <b style='color:#f5a524'>{counts['alert']}</b> 警戒 · <b class=down>{counts['ok']}</b> 正常{f" · {counts['nodata']} 无数据" if counts['nodata'] else ''}。个数只作参考，价格类信号总是一起亮。</div></div>
 {_rating_html(rate)}
 </section>
 

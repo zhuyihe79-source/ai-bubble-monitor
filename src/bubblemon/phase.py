@@ -20,7 +20,7 @@ PHASES = {
     4: ("破裂确认", "价格跌破触发线，财报也证实需求转负。"),
 }
 SHORT = {1: "扩张", 2: "价格回调", 3: "需求偏弱", 4: "破裂确认"}
-PHASE_COLOR = {1: "#1f9d61", 2: "#f0a020", 3: "#8a94a6", 4: "#e5484d"}
+PHASE_COLOR = {1: "#23b26d", 2: "#f5a524", 3: "#8b94a7", 4: "#ff5459"}
 
 
 def layer_states(statuses: dict[str, str], cfg: Config) -> dict[str, str]:
