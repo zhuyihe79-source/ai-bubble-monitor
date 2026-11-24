@@ -107,6 +107,10 @@ td.n>b,td.n b{font-size:14.5px}
 .past summary::before{content:"›";display:inline-block;margin-right:8px;color:var(--ink3);transition:transform .15s}
 .past details[open] summary::before{transform:rotate(90deg)}
 .news{padding:16px 0;border-bottom:1px solid var(--line2)}.news:first-of-type{padding-top:4px}.news:last-child{border-bottom:0}
+.nday{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:700;color:var(--ink);letter-spacing:.04em;margin:22px 0 0;padding:0 0 8px;border-bottom:1px solid var(--line);font-family:var(--mono)}
+.nday:first-child{margin-top:2px}.nday span{color:var(--ink3);font-weight:500;font-family:inherit}
+.nday em{font-style:normal;font-size:11px;font-weight:700;color:#3fe0a0;background:rgba(47,208,140,.12);border-radius:999px;padding:1px 8px}
+.nday+.news{padding-top:12px}
 .news .meta{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:7px}
 .news a.t{display:block;font-weight:650;color:var(--ink);font-size:14.5px;line-height:1.55}
 .news a.t:hover{color:#4c8dff;text-decoration:none}
@@ -185,7 +189,14 @@ def _news_html(items: list, trigger_names: dict) -> str:
     if not items:
         return "<p><small>最近 7 天还没有新闻数据（等待分析师定时任务运行）。</small></p>"
     rows = []
-    for x in sorted(items, key=lambda x: (-x.importance, -x.published.value))[:25]:
+    day = None
+    # 按日期分组、新的在上：按重要性全局排序时，几天前的五星新闻会一直压在最上面，看起来像没更新
+    for x in sorted(items, key=lambda x: (-x.published.value, -x.importance)):
+        if x.published != day:
+            day = x.published
+            n = sum(y.published == day for y in items)
+            rows.append(f"<div class=nday>{day:%m-%d} 周{'一二三四五六日'[day.weekday()]}<span>{n} 条</span>"
+                        f"{'<em>最新</em>' if not rows else ''}</div>")
         sig = f"<span class=tag>关联：{html.escape(trigger_names.get(x.signal, x.signal))}</span>" if x.signal else ""
         rows.append(
             f"<div class=news><div class=meta><span class=stars title='重要性 {x.importance}/5'>{'★' * x.importance}<em>{'★' * (5 - x.importance)}</em></span>"
@@ -685,7 +696,7 @@ def build(cdn: bool = False, asof: pd.Timestamp | None = None) -> str:
 点图例里的“市场宽松度”可以叠加大环境（信用利差、VIX、利率）。</small></p></div>
 
 <div class=card id=news><h2>新闻热度</h2><div class=sub>近 8 周，按主题</div>{_heat_news_html(heat_df, rate_hist)}</div>
-<div class=card><h2>近 7 天要闻</h2><div class=sub>{len(week_news)} 条，按重要性排序：风险上升 {n_dir['risk_up']} 条 · 风险下降 {n_dir['risk_down']} 条 · 中性 {n_dir['neutral']} 条</div><div class=prose>{_news_html(week_news, trigger_names)}</div></div>
+<div class=card><h2>近 7 天要闻</h2><div class=sub>{len(week_news)} 条，按日期从新到旧，同一天内按重要性：风险上升 {n_dir['risk_up']} 条 · 风险下降 {n_dir['risk_down']} 条 · 中性 {n_dir['neutral']} 条</div><div class=prose>{_news_html(week_news, trigger_names)}</div></div>
 
 <div class=card id=build><h2>AI 泡沫温度是怎么来的</h2>{dim_html}
 <p><small>维度分 = 该维度内各指标风险分位的平均 × 100；风险分位 = 指标在自身过去最多 15 年里的位置，越高越接近泡沫。贡献合计等于分数变化（有数据的维度数变化时会有小误差）。</small></p></div>
