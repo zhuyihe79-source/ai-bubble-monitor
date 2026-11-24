@@ -1,10 +1,10 @@
 {
   "date": "2026-11-24",
-  "generated_at": "2026-11-24T07:55:00+08:00",
+  "generated_at": "2026-11-24T11:55:00+08:00",
   "window": "2026-11-23 至 2026-11-24",
   "assessment": {
     "level": 4,
-    "reason": "维持规则值4级（前日分析师为5级）：黄仁勋复职、信用利差回落，加上HPE订单和Applied Digital新租约，是本次有分量的反面证据，NVDA回撤收窄到31%，价格层退出触发；但SEC与司法部调查未了结，Anthropic和新云转向高息债，融资层仍在触发，不足以下调到3级。"
+    "reason": "维持规则值4级：黄仁勋复职（重要性5）和随后亚洲股市大涨，让价格层退出触发、阶段回到扩张，但它和上周SEC调查同属一个事件，两条5分互相抵消后不宜再下调；融资层仍在触发，Meta推迟600亿美元增发、市场已定价12月加息，加上Anthropic和新云转向高息债，不足以降到3级。反面证据有台积电和三星表示供不应求，但都没有新的硬数字。"
   },
   "items": [
     {
@@ -116,6 +116,61 @@
       "direction": "risk_down",
       "summary": "HPE第四财季收入145亿美元、同比增50%，订单增88%；把2027财年收入增长指引上调到27%–35%（594亿–631亿美元）。非GAAP毛利率环比降220个基点，盘后股价跌约7%。",
       "implication": "AI服务器订单远快于出货，说明终端需求仍强；毛利率环比下滑反映存储涨价压力，市场对高预期的反应偏谨慎。"
+    },
+    {
+      "published": "2026-11-24",
+      "title": "Meta pauses Class C share issuance amid shareholder lawsuit",
+      "source": "Reuters（Investing.com转载，Meta 8-K交叉核实）",
+      "url": "https://www.investing.com/news/stock-market-news/meta-pauses-class-c-share-issuance-amid-shareholder-lawsuit-5046609",
+      "topic": "financing",
+      "importance": 4,
+      "direction": "risk_up",
+      "summary": "Meta在8-K中承诺诉讼审理期间不发行C类股，庭审定于2027年4月19日；原定用于支持AI投入的600亿美元按市价增发计划要等C类股上市后才启动。",
+      "implication": "最大的股权融资渠道之一被推迟至少半年，Meta在此期间的资本开支只能更多依靠经营现金流和发债，云厂商负债增速可能继续抬升。"
+    },
+    {
+      "published": "2026-11-23",
+      "title": "AI's spending slowdown",
+      "source": "Axios（援引FactSet）",
+      "url": "https://www.axios.com/2026/11/23/ai-spending-slowdown",
+      "topic": "demand",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "据Axios引用FactSet数据，三季报后分析师没有上调五大云厂商未来12个月capex一致预期；此前每个财报季预期都会明显上调。",
+      "implication": "资本开支没有下降，但“每季上调”的增量动能停了，最先受影响的是靠capex增量拿订单的设备、存储和电力供应商；这还不是需求层信号。"
+    },
+    {
+      "published": "2026-11-24",
+      "title": "TSMC dismisses AI market risks",
+      "source": "Taipei Times",
+      "url": "https://www.taipeitimes.com/News/biz/archives/2026/11/24/2003868252",
+      "topic": "memory",
+      "importance": 2,
+      "direction": "risk_down",
+      "summary": "台积电周一发表声明，称全球AI需求仍在增长、先进制程需求“极为强劲”且供给偏紧；但也承认消费类和价格敏感市场受零部件涨价冲击。",
+      "implication": "核心代工厂在抛售中重申供不应求，说明订单端暂未见松动；属公司表态、无新数字，分量有限。"
+    },
+    {
+      "published": "2026-11-24",
+      "title": "Report: Samsung's 2027 DRAM Supply Is Effectively Sold Out",
+      "source": "TechPowerUp（援引韩国Economy Tribune）",
+      "url": "https://www.techpowerup.com/355146/report-samsungs-2027-dram-supply-is-effectively-sold-out",
+      "topic": "memory",
+      "importance": 2,
+      "direction": "risk_down",
+      "summary": "据韩国Economy Tribune报道，三星2027–2029年存储产能大多已被长约锁定，2027年常规DRAM晶圆基本售罄；公司仅确认HBM已售完。",
+      "implication": "与高盛预测2028年价格下行形成对照，至少2027年存储仍是卖方市场；但消息来自匿名人士，且长约本身会放大将来需求转弱时的违约和重议风险。"
+    },
+    {
+      "published": "2026-11-24",
+      "title": "Asian stocks rally as Huang's Nvidia return revives AI trade",
+      "source": "Reuters（Yahoo Finance转载）",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/asian-stocks-rally-huangs-nvidia-013042563.html",
+      "topic": "financing",
+      "importance": 3,
+      "direction": "neutral",
+      "summary": "周二台股涨9.1%、韩国KOSPI涨7.5%、日经涨4.5%；同时期货市场已把美联储12月加息定价为确定事件，美国10年期国债收益率升至4.94%。",
+      "implication": "上周亚洲护盘后的抛压明显缓解，但AI反弹放松了金融条件，反而坐实了加息预期；融资成本上升对靠发债扩张的新云和AI实验室是新的压力。"
     }
   ]
 }
