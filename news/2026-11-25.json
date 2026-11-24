@@ -1,0 +1,119 @@
+{
+  "date": "2026-11-25",
+  "generated_at": "2026-11-25T07:50:00+08:00",
+  "window": "2026-11-24 至 2026-11-25",
+  "assessment": {"level": 4, "reason": "维持规则值4级：周二抛售让NVDA回撤重回35%触发线、阶段退回价格回调（重要性5），但它和前一天的复职（重要性5、风险下降）同属黄仁勋事件后的价格来回，回撤只越线约0.05个百分点；戴尔AI积压订单1323亿美元并上调全年指引，是比多条行情报道更重的需求硬数据，不宜升到5级。融资层仍在触发，CoreWeave债券创新低、Anthropic破发、AMD登记OpenAI和Meta认股权证股份，压力集中在新云和AI实验室，也不宜降到3级。融资和芯片主题本次未找到有分量的反面证据。"},
+  "items": [
+    {
+      "published": "2026-11-25",
+      "title": "Nvidia, AMD, Broadcom lead chip stocks lower as AI trade comes under pressure",
+      "source": "Yahoo Finance",
+      "url": "https://finance.yahoo.com/markets/article/nvidia-amd-broadcom-lead-chip-stocks-lower-as-ai-trade-comes-under-pressure-141635463.html",
+      "topic": "nvidia",
+      "importance": 5,
+      "direction": "risk_up",
+      "signal": "nvda_drawdown",
+      "summary": "复职次日AI交易回吐：NVDA收155.38美元、跌5.9%，美光和SK海力士跌约10%，Arm跌8%，台积电、ASML跌超3%，CoreWeave等新云同跌。",
+      "implication": "NVDA距52周高点回撤回到35.05%，刚越过触发线，看板阶段由扩张退回价格回调；说明复职只换来一天反弹，市场对需求和融资的疑虑没消。"
+    },
+    {
+      "published": "2026-11-25",
+      "title": "Dell Technologies Delivers Third Quarter Fiscal 2027 Financial Results",
+      "source": "Dell 新闻稿（Business Wire）",
+      "url": "https://investors.delltechnologies.com/news-events/press-releases/detail/1665/dell-technologies-delivers-third-quarter-fiscal-2027-financial-results",
+      "topic": "demand",
+      "importance": 4,
+      "direction": "risk_down",
+      "summary": "戴尔三季度收入549亿美元、同比增103%；AI订单602亿美元，积压订单创纪录达1323亿美元；全年收入指引由1920亿上调到2020亿美元。",
+      "implication": "抛售最猛的几周里AI服务器订单仍在加速，是需求未转弱的硬数据；但公司称订单已按客户资金和电力审核，说明新云融资能力已是瓶颈。"
+    },
+    {
+      "published": "2026-11-25",
+      "title": "Workday Announces Fiscal 2027 Third Quarter Financial Results",
+      "source": "Workday 新闻稿（SEC 8-K 附件99.1）",
+      "url": "https://www.sec.gov/Archives/edgar/data/1327811/000132781126000057/wday-10312026x991.htm",
+      "topic": "demand",
+      "importance": 2,
+      "direction": "risk_down",
+      "summary": "Workday三季度AI产品新增年度合同额近1.5亿美元，是去年同期三倍多；买过AI产品的核心客户超2200家；全年订阅收入指引上调到99.58亿美元。",
+      "implication": "企业软件端的AI付费在增长，但规模相对算力投入仍很小，只能算需求端的边际佐证。"
+    },
+    {
+      "published": "2026-11-24",
+      "title": "Anthropic shares tumble below $83 IPO price, on track to lose nearly $200 billion in value",
+      "source": "Reuters（Investing.com转载）",
+      "url": "https://www.investing.com/news/economy-news/anthropic-breaks-below-83-ipo-price-as-debut-rally-unravels-5047654",
+      "topic": "financing",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "Anthropic上市第四个交易日跌破83美元发行价，收81.91美元；超额配售行使后IPO毛额增至935亿美元，创始人兄妹各向承销商卖出逾337万股。",
+      "implication": "最大的AI股权融资刚完成就破发，二级市场对AI实验室的定价在收紧，后续融资只能更依赖高息债；但破发不减少已募到的资金。"
+    },
+    {
+      "published": "2026-11-25",
+      "title": "CoreWeave bonds hit record lows as AI trade concerns return",
+      "source": "Investing.com（援引Trace数据）",
+      "url": "https://uk.investing.com/news/stock-market-news/coreweave-bonds-hit-record-lows-as-ai-trade-concerns-return-5002423",
+      "topic": "financing",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "CoreWeave票息9%的2031年债跌至76.4美分，9.625%的2032年债跌至74.9美分，均创发行以来新低，抹去周一涨幅；股价跌11.9%。",
+      "implication": "最大新云的债券已按困境债附近定价，再融资成本高企；信用市场不认同复职能解决新云的债务问题。"
+    },
+    {
+      "published": "2026-11-24",
+      "title": "Advanced Micro Devices, Inc. Form S-3 Registration Statement: 336,934,324 Shares Common Stock Offered by the Selling Stockholders",
+      "source": "SEC EDGAR（AMD S-3ASR）",
+      "url": "https://www.sec.gov/Archives/edgar/data/2488/000119312526472370/d171551ds3asr.htm",
+      "topic": "financing",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "AMD登记约3.37亿股供股东转售，其中OpenAI和Meta认股权证各对应1.6亿股，须达成条件后才能行权；AMD周二收413.27美元、跌8.9%。",
+      "implication": "芯片商以股权换大客户订单的安排正走向可变现，等于客户用供应商的股票补贴算力采购，是循环交易的典型形态，也意味着潜在摊薄。"
+    },
+    {
+      "published": "2026-11-24",
+      "title": "BNP Paribas cuts Micron rating on risks to 2028 hyperscaler capacity plans",
+      "source": "Investing.com（Yahoo Finance转载）",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/bnp-paribas-cuts-micron-rating-145304912.html",
+      "topic": "memory",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "法巴把美光降至中性、目标价从1700美元砍到775美元，称DRAM和NAND供需2027年中趋于平衡、比原判断早一年，并称Rubin Ultra用HBM减少。",
+      "implication": "继高盛之后又一家把存储拐点前移，理由包括云厂商2028年扩产计划存疑；属券商观点，HBM减量说法尚无公司确认。"
+    },
+    {
+      "published": "2026-11-25",
+      "title": "HBM Prices to Double, Big Tech Shakes Market",
+      "source": "Chosun Ilbo（援引TrendForce、KB证券）",
+      "url": "https://www.chosun.com/english/industry-en/2026/11/25/MJRWY4RHTFD5ZELSZNQ7FCE3H4/",
+      "topic": "memory",
+      "importance": 2,
+      "direction": "neutral",
+      "summary": "TrendForce预计明年HBM均价涨122%；据KB证券估算，英伟达占HBM需求份额将从今年55%–58%降至38%，谷歌升至37%，AMD占13%。",
+      "implication": "HBM仍是卖方市场，需求在向谷歌TPU等自研芯片分散；对存储是利好，对英伟达是份额压力，净方向不明确。"
+    },
+    {
+      "published": "2026-11-25",
+      "title": "U.S. Prepares to Raise Tariffs on China and Other Countries",
+      "source": "The Wall Street Journal（To Vima转载）",
+      "url": "https://www.tovima.com/wsj/u-s-prepares-to-raise-tariffs-on-china-and-other-countries",
+      "topic": "memory",
+      "importance": 2,
+      "direction": "risk_up",
+      "summary": "据WSJ，美国贸易代表最快本周公布对中国、欧盟及另外14国产业补贴的调查结果，将对日本、韩国等多数出口商品加征关税，税率未定。",
+      "implication": "芯片和服务器供应链横跨日韩台和东南亚，新关税会抬高算力建设成本；周二半导体股下跌的部分原因来自此消息。"
+    },
+    {
+      "published": "2026-11-25",
+      "title": "Schumer accuses Nvidia CEO of violating US export control law",
+      "source": "Reuters（Investing.com转载）",
+      "url": "https://www.investing.com/news/stock-market-news/schumer-accuses-nvidia-ceo-of-violating-us-export-control-law-5048879",
+      "topic": "nvidia",
+      "importance": 2,
+      "direction": "risk_up",
+      "summary": "参议院民主党领袖舒默指控黄仁勋向中国运送先进芯片、违反出口管制法；两党议员呼吁立法收紧对华芯片出口。黄仁勋12月3日出席参院银行委员会听证。",
+      "implication": "复职没有终结政治风险，出口管制立法可能收紧；属黄仁勋事件后续，只是新的当事方表态，分量有限。"
+    }
+  ]
+}
