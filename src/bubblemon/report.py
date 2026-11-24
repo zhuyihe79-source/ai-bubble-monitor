@@ -107,6 +107,11 @@ td.n>b,td.n b{font-size:14.5px}
 .past summary::before{content:"›";display:inline-block;margin-right:8px;color:var(--ink3);transition:transform .15s}
 .past details[open] summary::before{transform:rotate(90deg)}
 .news{padding:16px 0;border-bottom:1px solid var(--line2)}.news:first-of-type{padding-top:4px}.news:last-child{border-bottom:0}
+.ntop{background:#161b25;border:1px solid var(--line);border-radius:12px;padding:14px 18px 6px;margin:2px 0 6px}
+.ntop-h{font-size:13px;font-weight:750;color:var(--ink);display:flex;gap:10px;align-items:baseline}.ntop-h span{font-size:12px;font-weight:500;color:var(--ink3)}
+.prose .ntop ol{margin:8px 0 0;padding:0;list-style:none}.prose .ntop li{padding:10px 0;border-top:1px solid var(--line2);margin:0}.ntop li:first-child{border-top:0}
+.ntop .meta{display:flex;gap:8px;align-items:center;margin-bottom:4px}
+.ntop a{color:var(--ink);font-weight:600;font-size:14px;line-height:1.6}.ntop a:hover{color:#4c8dff;text-decoration:none}
 .nday{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:700;color:var(--ink);letter-spacing:.04em;margin:22px 0 0;padding:0 0 8px;border-bottom:1px solid var(--line);font-family:var(--mono)}
 .nday:first-child{margin-top:2px}.nday span{color:var(--ink3);font-weight:500;font-family:inherit}
 .nday em{font-style:normal;font-size:11px;font-weight:700;color:#3fe0a0;background:rgba(47,208,140,.12);border-radius:999px;padding:1px 8px}
@@ -188,15 +193,23 @@ LAYER_COLOR = {"demand": "#4c8dff", "price": "#ff5459", "financing": "#a78bfa", 
 def _news_html(items: list, trigger_names: dict) -> str:
     if not items:
         return "<p><small>最近 7 天还没有新闻数据（等待分析师定时任务运行）。</small></p>"
+    top = sorted((x for x in items if x.importance >= 4), key=lambda x: (-x.importance, -x.published.value))[:6]
     rows = []
+    if top:
+        lis = "".join(
+            f"<li><div class=meta><span class=stars>{'★' * x.importance}<em>{'★' * (5 - x.importance)}</em></span>"
+            f"<span class='badge {DIR_CLASS[x.direction]}'>{news.DIRECTIONS[x.direction]}</span><small>{x.published:%m-%d}</small></div>"
+            f"<a href='{html.escape(x.url, quote=True)}' target=_blank rel=noopener>{html.escape(x.summary)}</a></li>" for x in top)
+        rows.append(f"<div class=ntop><div class=ntop-h>本周大事<span>重要性 4 星以上，按重要性</span></div><ol>{lis}</ol></div>")
     day = None
     # 按日期分组、新的在上：按重要性全局排序时，几天前的五星新闻会一直压在最上面，看起来像没更新
+    items_newest = max(x.published for x in items)
     for x in sorted(items, key=lambda x: (-x.published.value, -x.importance)):
         if x.published != day:
             day = x.published
             n = sum(y.published == day for y in items)
             rows.append(f"<div class=nday>{day:%m-%d} 周{'一二三四五六日'[day.weekday()]}<span>{n} 条</span>"
-                        f"{'<em>最新</em>' if not rows else ''}</div>")
+                        f"{'<em>最新</em>' if day == items_newest else ''}</div>")
         sig = f"<span class=tag>关联：{html.escape(trigger_names.get(x.signal, x.signal))}</span>" if x.signal else ""
         rows.append(
             f"<div class=news><div class=meta><span class=stars title='重要性 {x.importance}/5'>{'★' * x.importance}<em>{'★' * (5 - x.importance)}</em></span>"
