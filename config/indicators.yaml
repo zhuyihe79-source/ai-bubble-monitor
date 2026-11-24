@@ -104,8 +104,9 @@ indicators:
   - id: vix
     name: VIX 波动率指数
     dimension: sentiment
-    source: fred
-    params: {series: VIXCLS}
+    # 不用 FRED 的 VIXCLS：它次日才发布，晚上建站时总差一天；Yahoo 收盘后即有当天值，历史数值相同
+    source: yahoo
+    params: {kind: price, ticker: "^VIX"}
     direction: low        # 波动率越低，越自满
     frequency: daily
     max_stale_days: 10
@@ -316,7 +317,7 @@ triggers:
     alert: 0.75
     trigger: 1.50
     unit: pp
-    why: 信用市场通常先于股市定价风险；利差急升会抬高数据中心项目和 AI 新贵的融资成本。
+    why: 信用市场通常先于股市定价风险；利差急升会抬高数据中心项目和 AI 新贵的融资成本。FRED 晚一个工作日发布，数据日期通常比股价早一天。
 
   # ---- 情绪与利率：大环境 ----
   - id: vix_level
@@ -339,7 +340,7 @@ triggers:
     alert: 0.40
     trigger: 0.75
     unit: pp
-    why: AI 股票的价值主要来自远期现金流，对贴现率最敏感。
+    why: AI 股票的价值主要来自远期现金流，对贴现率最敏感。FRED 晚一个工作日发布，数据日期通常比股价早一天。
   - id: bubble_search
     name: Google 搜索 "AI bubble" + "AI crash" 热度
     layer: climate

@@ -101,3 +101,12 @@ def test_trends_combine_shares_scale_and_rescales_to_100():
     df = pd.DataFrame({"a": [10, 50, 20], "b": [10, 50, 0], "isPartial": [False] * 3})
     s = trends.combine(df, ["a", "b"])
     assert s.tolist() == [20.0, 100.0, 20.0]  # 相加后 100 = 两个词合计的最高周
+
+def test_drop_unfinished_bar_during_session():
+    s = pd.Series([1.0, 2.0], index=pd.to_datetime(["2026-11-20", "2026-11-23"]))
+    intraday = pd.Timestamp("2026-11-23 11:00", tz="America/New_York")
+    after_close = pd.Timestamp("2026-11-23 17:00", tz="America/New_York")
+    premarket_next = pd.Timestamp("2026-11-24 08:00", tz="America/New_York")
+    assert yahoo.drop_unfinished(s, intraday).index[-1] == pd.Timestamp("2026-11-20")
+    assert yahoo.drop_unfinished(s, after_close).index[-1] == pd.Timestamp("2026-11-23")
+    assert yahoo.drop_unfinished(s, premarket_next).index[-1] == pd.Timestamp("2026-11-23")

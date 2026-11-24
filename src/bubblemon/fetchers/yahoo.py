@@ -11,7 +11,16 @@ def _close(ticker: str, dividends: bool = True) -> pd.Series:
     if isinstance(close, pd.DataFrame):
         close = close.iloc[:, 0]
     close.index = pd.to_datetime(close.index).tz_localize(None)
-    return close.dropna()
+    return drop_unfinished(close.dropna())
+
+
+def drop_unfinished(close: pd.Series, now: pd.Timestamp | None = None) -> pd.Series:
+    """盘中运行时 yfinance 把当天还没收盘的最新价当作日线收盘价，去掉这根未完成的 K 线。"""
+    now = now if now is not None else pd.Timestamp.now(tz="America/New_York")
+    today = now.tz_localize(None).normalize()
+    if len(close) and close.index[-1] >= today and (now.hour, now.minute) < (16, 20):
+        return close[close.index < today]
+    return close
 
 
 def compute(kind: str, params: dict, load=_close) -> pd.Series:

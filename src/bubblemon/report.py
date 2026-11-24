@@ -621,6 +621,13 @@ def build(cdn: bool = False, asof: pd.Timestamp | None = None) -> str:
     changed = cfg.scoring.get("method_changed")
     stale = (f"<div class=callout>这篇周报写于 {changed} 算法调整之前，里面引用的 AI 泡沫温度和破裂信号个数是旧口径，"
              f"和本页现在的数字对不上；新闻事实和判断不受影响。</div>") if note_md and changed and note_md[0] < str(changed) else ""
+    if note_md:
+        # 周报按北京时间早上写，当时能看到的是前一个美股交易日的数据
+        seen = {s.trigger.id: s.status for s in triggers.evaluate(series, cfg, pd.Timestamp(note_md[0]) - pd.Timedelta(days=1))}
+        note_ph = phase.phase_of(phase.layer_states(seen, cfg))
+        if note_ph != ph:
+            stale += (f"<div class=callout>这篇周报写于 {note_md[0]}，当时阶段是「{phase.SHORT[note_ph]}」；"
+                      f"按 {tot.index[-1].date()} 的最新数据，阶段已变为「{phase.SHORT[ph]}」。周报里的数字是写作当时的，以本页上方为准。</div>")
     brief = (f"<div class=card id=brief><h2>分析师周报</h2><div class=sub>{note_md[0]} · AI 分析师阅读新闻后撰写</div>{stale}<div class=prose>"
              f"{markdown.markdown(note_md[1], extensions=['tables'])}</div></div>") if note_md else ""
 
