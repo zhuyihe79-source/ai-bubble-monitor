@@ -1,5 +1,6 @@
 import argparse
 import html
+import json
 from pathlib import Path
 
 import markdown
@@ -35,6 +36,8 @@ main{max-width:1200px;margin:0 auto;padding:34px 28px 64px}
 .title h1{font-size:30px;line-height:1.15;letter-spacing:-.025em;margin:0;font-weight:800;color:#f2f4f8}
 .title p{margin:8px 0 0;color:var(--ink2);font-size:14px}
 .stamp{color:var(--ink3);font-size:12.5px;text-align:right;line-height:1.6}
+#newver{position:fixed;top:68px;left:50%;transform:translateX(-50%);z-index:20;background:#4c8dff;color:#fff;font-weight:650;font-size:13.5px;padding:9px 18px;border-radius:999px;box-shadow:0 8px 24px -6px rgba(0,0,0,.6);white-space:nowrap}
+#newver:hover{text-decoration:none;background:#3b7bf0}
 .hero{display:grid;grid-template-columns:1.25fr 1fr 1.15fr;gap:18px;margin-bottom:22px}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px 24px;display:flex;flex-direction:column;gap:10px;min-width:0;box-shadow:var(--sh)}
 .kpi.main{background:linear-gradient(165deg,var(--card) 45%,#1a1216)}
@@ -515,7 +518,8 @@ def _phase_card(ph: int, layers: dict, now: dict, cfg, episodes: list, alerts: d
             f"<div class=note style='margin-top:10px'>“破”= 该层有信号越过触发线。融资、情绪与利率不改变阶段，但它们越差，回调来了越疼。</div></div></section>")
 
 
-def build(cdn: bool = False, asof: pd.Timestamp | None = None) -> str:
+def build(cdn: bool = False, asof: pd.Timestamp | None = None, built: pd.Timestamp | None = None) -> str:
+    built = built if built is not None else scoring.now()
     cfg = load_config()
     con = db.connect()
     series = {i.id: db.load_series(con, i.id) for i in cfg.indicators}
@@ -664,12 +668,13 @@ def build(cdn: bool = False, asof: pd.Timestamp | None = None) -> str:
               f"{_episodes_html(episodes, dd_trigger)}") if has_dd else ""
 
     return f"""<!doctype html><html lang=zh><head><meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1"><title>AI 泡沫监测 · {phase.SHORT[ph]} · {latest:.0f}°</title><style>{CSS}</style>{_plotly_tag(cdn)}</head><body>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=built content="{built:%Y-%m-%dT%H:%M:%S}"><title>AI 泡沫监测 · {phase.SHORT[ph]} · {latest:.0f}°</title><style>{CSS}</style>{_plotly_tag(cdn)}</head><body>
 <header class=top><div class=in><div class=brand><i></i>AI 泡沫监测</div>
 <nav><a href=#overview>概览</a><a href=#brief>周报</a><a href=#signals>破裂信号</a><a href=#analog>历史对照</a><a href=#trend>温度走势</a><a href=#news>新闻</a><a href=#build>分数构成</a><a href=#note>数据解读</a><a href=#detail>指标明细</a><a href=#method>方法与局限</a></nav></div></header>
+<a id=newver hidden href="" onclick="location.reload();return false">页面有新版本，点这里刷新</a>
 <main>
 <div class=title id=overview><div><h1>AI 经济泡沫监测</h1><p>先看处在哪个阶段，再看有多热。每个工作日用公开数据更新。</p></div>
-<div class=stamp>数据截至 {asof_day}<br>指标覆盖率 {res.coverage.iloc[-1]:.0%}</div></div>
+<div class=stamp>美股 {asof_day:%m-%d} 周{'一二三四五六日'[asof_day.weekday()]}收盘数据<br>页面更新于北京时间 {built:%m-%d %H:%M}<br>美股收盘后更新，通常在北京时间早上 7:40 前后；盘中不更新</div></div>
 
 {_phase_card(ph, layers, now, cfg, episodes, alerts)}
 
@@ -731,8 +736,11 @@ def build(cdn: bool = False, asof: pd.Timestamp | None = None) -> str:
 <li><b>分析师评级只基于新闻</b>，而收录新闻本身偏向坏消息（见“近 7 天要闻”里上升和下降的条数）。评级高说明坏消息密集，不代表数据已经转差。</li>
 <li>没有覆盖：未上市公司（OpenAI、Anthropic 等）的财务、表外和私募信贷融资、GPU 租金、企业端 AI 实际付费。这些只能靠新闻。</li>
 </ul></div>
-<footer>风险分位 = 该指标在自身过去最多 15 年历史中的位置（方向已处理，越高越接近泡沫）。财报数据按季末后 35 天视为可见。本页仅供参考，不构成投资建议。生成于北京时间 {scoring.now():%Y-%m-%d %H:%M}。</footer>
-</main></body></html>"""
+<footer>风险分位 = 该指标在自身过去最多 15 年历史中的位置（方向已处理，越高越接近泡沫）。财报数据按季末后 35 天视为可见。本页仅供参考，不构成投资建议。生成于北京时间 {built:%Y-%m-%d %H:%M}。</footer>
+</main><script>(()=>{{const me=document.querySelector('meta[name=built]').content;let done=false;
+async function check(){{if(done)return;try{{const r=await fetch('version.json?t='+Date.now(),{{cache:'no-store'}});if(!r.ok)return;
+const v=await r.json();if(v.built&&v.built!==me){{done=true;document.getElementById('newver').hidden=false}}}}catch(e){{}}}}
+document.addEventListener('visibilitychange',()=>{{if(document.visibilityState==='visible')check()}});setInterval(check,600000);check()}})()</script></body></html>"""
 
 
 def main():
@@ -742,7 +750,10 @@ def main():
     args = ap.parse_args()
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(build(args.cdn), encoding="utf-8")
+    built = scoring.now()
+    out.write_text(build(args.cdn, built=built), encoding="utf-8")
+    # 页面里的脚本拿它和自己的生成时间比，发现浏览器开着的是旧页面就提示刷新
+    (out.parent / "version.json").write_text(json.dumps({"built": f"{built:%Y-%m-%dT%H:%M:%S}"}), encoding="utf-8")
     print(f"已生成 {out}")
 
 
