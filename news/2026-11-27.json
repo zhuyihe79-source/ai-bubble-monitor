@@ -1,0 +1,99 @@
+{
+  "date": "2026-11-27",
+  "generated_at": "2026-11-27T08:10:00+08:00",
+  "window": "2026-11-26 至 2026-11-27",
+  "assessment": {
+    "level": 4,
+    "reason": "维持规则值4级（七日净方向+0.41）：英伟达暂停向东南亚四国发货、软银CDS创四年新高、英格兰银行点名4万亿美元AI循环融资，说明出口管制和融资层压力在落地；但英伟达停运与CNBC经销商报道同源，不宜叠加计权，而存储多年期预付长约、全球数据中心空置率降到1.8%这两条硬数据说明需求层仍在扩张，不足以升到5级。融资主题本次未找到有分量的反面证据。"
+  },
+  "items": [
+    {
+      "published": "2026-11-26",
+      "title": "Nvidia halts server shipments to four Southeast Asian countries, FT reports",
+      "source": "Reuters（Investing.com转载，援引FT）",
+      "url": "https://www.investing.com/news/stock-market-news/nvidia-halts-server-shipments-to-four-southeast-asian-countries-ft-reports-5052112",
+      "topic": "nvidia",
+      "importance": 4,
+      "direction": "risk_up",
+      "summary": "据FT，远程算力新规生效后，英伟达让戴尔、超微等伙伴暂停向马来西亚、新加坡、泰国、印尼发货含其芯片的服务器，是否只是暂时的合规停顿尚不清楚。",
+      "implication": "出口管制从融资端传导到实际出货：东南亚是中国企业租用算力的主要通道，停运会让一部分订单延后或转手；若持续一个季度以上，可能在英伟达下季收入里看到缺口。"
+    },
+    {
+      "published": "2026-11-27",
+      "title": "Nvidia chip buyers told to rule out Chinese renters to purchase GPUs, sources say",
+      "source": "CNBC",
+      "url": "https://www.cnbc.com/2026/11/26/neoclouds-nvidia-china-ai.html",
+      "topic": "nvidia",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "据CNBC，经销商告知新云：只要有任何算力会租给中国公司，就不再供应英伟达芯片，比此前50%的门槛更严；部分卖家正为原本面向中国租户的GPU另找买家。",
+      "implication": "原本由中国租户消化的GPU要重新找买家，二手和租赁市场的供给会增加，压低租金和新云利润；属11月19日新规的执行后果，与FT停运报道同源，权重不宜叠加。"
+    },
+    {
+      "published": "2026-11-26",
+      "title": "SoftBank credit risk tops 500 basis points as AI worries mount",
+      "source": "Bloomberg（CNBC-TV18转载）",
+      "url": "https://www.cnbctv18.com/market/softbank-credit-risk-tops-500-basis-points-as-ai-worries-mount-20041733.htm",
+      "topic": "financing",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "软银五年期CDS升至516基点，为2022年10月以来最高；9月发行的9.75%票息美元债利差扩大约四成到约644基点。软银已向OpenAI投入646亿美元。",
+      "implication": "OpenAI最大的外部出资方融资成本在上升，标普称其贷款价值比已逼近35%的降级门槛；若软银被迫放慢出资，OpenAI的算力合同就要找别的钱。"
+    },
+    {
+      "published": "2026-11-26",
+      "title": "AI firms' $4 trillion exposure amplifies global market risks: BOE",
+      "source": "Bloomberg（Business Standard转载）",
+      "url": "https://www.business-standard.com/technology/artificial-intelligence/ai-firms-4-trillion-exposure-amplifies-global-market-risks-boe-126112601042_1.html",
+      "topic": "financing",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "英格兰银行金融稳定报告称，云厂商与AI相关的债务和表外承诺超过4万亿美元，融资“越来越复杂、循环和不透明”，部分私募信贷已在挑选数据中心项目。",
+      "implication": "央行首次正式把AI循环融资列为跨市场传染源，说明融资层风险已被监管层确认；报告本身不改变现金流，但会让银行和私募对新项目更挑剔。"
+    },
+    {
+      "published": "2026-11-26",
+      "title": "The Mad Dash For Memory Chips—and the Pain It’s Causing Holiday Shoppers",
+      "source": "WSJ（Hindustan Times转载），Digitimes同日印证",
+      "url": "https://www.hindustantimes.com/world-news/the-mad-dash-for-memory-chips-and-the-pain-it-s-causing-holiday-shoppers-101795663298085.html",
+      "topic": "memory",
+      "importance": 3,
+      "direction": "risk_down",
+      "summary": "据WSJ，部分存储芯片一年涨价10倍；SK海力士DRAM和HBM已售罄至2029年，美光多年期合同预售至少1500亿美元，新合同最长5年、需预付25%–30%。",
+      "implication": "客户愿意预付现金锁定多年供应，说明AI需求是真金白银；但预付也把买家的现金提前锁死，一旦需求转弱，长约会变成负担，消费电子涨价也在挤压终端需求。"
+    },
+    {
+      "published": "2026-11-26",
+      "title": "Huawei teases an AI memory chip to take on Samsung and SK Hynix",
+      "source": "The Next Web（援引Bloomberg）",
+      "url": "https://thenextweb.com/news/huawei-hbm-ai-memory-samsung-sk-hynix-isscc",
+      "topic": "memory",
+      "importance": 2,
+      "direction": "neutral",
+      "summary": "据彭博，华为将在明年2月ISSCC会议上发表一种HBM设计，数据引脚密度是三星、海力士量产产品的两倍；离量产还有多远不清楚，消息拖累存储股。",
+      "implication": "中国自产HBM会减少对韩国HBM的依赖，长期是存储厂的份额风险；但目前只是论文，对未来6–12个月的供需没有实质影响。"
+    },
+    {
+      "published": "2026-11-27",
+      "title": "AI data centers are taking over new capacity as soon as it's built, as global vacancies continue to shrink",
+      "source": "TechRadar（援引DatacenterHawk季报，ETDatacenters印证）",
+      "url": "https://www.techradar.com/pro/ai-data-centers-are-taking-over-new-capacity-as-soon-as-its-built-as-global-vacancies-continue-to-shrink",
+      "topic": "demand",
+      "importance": 3,
+      "direction": "risk_down",
+      "summary": "DatacenterHawk三季报：全球季度租出18GW创纪录，空置率从3.5%降到1.8%，北美仅0.87%；但北美一半以上来自OpenAI俄亥俄8GW单笔。",
+      "implication": "实体需求仍在吸收新增产能，没有出现空置堆积；但租约高度集中在OpenAI等少数买家，需求强度取决于这几家的融资能否持续。"
+    },
+    {
+      "published": "2026-11-27",
+      "title": "Japan's JERA enters talks with Anthropic, Meta to build data centres, Nikkei reports",
+      "source": "Reuters（CNA转载，援引日经）",
+      "url": "https://www.channelnewsasia.com/business/japans-jera-enters-talks-anthropic-meta-build-data-centres-nikkei-reports-6586021",
+      "topic": "demand",
+      "importance": 2,
+      "direction": "risk_down",
+      "summary": "据日经，日本最大发电商JERA与Anthropic、Meta洽谈在东京一带电厂旁建数据中心，也在与亚马逊、微软、谷歌讨论，此前已与戴尔规划千叶150亿美元项目。",
+      "implication": "电力方主动找AI公司，说明数据中心需求在向有电的地方扩散；但只是洽谈，尚无合同和金额，分量有限。"
+    }
+  ]
+}
