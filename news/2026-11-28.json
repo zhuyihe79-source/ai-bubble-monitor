@@ -1,0 +1,88 @@
+{
+  "date": "2026-11-28",
+  "generated_at": "2026-11-28T07:45:00+08:00",
+  "window": "2026-11-27 至 2026-11-28",
+  "assessment": {
+    "level": 4,
+    "reason": "维持规则值4级（七日净方向+0.39，权重57）：本次新增多为2–3分的后续证据，Blackwell现身上海是黄仁勋丑闻的延续，TrendForce把DRAM合约价转跌时点定在2028年，全球股票基金录得14个月最大流出，SpaceX下调GPU短租价；但韩国出口加速、台积电3纳米产能被云厂商芯片占满，说明硬件需求仍在扩张，不足以升到5级。融资主题本次未找到有分量的反面证据。"
+  },
+  "items": [
+    {
+      "published": "2026-11-27",
+      "title": "Nvidia Blackwell Chips Turn Up at China Site Tied to Alice Huang",
+      "source": "Bloomberg（Yahoo Finance转载）",
+      "url": "https://finance.yahoo.com/technology/articles/nvidia-blackwell-chips-turn-china-114546617.html",
+      "topic": "nvidia",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "彭博查到两家中国公司在与Alice Huang有关的上海数据中心装了GB300机柜和GB200服务器并拿设备抵押贷款，首次证实Blackwell流入中国。",
+      "implication": "下周黄仁勋国会听证多了一项具体证据，出口管制和处罚风险继续压在英伟达身上；当天半导体ETF涨约4.2%，NVDA只涨0.8%，市场在单独给英伟达的政策风险定价。"
+    },
+    {
+      "published": "2026-11-27",
+      "title": "Limited Demand Visibility and Growing Supply Chain Caution Heighten Risk of DRAM Contract Price Declines in 2028, Says TrendForce",
+      "source": "TrendForce",
+      "url": "https://www.trendforce.com/presscenter/news/20261127-13327.html",
+      "topic": "memory",
+      "importance": 3,
+      "direction": "risk_up",
+      "summary": "TrendForce称DRAM采购四季度起放缓；基准情景合约价涨幅2027年逐季收窄、2028年一季度起全面下跌，悲观情景2027年四季度就转跌。",
+      "implication": "原因点名了英伟达可能收缩对新云的融资、BIS新规和中期选举后的数据中心政策，都在需求端；广发证券同期把2027年各季DRAM合约价预测下调到+6%、+3%、0%、0%，通用存储涨价周期的终点正在被提前。"
+    },
+    {
+      "published": "2026-11-27",
+      "title": "South Korea November exports post fastest growth on AI chip surge",
+      "source": "Reuters（Citizen Digital转载）",
+      "url": "https://citizen.digital/article/south-korea-november-exports-post-fastest-growth-on-ai-chip-surge-n394673",
+      "topic": "memory",
+      "importance": 2,
+      "direction": "risk_down",
+      "summary": "路透调查预计韩国11月出口同比增96.8%，为1974年以来最快；前20天芯片出口增294.4%。韩国央行把2027年增长预测由2.9%上调到4.1%。",
+      "implication": "存储出货到11月仍在加速，AI硬件订单没有掉头；但这只是经济学家预测，正式数据12月1日公布，出口额里同时包含涨价和出货量。"
+    },
+    {
+      "published": "2026-11-27",
+      "title": "This might be the real reason Elon Musk says Tesla’s AI5 chip is going to Optimus",
+      "source": "Electrek（援引工商时报）",
+      "url": "https://electrek.co/2026/11/27/tesla-ai5-optimus-real-reason-tsmc-3nm/",
+      "topic": "memory",
+      "importance": 2,
+      "direction": "risk_down",
+      "summary": "据工商时报，创意电子把2027年有限的台积电3纳米产能优先给谷歌、微软的数据中心芯片，特斯拉AI5大规模装车因此推迟到2028年。",
+      "implication": "先进制程产能仍被云厂商自研芯片占满，说明2027年云端定制芯片需求还在；同时供给瓶颈会继续推高成本，新增3纳米产能要到2027年下半年才陆续投产。"
+    },
+    {
+      "published": "2026-11-27",
+      "title": "Global equity funds log biggest weekly outflow in 14 months",
+      "source": "Reuters（Investing.com转载）",
+      "url": "https://www.investing.com/news/economy-news/global-equity-funds-log-biggest-weekly-outflow-in-14-months-5053188",
+      "topic": "financing",
+      "importance": 2,
+      "direction": "risk_up",
+      "summary": "LSEG Lipper数据：截至11月25日当周全球股票基金净流出227.3亿美元，为14个月最大；美股基金流出305.7亿美元，科技类基金流出75.7亿美元。",
+      "implication": "抛售期间资金是真在撤出而不只是换仓，股权融资窗口随之变窄；UBS称AI模型和应用收入四年内要增长至少750%才能覆盖投入。本周全球股市已反弹约3.5%，12月3日的下一期数据看流出是否延续。"
+    },
+    {
+      "published": "2026-11-27",
+      "title": "Elon Musk's SpaceX Slashes Nvidia Blackwell GPU Rental Rates by Up to 35%, While Anthropic May Not Renew H200 Deal: Report",
+      "source": "Benzinga（援引SemiAnalysis）",
+      "url": "https://www.benzinga.com/markets/tech/26/11/63668386/elon-musks-spacex-slashes-nvidia-blackwell-gpu-rental-rates-by-up-to-35-while-anthropic-may-not-renew-h200-deal-report",
+      "topic": "demand",
+      "importance": 2,
+      "direction": "risk_up",
+      "summary": "据SemiAnalysis，SpaceX把Blackwell短租价从约15美元/卡时降到10–12美元；Anthropic不再续租5万张H200。",
+      "implication": "新卡上线后短租和旧卡价格走软，SpaceX正以每卡时5美元为那批H200另找租户，与上周H100租金上涨的说法相反，算力租赁开始分层；SemiAnalysis认为12美元仍符合其GB300收入模型，还不是需求崩塌，但新云的出租率和定价权要打折。"
+    },
+    {
+      "published": "2026-11-27",
+      "title": "Earnings call transcript: Meituan posts Q3 2026 profit as shares slip 3.6%",
+      "source": "Investing.com",
+      "url": "https://ph.investing.com/news/stock-market-news/earnings-call-transcript-meituan-posts-q3-2026-profit-as-shares-slip-36-93CH-2723671",
+      "topic": "demand",
+      "importance": 2,
+      "direction": "risk_up",
+      "summary": "美团三季度收入增21.6%、扭亏为盈，但管理层称今年已锁定部分算力，2027年AI相关资本开支将低于2026年，今后支出按投资回报决定。",
+      "implication": "中国互联网公司开始收缩AI资本开支，与TrendForce所说中国云厂商削减服务器存储订单方向一致；对美国云厂商capex没有直接影响，分量有限。"
+    }
+  ]
+}
